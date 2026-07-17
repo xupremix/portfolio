@@ -9,7 +9,7 @@
 
 - [x] **SETUP-01**: Astro project scaffolded with Tailwind CSS configured
 - [x] **SETUP-02**: Global design system defined (color palette, typography, spacing) — visually striking and cohesive across the site
-- [ ] **SETUP-03**: Site navigation/layout shell (header/nav, footer) present across all sections
+- [x] **SETUP-03**: Site navigation/layout shell (header/nav, footer) present across all sections
 
 ### Hero
 
@@ -67,7 +67,7 @@ Deferred — not in current roadmap.
 |-------------|-------|--------|
 | SETUP-01 | Phase 1 | Complete |
 | SETUP-02 | Phase 1 | Complete |
-| SETUP-03 | Phase 1 | Pending |
+| SETUP-03 | Phase 1 | Complete |
 | HERO-01 | Phase 2 | Pending |
 | HERO-02 | Phase 2 | Pending |
 | PROJ-01 | Phase 3 | Pending |

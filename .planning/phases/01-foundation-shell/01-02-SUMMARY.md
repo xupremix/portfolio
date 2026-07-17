@@ -151,3 +151,7 @@ None - no external service configuration required.
 ---
 *Phase: 01-foundation-shell*
 *Completed: 2026-07-17*
+
+## Self-Check: PASSED
+
+All created files verified present on disk (`src/components/Nav.astro`, `src/components/Footer.astro`, `src/components/Badge.astro`, `src/layouts/Layout.astro`, `src/pages/404.astro`, `src/pages/index.astro`); all 4 task/summary commits (`07a339d`, `e425610`, `71b0b7a`, `4518d54`) verified present in git log.

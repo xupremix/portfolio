@@ -17,7 +17,7 @@ recruiter landing on the live URL gets everything the Core Value promises in und
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [ ] **Phase 1: Foundation & Shell** - Astro+Tailwind project scaffolded with a cohesive design system and a site-wide nav/footer shell
+- [x] **Phase 1: Foundation & Shell** - Astro+Tailwind project scaffolded with a cohesive design system and a site-wide nav/footer shell (completed 2026-07-17)
 - [ ] **Phase 2: Hero** - First-impression hero section with name, role, tagline, and a CTA toward projects/contact
 - [ ] **Phase 3: Projects Showcase** - Featured project cards (with correct in-progress/team framing) plus a secondary "more on GitHub" list
 - [ ] **Phase 4: Skills, Experience & Contact** - Skills, education/tutoring experience, in-page CV, and actionable contact info
@@ -38,11 +38,11 @@ Decimal phases appear between their surrounding integers in numeric order.
   3. A header/nav and footer are present and identical in structure across the site (even before content sections are added).
   4. Visiting the site in a browser shows a coherent, styled page shell rather than unstyled HTML.
 
-**Plans**: 1/2 plans executed
+**Plans**: 2/2 plans complete
 Plans:
 
 - [x] 01-01-PLAN.md — Scaffold Astro + Tailwind v4 + fonts/icons; encode UI-SPEC design tokens as a Tailwind @theme block
-- [ ] 01-02-PLAN.md — Build Nav/Footer/Badge shell, wire Layout.astro, ship real index.astro + 404.astro
+- [x] 01-02-PLAN.md — Build Nav/Footer/Badge shell, wire Layout.astro, ship real index.astro + 404.astro
 
 **UI hint**: yes
 
@@ -117,7 +117,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Shell | 1/2 | In Progress|  |
+| 1. Foundation & Shell | 2/2 | Complete   | 2026-07-17 |
 | 2. Hero | 0/TBD | Not started | - |
 | 3. Projects Showcase | 0/TBD | Not started | - |
 | 4. Skills, Experience & Contact | 0/TBD | Not started | - |
