@@ -1,258 +1,257 @@
-<!-- NluDemo.astro — ATIS Intent + Slot Classification Demo -->
-<dialog id="nlu-demo" aria-labelledby="nlu-demo-title">
-  <div style="display:flex;flex-direction:column;height:90vh;max-height:620px;">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #313244;flex-shrink:0;">
-      <div>
-        <h2 id="nlu-demo-title" style="font-size:18px;font-weight:600;color:#cdd6f4;margin:0;">
-          NLU — Intent Classification & Slot Filling
-        </h2>
-        <p style="font-size:13px;color:#a6adc8;margin:4px 0 0;">ATIS dataset · 0.9509 slot F1 · 0.9765 intent accuracy</p>
+---
+// NLU demo — real ATIS test sentences with their GOLD annotations.
+//
+// Honesty rules (these fixed real bugs — do not regress):
+// - Every utterance + BIO tag sequence below is copied verbatim from the ATIS
+//   test set used in the project (dataset/ATIS/test.json). Nothing is invented.
+// - There is NO free-text input and NO fake "inference": the old demo returned
+//   a canned result for any unrecognized text and displayed made-up
+//   per-sentence confidences. Now the sidebar shows the model's REAL aggregate
+//   test metrics (from NLU_Report.md: slot F1 0.9509, intent acc 0.9765) and
+//   the copy says exactly what is being shown.
+import DemoDialog from './DemoDialog.astro';
+
+interface AtisRow {
+  short: string; // chip label
+  utterance: string;
+  slots: string; // BIO tags, space-separated, verbatim from the dataset
+  intent: string;
+}
+
+// Verbatim rows from ATIS test.json (893 test utterances total).
+const ROWS: AtisRow[] = [
+  {
+    short: 'flight',
+    utterance: 'monday morning i would like to fly from columbus to indianapolis',
+    slots: 'B-depart_date.day_name B-depart_time.period_of_day O O O O O O B-fromloc.city_name O B-toloc.city_name',
+    intent: 'flight',
+  },
+  {
+    short: 'airfare',
+    utterance: 'what are the fares for all flights between washington and columbus',
+    slots: 'O O O O O O O O B-fromloc.city_name O B-toloc.city_name',
+    intent: 'airfare',
+  },
+  {
+    short: 'airport',
+    utterance: 'i would like to know what airports are in los angeles',
+    slots: 'O O O O O O O O O B-city_name I-city_name',
+    intent: 'airport',
+  },
+  {
+    short: 'airline',
+    utterance: 'what airlines fly between detroit and westchester county',
+    slots: 'O O O O B-fromloc.city_name O B-toloc.city_name I-toloc.city_name',
+    intent: 'airline',
+  },
+  {
+    short: 'distance',
+    utterance: "how far is new york 's la guardia from downtown",
+    slots: 'O O O B-city_name I-city_name I-city_name B-airport_name I-airport_name O O',
+    intent: 'distance',
+  },
+];
+
+// Slot family → display label + Catppuccin token classes.
+const SLOT_STYLE: Record<string, { label: string; cls: string }> = {
+  'depart_date.day_name': { label: 'day', cls: 'border-yellow text-yellow bg-yellow/15' },
+  'depart_time.period_of_day': { label: 'time of day', cls: 'border-yellow text-yellow bg-yellow/15' },
+  'fromloc.city_name': { label: 'from city', cls: 'border-green text-green bg-green/15' },
+  'toloc.city_name': { label: 'to city', cls: 'border-sapphire text-sapphire bg-sapphire/15' },
+  'stoploc.city_name': { label: 'stop city', cls: 'border-maroon text-maroon bg-maroon/15' },
+  city_name: { label: 'city', cls: 'border-teal text-teal bg-teal/15' },
+  airport_name: { label: 'airport', cls: 'border-peach text-peach bg-peach/15' },
+};
+
+interface Span {
+  text: string;
+  slot: string | null;
+}
+
+/** Merge BIO tags into word spans: B-x followed by I-x join one span. */
+function bioToSpans(utterance: string, slots: string): Span[] {
+  const words = utterance.split(' ');
+  const tags = slots.split(' ');
+  const spans: Span[] = [];
+  words.forEach((word, i) => {
+    const tag = tags[i] ?? 'O';
+    if (tag.startsWith('I-') && spans.length > 0 && spans[spans.length - 1].slot === tag.slice(2)) {
+      spans[spans.length - 1].text += ' ' + word;
+    } else if (tag.startsWith('B-') || tag.startsWith('I-')) {
+      spans.push({ text: word, slot: tag.slice(2) });
+    } else {
+      spans.push({ text: word, slot: null });
+    }
+  });
+  return spans;
+}
+
+const examples = ROWS.map((row) => ({ ...row, spans: bioToSpans(row.utterance, row.slots) }));
+---
+
+<DemoDialog
+  id="nlu-demo"
+  title="NLU — intent classification & slot filling"
+  subtitle="Joint BERT fine-tune on ATIS · real test-set sentences with their gold annotations"
+>
+  <div slot="main" class="flex min-h-0 flex-1 flex-col gap-lg overflow-y-auto p-md md:p-lg">
+    <!-- Example picker: real ATIS test sentences -->
+    <div>
+      <div class="demo-kicker mb-sm">pick a real test-set query</div>
+      <div class="flex flex-wrap gap-xs">
+        {examples.map((ex, i) => (
+          <button
+            type="button"
+            data-nlu-example={i}
+            aria-pressed={i === 0 ? 'true' : 'false'}
+            class:list={[
+              'nlu-chip cursor-pointer rounded-full border px-md py-xs font-mono text-[12px] font-semibold transition-colors',
+              i === 0 ? 'border-accent bg-accent/15 text-accent' : 'border-border text-subtext hover:border-accent/40 hover:text-accent',
+            ]}
+          >
+            {ex.short}
+          </button>
+        ))}
       </div>
-      <button id="nlu-close" aria-label="Close" style="background:none;border:1px solid #313244;color:#a6adc8;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
     </div>
 
-    <!-- Body -->
-    <div style="display:flex;flex:1;overflow:hidden;min-height:0;flex-direction:column;">
-      <!-- Input area -->
-      <div style="padding:16px 20px;border-bottom:1px solid #313244;flex-shrink:0;">
-        <div style="display:flex;gap:8px;">
-          <input
-            id="nlu-input"
-            type="text"
-            placeholder="e.g. book a flight from boston to denver on tuesday"
-            style="flex:1;background:#1e1e2e;border:1px solid #313244;border-radius:8px;padding:10px 14px;color:#cdd6f4;font-size:14px;outline:none;font-family:inherit;transition:border-color 0.2s;"
-            onfocus="this.style.borderColor='#cba6f7'"
-            onblur="this.style.borderColor='#313244'"
-          />
-          <button
-            id="nlu-classify-btn"
-            style="background:#cba6f7;color:#1e1e2e;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity 0.15s;"
-          >
-            Classify →
-          </button>
+    <!-- One block per example; JS toggles visibility + staggers tokens -->
+    {examples.map((ex, i) => (
+      <div data-nlu-block={i} class:list={[i === 0 ? '' : 'hidden']}>
+        <div class="flex items-center gap-md">
+          <span class="demo-kicker">intent</span>
+          <span class="inline-flex items-center rounded-full border border-accent bg-accent/15 px-md py-xs font-mono text-[13px] font-bold text-accent uppercase">
+            {ex.intent}
+          </span>
+          <span class="font-mono text-[11px] text-subtext">gold label · ATIS test</span>
         </div>
 
-        <!-- Example chips -->
-        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
-          <span style="font-size:11px;color:#a6adc8;align-self:center;margin-right:2px;">Try:</span>
-          <button class="nlu-chip" data-idx="0" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #313244;background:transparent;color:#a6adc8;cursor:pointer;transition:all 0.15s;">flight booking</button>
-          <button class="nlu-chip" data-idx="1" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #313244;background:transparent;color:#a6adc8;cursor:pointer;transition:all 0.15s;">cheapest fare</button>
-          <button class="nlu-chip" data-idx="2" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #313244;background:transparent;color:#a6adc8;cursor:pointer;transition:all 0.15s;">airport lookup</button>
-          <button class="nlu-chip" data-idx="3" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #313244;background:transparent;color:#a6adc8;cursor:pointer;transition:all 0.15s;">evening flight</button>
-          <button class="nlu-chip" data-idx="4" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #313244;background:transparent;color:#a6adc8;cursor:pointer;transition:all 0.15s;">airlines query</button>
+        <div class="mt-md rounded-[var(--radius-control)] border border-border bg-base p-md">
+          <div class="flex flex-wrap items-end gap-x-sm gap-y-md">
+            {ex.spans.map((span) => (
+              <span class="nlu-token flex flex-col items-center gap-xs">
+                <span
+                  class:list={[
+                    'rounded-[4px] text-[15px] leading-snug',
+                    span.slot && SLOT_STYLE[span.slot]
+                      ? `border px-xs font-semibold ${SLOT_STYLE[span.slot].cls}`
+                      : 'px-[2px] text-text',
+                  ]}
+                >
+                  {span.text}
+                </span>
+                {span.slot && SLOT_STYLE[span.slot] && (
+                  <span class="text-[9px] leading-none opacity-70" class:list={[SLOT_STYLE[span.slot].cls.split(' ')[1]]}>
+                    {SLOT_STYLE[span.slot].label}
+                  </span>
+                )}
+              </span>
+            ))}
+          </div>
+        </div>
+
+        <div class="mt-sm flex flex-wrap gap-xs">
+          {[...new Set(ex.spans.map((s) => s.slot).filter(Boolean))].map((slot) => (
+            <span class:list={['inline-flex items-center rounded-full border px-sm py-xs text-[11px]', SLOT_STYLE[slot!].cls]}>
+              {SLOT_STYLE[slot!].label} · {slot}
+            </span>
+          ))}
         </div>
       </div>
+    ))}
 
-      <!-- Results -->
-      <div style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:16px;">
-        <div id="nlu-results" style="display:none;">
-          <!-- Intent -->
-          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
-            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;min-width:60px;">Intent</div>
-            <div id="nlu-intent-badge" style="display:inline-flex;align-items:center;gap:8px;background:rgb(203 166 247/0.15);border:1px solid #cba6f7;border-radius:20px;padding:4px 14px;font-size:13px;font-weight:700;color:#cba6f7;"></div>
-            <div id="nlu-confidence" style="font-size:12px;color:#a6adc8;font-family:'JetBrains Mono',monospace;"></div>
+    <p class="text-[11px] leading-relaxed text-subtext">
+      These are gold annotations from the ATIS test set — the exact structure the model has to
+      recover. The training pipeline (joint intent + slot heads on BERT, built from scratch) is in
+      the repo; its measured accuracy on this test set is on the right.
+    </p>
+  </div>
+
+  <div slot="aside">
+    <!-- REAL aggregate metrics from the project report -->
+    <div>
+      <div class="demo-kicker mb-sm">measured on ATIS test (893 queries)</div>
+      <div class="flex flex-col gap-md">
+        <div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-[12px] text-text">slot F1</span>
+            <span class="font-mono text-[18px] font-semibold text-text">0.9509</span>
           </div>
-
-          <!-- Annotated sentence -->
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;margin-bottom:8px;">Slot annotations</div>
-          <div id="nlu-annotated" style="font-size:16px;line-height:2.2;font-weight:500;padding:12px;background:#1e1e2e;border-radius:8px;border:1px solid #313244;flex-wrap:wrap;display:flex;gap:4px;align-items:baseline;"></div>
-
-          <!-- Slot legend -->
-          <div style="margin-top:12px;">
-            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;margin-bottom:8px;">Slot types found</div>
-            <div id="nlu-slot-legend" style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px;"></div>
+          <div class="mt-xs h-1.5 w-full overflow-hidden rounded-full bg-border">
+            <div class="h-full w-[95.09%] rounded-full bg-accent"></div>
           </div>
         </div>
-
-        <div id="nlu-placeholder" style="color:#a6adc8;font-size:13px;text-align:center;padding:40px 0;">
-          Type a query or click an example above, then hit "Classify →"
+        <div>
+          <div class="flex items-baseline justify-between">
+            <span class="text-[12px] text-text">intent accuracy</span>
+            <span class="font-mono text-[18px] font-semibold text-text">0.9765</span>
+          </div>
+          <div class="mt-xs h-1.5 w-full overflow-hidden rounded-full bg-border">
+            <div class="h-full w-[97.65%] rounded-full bg-accent"></div>
+          </div>
         </div>
+      </div>
+      <p class="mt-sm text-[11px] leading-relaxed text-subtext">
+        bert-base-cased, lr 5e-5 — numbers from the project report, not estimates.
+      </p>
+    </div>
+
+    <!-- How it works -->
+    <div class="flex flex-col gap-sm text-[12px] leading-relaxed text-text">
+      <div class="demo-kicker">how the model works</div>
+      <p>
+        One BERT encoder, two heads: the <span class="font-mono text-accent">[CLS]</span> vector
+        classifies the intent; every token vector classifies its BIO slot tag. Both heads train
+        jointly with a summed loss.
+      </p>
+      <div class="border-l-2 border-accent/50 pl-sm text-subtext">
+        utterance → BERT → <span class="font-mono">[CLS]</span>→ intent · tokens → slots
       </div>
     </div>
   </div>
-</dialog>
+</DemoDialog>
 
-<script is:inline>
-(function () {
-  const SLOT_COLORS = {
-    'fromloc.city_name':    { bg: 'rgb(166 227 161/0.2)', border: '#a6e3a1', text: '#a6e3a1', label: 'from city' },
-    'toloc.city_name':      { bg: 'rgb(137 220 235/0.2)', border: '#89dceb', text: '#89dceb', label: 'to city' },
-    'depart_date.day_name': { bg: 'rgb(249 226 175/0.2)', border: '#f9e2af', text: '#f9e2af', label: 'depart date' },
-    'depart_time.time':     { bg: 'rgb(249 226 175/0.2)', border: '#f9e2af', text: '#f9e2af', label: 'depart time' },
-    'cost_relative':        { bg: 'rgb(250 179 135/0.2)', border: '#fab387', text: '#fab387', label: 'cost modifier' },
-    'airport_name':         { bg: 'rgb(148 226 213/0.2)', border: '#94e2d5', text: '#94e2d5', label: 'airport' },
-  };
-
-  const EXAMPLES = [
-    {
-      text: "book a flight from boston to denver on tuesday",
-      intent: "flight", confidence: 98.5,
-      slots: [
-        { word: "book", slot: null }, { word: "a", slot: null }, { word: "flight", slot: null },
-        { word: "from", slot: null }, { word: "boston", slot: "fromloc.city_name" },
-        { word: "to", slot: null }, { word: "denver", slot: "toloc.city_name" },
-        { word: "on", slot: null }, { word: "tuesday", slot: "depart_date.day_name" },
-      ]
-    },
-    {
-      text: "what is the cheapest fare from new york to los angeles",
-      intent: "airfare", confidence: 97.7,
-      slots: [
-        { word: "what", slot: null }, { word: "is", slot: null }, { word: "the", slot: null },
-        { word: "cheapest", slot: "cost_relative" }, { word: "fare", slot: null },
-        { word: "from", slot: null }, { word: "new", slot: "fromloc.city_name" },
-        { word: "york", slot: "fromloc.city_name" }, { word: "to", slot: null },
-        { word: "los", slot: "toloc.city_name" }, { word: "angeles", slot: "toloc.city_name" },
-      ]
-    },
-    {
-      text: "list the airports in chicago",
-      intent: "airport", confidence: 99.2,
-      slots: [
-        { word: "list", slot: null }, { word: "the", slot: null },
-        { word: "airports", slot: null }, { word: "in", slot: null },
-        { word: "chicago", slot: "airport_name" },
-      ]
-    },
-    {
-      text: "show me flights leaving denver after 6pm",
-      intent: "flight", confidence: 96.1,
-      slots: [
-        { word: "show", slot: null }, { word: "me", slot: null }, { word: "flights", slot: null },
-        { word: "leaving", slot: null }, { word: "denver", slot: "fromloc.city_name" },
-        { word: "after", slot: null }, { word: "6pm", slot: "depart_time.time" },
-      ]
-    },
-    {
-      text: "what airlines fly from dallas to miami",
-      intent: "airline", confidence: 98.8,
-      slots: [
-        { word: "what", slot: null }, { word: "airlines", slot: null }, { word: "fly", slot: null },
-        { word: "from", slot: null }, { word: "dallas", slot: "fromloc.city_name" },
-        { word: "to", slot: null }, { word: "miami", slot: "toloc.city_name" },
-      ]
-    },
-  ];
-
-  function findExample(text) {
-    const norm = text.trim().toLowerCase();
-    return EXAMPLES.find(e => e.text.toLowerCase() === norm) || EXAMPLES[0];
+<style>
+  @keyframes nlu-pop {
+    from { opacity: 0; transform: translateY(5px); }
+    to   { opacity: 1; transform: translateY(0); }
   }
-
-  function classify(text) {
-    const ex = findExample(text) || EXAMPLES[0];
-    showResult(ex);
+  .nlu-token.animate {
+    animation: nlu-pop 0.3s cubic-bezier(0.16, 1, 0.3, 1) both;
   }
+  @media (prefers-reduced-motion: reduce) {
+    .nlu-token.animate { animation: none; }
+  }
+</style>
 
-  function showResult(ex) {
-    document.getElementById('nlu-placeholder').style.display = 'none';
-    document.getElementById('nlu-results').style.display = 'block';
-
-    // Intent badge
-    const intentEl = document.getElementById('nlu-intent-badge');
-    intentEl.textContent = ex.intent.toUpperCase();
-    document.getElementById('nlu-confidence').textContent = `${ex.confidence}% confidence`;
-
-    // Annotated sentence
-    const ann = document.getElementById('nlu-annotated');
-    ann.innerHTML = '';
-    const seenSlots = new Set();
-
-    ex.slots.forEach(({ word, slot }) => {
-      const span = document.createElement('span');
-      span.style.position = 'relative';
-      span.style.display = 'inline-flex';
-      span.style.flexDirection = 'column';
-      span.style.alignItems = 'center';
-
-      const wordEl = document.createElement('span');
-      wordEl.textContent = word;
-      wordEl.style.fontWeight = slot ? '700' : '400';
-
-      if (slot && SLOT_COLORS[slot]) {
-        const c = SLOT_COLORS[slot];
-        wordEl.style.color = c.text;
-        wordEl.style.background = c.bg;
-        wordEl.style.border = `1px solid ${c.border}`;
-        wordEl.style.borderRadius = '4px';
-        wordEl.style.padding = '0 5px';
-        seenSlots.add(slot);
-        // Label below
-        const lbl = document.createElement('span');
-        lbl.textContent = c.label;
-        lbl.style.fontSize = '9px';
-        lbl.style.color = c.text;
-        lbl.style.opacity = '0.7';
-        lbl.style.lineHeight = '1';
-        lbl.style.marginTop = '2px';
-        span.appendChild(wordEl);
-        span.appendChild(lbl);
-      } else {
-        wordEl.style.color = '#cdd6f4';
-        wordEl.style.padding = '0 2px';
-        span.appendChild(wordEl);
+<script>
+  // Chip switching + staggered token reveal. No inference is simulated.
+  function showExample(idx: number) {
+    document.querySelectorAll<HTMLButtonElement>('.nlu-chip').forEach((chip, i) => {
+      const active = i === idx;
+      chip.setAttribute('aria-pressed', String(active));
+      chip.classList.toggle('border-accent', active);
+      chip.classList.toggle('bg-accent/15', active);
+      chip.classList.toggle('text-accent', active);
+      chip.classList.toggle('border-border', !active);
+      chip.classList.toggle('text-subtext', !active);
+    });
+    document.querySelectorAll<HTMLElement>('[data-nlu-block]').forEach((block) => {
+      const active = Number(block.dataset.nluBlock) === idx;
+      block.classList.toggle('hidden', !active);
+      if (active) {
+        block.querySelectorAll<HTMLElement>('.nlu-token').forEach((token, i) => {
+          token.classList.remove('animate');
+          void token.offsetWidth; // restart the CSS animation
+          token.style.animationDelay = `${i * 40}ms`;
+          token.classList.add('animate');
+        });
       }
-      ann.appendChild(span);
     });
-
-    // Slot legend
-    const legend = document.getElementById('nlu-slot-legend');
-    legend.innerHTML = '';
-    if (seenSlots.size === 0) {
-      const empty = document.createElement('span');
-      empty.textContent = 'No slots in this query';
-      empty.style.color = '#a6adc8';
-      legend.appendChild(empty);
-    } else {
-      seenSlots.forEach(slot => {
-        const c = SLOT_COLORS[slot];
-        const chip = document.createElement('span');
-        chip.style.display = 'inline-flex';
-        chip.style.alignItems = 'center';
-        chip.style.gap = '5px';
-        chip.style.padding = '3px 10px';
-        chip.style.borderRadius = '20px';
-        chip.style.border = `1px solid ${c.border}`;
-        chip.style.color = c.text;
-        chip.style.background = c.bg;
-        chip.textContent = c.label;
-        legend.appendChild(chip);
-      });
-    }
   }
 
-  document.getElementById('nlu-classify-btn').addEventListener('click', () => {
-    const text = document.getElementById('nlu-input').value;
-    if (text.trim()) classify(text);
+  document.querySelectorAll<HTMLButtonElement>('.nlu-chip').forEach((chip, i) => {
+    chip.addEventListener('click', () => showExample(i));
   });
-
-  document.getElementById('nlu-input').addEventListener('keydown', (e) => {
-    if (e.key === 'Enter') {
-      const text = e.target.value;
-      if (text.trim()) classify(text);
-    }
-  });
-
-  document.querySelectorAll('.nlu-chip').forEach((chip) => {
-    chip.addEventListener('click', () => {
-      const idx = parseInt(chip.dataset.idx, 10);
-      const ex = EXAMPLES[idx];
-      document.getElementById('nlu-input').value = ex.text;
-      showResult(ex);
-    });
-    chip.addEventListener('mouseenter', () => {
-      chip.style.borderColor = '#cba6f7';
-      chip.style.color = '#cba6f7';
-    });
-    chip.addEventListener('mouseleave', () => {
-      chip.style.borderColor = '#313244';
-      chip.style.color = '#a6adc8';
-    });
-  });
-
-  document.getElementById('nlu-close').addEventListener('click', () => {
-    document.getElementById('nlu-demo').close();
-  });
-})();
+  document.getElementById('nlu-demo')?.addEventListener('demo-open', () => showExample(0));
 </script>
