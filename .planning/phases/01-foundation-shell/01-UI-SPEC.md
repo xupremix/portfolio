@@ -1,7 +1,7 @@
 ---
 phase: 1
 slug: foundation-shell
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-07-17
@@ -35,7 +35,7 @@ created: 2026-07-17
 
 **Why no shadcn:** shadcn's component model targets React (Radix primitives + client-side interactivity). This project is Astro-only, static-first, "minimal JS shipped" per PROJECT.md constraints, with no React islands planned. A handful of hand-built Astro components (nav, footer, card, badge, button) styled directly with Tailwind fully covers this site's needs without pulling in a React runtime. If a later phase introduces genuine client-side interactivity that benefits from Radix primitives, revisit this decision then — do not add it preemptively.
 
-**Aesthetic direction [DEFAULT]:** Dark-mode-only, single theme (no light/dark toggle in v1 — avoids theme-switching JS, keeps the "minimal JS" constraint intact, and a toggle is not in REQUIREMENTS.md). Dark, near-black surfaces with a single vivid cyan accent read as modern/technical and are a well-established, low-risk pattern for systems/ML engineer portfolios aimed at technical recruiters. This is a first-pass call, not a locked user decision — flag for confirmation at next `/gsd-discuss-phase` or UAT if the user wants light mode instead.
+**Aesthetic direction [USER DECISION]:** Dark-mode-only, single theme (no light/dark toggle in v1 — avoids theme-switching JS, keeps the "minimal JS" constraint intact, and a toggle is not in REQUIREMENTS.md). Pastel-on-dark, Catppuccin Mocha-inspired: a dark charcoal/navy base with soft, desaturated pastel accents rather than a single vivid neon accent. Explicitly requested by the user — fits the dev-tool aesthetic he already lives in (his own neovim config), reads as modern/technical but friendlier and less "terminal-harsh" than a pure neon-on-black look. Confirmed direction, not a default to revisit.
 
 ---
 
@@ -78,17 +78,19 @@ Exactly 4 sizes (14/16/28/48), exactly 2 weights (400/600) — no exceptions.
 
 ## Color
 
+Catppuccin Mocha-inspired palette (pastel-on-dark, per user decision).
+
 | Role | Value | Usage |
 |------|-------|-------|
-| Dominant (60%) | `#0B0F14` (near-black, cool slate) | Page background, all default surfaces |
-| Secondary (30%) | `#131922` (slightly lighter dark slate) | Cards, nav bar, footer, section alternation |
-| Accent (10%) | `#22D3EE` (cyan-400) | See reserved-for list below — nothing else |
-| Destructive | `#F87171` (red-400) | Not applicable in Phase 1 (no destructive actions exist on a static portfolio); reserved token for any future form-validation or broken-link error text only |
+| Dominant (60%) | `#1E1E2E` (Catppuccin "Base" — dark charcoal-navy) | Page background, all default surfaces |
+| Secondary (30%) | `#181825` (Catppuccin "Mantle" — slightly darker) | Cards, nav bar, footer, section alternation |
+| Accent (10%) | `#CBA6F7` (Catppuccin "Mauve" — pastel lavender-purple) | See reserved-for list below — nothing else |
+| Destructive | `#F38BA8` (Catppuccin "Red" — soft pastel rose) | Not applicable in Phase 1 (no destructive actions exist on a static portfolio); reserved token for any future form-validation or broken-link error text only |
 
 Supporting neutrals (not part of the 60/30/10 split, needed for text contrast):
-- Primary text: `#E6EDF3` (near-white) on dominant/secondary surfaces — passes WCAG AA for body text.
-- Muted/secondary text: `#8B949E` (mid-gray) for captions, footer copyright line, de-emphasized metadata.
-- Hairline borders/dividers: `#1F2733` (subtle, barely-there separator between nav/footer and page content).
+- Primary text: `#CDD6F4` (Catppuccin "Text" — soft off-white) on dominant/secondary surfaces — passes WCAG AA for body text.
+- Muted/secondary text: `#A6ADC8` (Catppuccin "Subtext0" — muted lavender-gray) for captions, footer copyright line, de-emphasized metadata.
+- Hairline borders/dividers: `#313244` (Catppuccin "Surface0" — subtle, barely-there separator between nav/footer and page content).
 
 **Accent reserved for** (explicit — never "all interactive elements"):
 - Primary CTA button fill (e.g. nav "Contact" button)
@@ -98,6 +100,8 @@ Supporting neutrals (not part of the 60/30/10 split, needed for text contrast):
 - The "in progress" badge outline/text on the evolcpp project card (Phase 3 — noted here so Phase 1's badge component primitive is built with this in mind)
 
 Do not use accent for: body text color, large surface fills, decorative backgrounds, or more than one element type per view beyond this list.
+
+**Secondary pastel set (Phase 3 tech-stack tag badges only — not part of the 60/30/10 shell split):** Phase 3's project tech-stack badges (Rust, Python, PyTorch, etc.) may cycle through a small fixed set of additional Catppuccin pastels for visual variety between tags — `#94E2D5` (Teal), `#89DCEB` (Sky), `#FAB387` (Peach), `#A6E3A1` (Green) — each tag uses exactly one color consistently per technology (e.g. Rust badges always the same pastel), never mixed within a single badge, and never used outside the badge component. This does not apply to Phase 1's shell.
 
 ---
 
@@ -134,7 +138,7 @@ Not applicable — `Tool: none` (no shadcn initialized, see Design System sectio
 Explicit list of what this phase builds, so planner/executor scope matches this contract:
 
 - `Layout.astro` — base HTML shell: `<head>` boilerplate, font loading, global CSS import, slot for page content.
-- `Nav.astro` — sticky/fixed header, 64px height. Transparent + backdrop-blur over hero on load, transitions to solid `Secondary (30%)` background once scrolled (CSS-only, `position: sticky` + a small IntersectionObserver or pure CSS `@supports`/scroll-driven-animation if targeting modern browsers — keep JS to near-zero). Desktop: horizontal link row + CTA button, right-aligned (or centered, executor's call within this contract). Mobile (<768px): logo/name left, hamburger toggle right (44px tap target) collapsing to a full-viewport or dropdown menu listing the same links + CTA.
+- `Nav.astro` — sticky/fixed header, 64px height. **Visual focal point:** the logo/name (left-aligned) is the resting focal point of the nav bar; the accent-filled "Contact" CTA button is the secondary draw, pulled forward by color per the Color section's reserved-for list — plain nav links stay neutral/muted until hover/active. Transparent + backdrop-blur over hero on load, transitions to solid `Secondary (30%)` background once scrolled (CSS-only, `position: sticky` + a small IntersectionObserver or pure CSS `@supports`/scroll-driven-animation if targeting modern browsers — keep JS to near-zero). Desktop: horizontal link row + CTA button, right-aligned (or centered, executor's call within this contract). Mobile (<768px): logo/name left, hamburger toggle right (44px tap target, `aria-label="Open menu"` — toggles to `aria-label="Close menu"` when expanded, matching the footer icon-links' accessible-label treatment) collapsing to a full-viewport or dropdown menu listing the same links + CTA.
 - `Footer.astro` — `Secondary (30%)` background, copyright text + GitHub/email icon-link slots as specified in Copywriting Contract above.
 - `Badge.astro` — small pill component (used for "in progress" tag in Phase 3, tech-stack tags in Phase 3) — build the primitive now since it's a shell-level visual primitive, even though its first real usage is Phase 3.
 - `404.astro` page — per Copywriting Contract above.
@@ -144,11 +148,11 @@ Explicit list of what this phase builds, so planner/executor scope matches this 
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS (initial FLAG on missing focal-point statement and hamburger `aria-label` — both resolved above)
+- [x] Dimension 3 Color: PASS (re-verify recommended after Catppuccin palette swap post-approval — swap preserves the same 60/30/10 structure and reserved-for accent list, so no structural re-review needed)
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved (2026-07-17) — color palette subsequently swapped to Catppuccin Mocha pastel-on-dark per explicit user decision (dark base preserved, single-accent discipline preserved, only hex values changed)
