@@ -59,7 +59,11 @@ Plans:
   3. The hero includes a clear visual cue (CTA, link, or scroll indicator) directing attention toward the projects or contact section.
   4. The hero section renders correctly and legibly at 375px (mobile), 768px (tablet), and 1440px (desktop) widths.
 
-**Plans**: TBD
+**Plans**: 0/1 plans complete
+Plans:
+
+- [ ] 02-01-PLAN.md — Build Hero.astro (name/role/tagline/CTA/scroll-cue) and mount it as the first section in index.astro
+
 **UI hint**: yes
 
 ### Phase 3: Projects Showcase
@@ -118,7 +122,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Shell | 2/2 | Verified   | 2026-07-17 |
-| 2. Hero | 0/TBD | Not started | - |
+| 2. Hero | 0/1 | Not started | - |
 | 3. Projects Showcase | 0/TBD | Not started | - |
 | 4. Skills, Experience & Contact | 0/TBD | Not started | - |
 | 5. Polish & Deploy | 0/TBD | Not started | - |
