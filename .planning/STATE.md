@@ -2,13 +2,13 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 1
-current_phase_name: Foundation & Shell
+current_phase: 2
+current_phase_name: Hero
 status: verifying
-stopped_at: Verified Phase 1 (passed, 6/6 must-haves)
-last_updated: "2026-07-17T16:21:42.284Z"
+stopped_at: Verified Phase 2 (passed, 4/4 must-haves)
+last_updated: "2026-07-17T18:30:00.000Z"
 last_activity: 2026-07-17
-last_activity_desc: "Verified Phase 1: status passed, 6/6 must-haves verified (see .planning/phases/01-foundation-shell/01-VERIFICATION.md)"
+last_activity_desc: "Verified Phase 2: status passed, 4/4 must-haves verified (see .planning/phases/02-hero/02-VERIFICATION.md)"
 progress:
   total_phases: 5
   completed_phases: 2
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-17)
 
 **Core value:** A recruiter who lands on the site for 60 seconds understands who Filippo is, sees credible technical depth (real projects, not filler), and knows how to reach him.
-**Current focus:** Phase 1 — Foundation & Shell (verified) — ready to plan Phase 2 (Hero)
+**Current focus:** Phase 2 — Hero (verified) — ready to plan Phase 3 (Projects Showcase)
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation & Shell) — VERIFIED
-Plan: 2 of 2 in current phase
-Status: Phase complete — ready for verification
-Last activity: 2026-07-17 — Verified Phase 1: status passed, 6/6 must-haves verified (see .planning/phases/01-foundation-shell/01-VERIFICATION.md)
+Phase: 2 of 5 (Hero) — VERIFIED
+Plan: 1 of 1 in current phase
+Status: Phase complete and verified — ready to plan Phase 3
+Last activity: 2026-07-17 — Verified Phase 2: status passed, 4/4 must-haves verified (see .planning/phases/02-hero/02-VERIFICATION.md)
 
 Progress: [██████████] 100%
 
@@ -75,6 +75,8 @@ Recent decisions affecting current work:
 - [Phase 01]: 01-02: Deferred the plan's visual/keyboard human-check to end-of-phase verification per config.json human_verify_mode: end-of-phase (no checkpoint:human-verify task in this plan; ran fully autonomously)
 - [Phase 01]: Verification: deferred human-check items (Catppuccin Mocha rendering, scroll swap, hamburger click/keyboard, focus rings) independently confirmed via real headless-Chromium session against `npm run dev`; goal-backward VERIFICATION.md status: passed, 6/6 must-haves verified, 0 gaps
 - [Phase ?]: 02-hero: 02-01: Deferred human-check (responsive/focus-ring/reduced-motion verification) to end-of-phase verification per config.json human_verify_mode: end-of-phase
+- [Phase 02]: Gotcha found and fixed during end-of-phase verification: `max-w-2xl` silently resolved to the custom `--spacing-2xl` token (48px) instead of Tailwind's default 672px container width, because the project's custom spacing scale reuses Tailwind's reserved size-scale key names (xs/sm/md/lg/xl/2xl/3xl). Fixed in commit `78aec22` (`max-w-[42rem]`); documented in PROJECT.md's new "Known Gotchas" section so it doesn't recur in Phases 3-5.
+- [Phase 02]: Verification: deferred human-check items (responsive rendering at 375/768/1440px, focus-ring visibility, reduced-motion behavior) independently confirmed via live headless-Chromium screenshots and Playwright runtime checks (computed box-shadow for focus rings, computed animation-name under emulated prefers-reduced-motion); goal-backward VERIFICATION.md status: passed, 4/4 must-haves verified, 0 gaps
 
 ### Pending Todos
 
@@ -94,6 +96,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-17T16:21:00.946Z
-Stopped at: Verified Phase 1 (passed, 6/6 must-haves) — next: plan Phase 2 (Hero)
+Last session: 2026-07-17T18:30:00.000Z
+Stopped at: Verified Phase 2 (passed, 4/4 must-haves) — next: plan Phase 3 (Projects Showcase)
 Resume file: None
