@@ -17,7 +17,7 @@ recruiter landing on the live URL gets everything the Core Value promises in und
 
 Decimal phases appear between their surrounding integers in numeric order.
 
-- [x] **Phase 1: Foundation & Shell** - Astro+Tailwind project scaffolded with a cohesive design system and a site-wide nav/footer shell (completed 2026-07-17)
+- [x] **Phase 1: Foundation & Shell** - Astro+Tailwind project scaffolded with a cohesive design system and a site-wide nav/footer shell (completed 2026-07-17, verified 2026-07-17)
 - [ ] **Phase 2: Hero** - First-impression hero section with name, role, tagline, and a CTA toward projects/contact
 - [ ] **Phase 3: Projects Showcase** - Featured project cards (with correct in-progress/team framing) plus a secondary "more on GitHub" list
 - [ ] **Phase 4: Skills, Experience & Contact** - Skills, education/tutoring experience, in-page CV, and actionable contact info
@@ -117,7 +117,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Shell | 2/2 | Complete   | 2026-07-17 |
+| 1. Foundation & Shell | 2/2 | Verified   | 2026-07-17 |
 | 2. Hero | 0/TBD | Not started | - |
 | 3. Projects Showcase | 0/TBD | Not started | - |
 | 4. Skills, Experience & Contact | 0/TBD | Not started | - |

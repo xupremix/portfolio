@@ -65,9 +65,9 @@ Deferred — not in current roadmap.
 
 | Requirement | Phase | Status |
 |-------------|-------|--------|
-| SETUP-01 | Phase 1 | Complete |
-| SETUP-02 | Phase 1 | Complete |
-| SETUP-03 | Phase 1 | Complete |
+| SETUP-01 | Phase 1 | Verified |
+| SETUP-02 | Phase 1 | Verified |
+| SETUP-03 | Phase 1 | Verified |
 | HERO-01 | Phase 2 | Pending |
 | HERO-02 | Phase 2 | Pending |
 | PROJ-01 | Phase 3 | Pending |

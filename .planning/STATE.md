@@ -4,11 +4,11 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 1
 current_phase_name: Foundation & Shell
-status: verifying
-stopped_at: Completed 01-02-PLAN.md
-last_updated: "2026-07-17T15:54:27.744Z"
+status: verified
+stopped_at: Verified Phase 1 (passed, 6/6 must-haves)
+last_updated: "2026-07-17T16:03:57.000Z"
 last_activity: 2026-07-17
-last_activity_desc: Completed 01-02 (Nav/Footer shell, Badge primitive, Layout wiring)
+last_activity_desc: Verified Phase 1 (Foundation & Shell) — status passed, 6/6 must-haves verified
 progress:
   total_phases: 5
   completed_phases: 1
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-17)
 
 **Core value:** A recruiter who lands on the site for 60 seconds understands who Filippo is, sees credible technical depth (real projects, not filler), and knows how to reach him.
-**Current focus:** Phase 1 — Foundation & Shell
+**Current focus:** Phase 1 — Foundation & Shell (verified) — ready to plan Phase 2 (Hero)
 
 ## Current Position
 
-Phase: 1 of 5 (Foundation & Shell)
+Phase: 1 of 5 (Foundation & Shell) — VERIFIED
 Plan: 2 of 2 in current phase
-Status: Phase complete — ready for verification
-Last activity: 2026-07-17 — Completed 01-02 (Nav/Footer shell, Badge primitive, Layout wiring)
+Status: Phase complete and verified — ready to plan Phase 2
+Last activity: 2026-07-17 — Verified Phase 1: status passed, 6/6 must-haves verified (see .planning/phases/01-foundation-shell/01-VERIFICATION.md)
 
 Progress: [██████████] 100%
 
@@ -72,6 +72,7 @@ Recent decisions affecting current work:
 - [Phase ?]: 01-01: Used @theme static (not plain @theme) so all 24 design tokens compile into :root regardless of markup usage
 - [Phase 01]: 01-02: Kept Nav's scroll-listener and keyboard-toggle logic in one shared inline script block to preserve UI-SPEC's near-zero-JS constraint
 - [Phase 01]: 01-02: Deferred the plan's visual/keyboard human-check to end-of-phase verification per config.json human_verify_mode: end-of-phase (no checkpoint:human-verify task in this plan; ran fully autonomously)
+- [Phase 01]: Verification: deferred human-check items (Catppuccin Mocha rendering, scroll swap, hamburger click/keyboard, focus rings) independently confirmed via real headless-Chromium session against `npm run dev`; goal-backward VERIFICATION.md status: passed, 6/6 must-haves verified, 0 gaps
 
 ### Pending Todos
 
@@ -91,6 +92,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-17T15:53:30.737Z
-Stopped at: Completed 01-02-PLAN.md
+Last session: 2026-07-17T16:03:57.000Z
+Stopped at: Verified Phase 1 (passed, 6/6 must-haves) — next: plan Phase 2 (Hero)
 Resume file: None
