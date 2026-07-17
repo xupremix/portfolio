@@ -1,315 +1,101 @@
-<!-- AsaDemo.astro — Multi-Agent Deliveroo Canvas Animation -->
-<dialog id="asa-demo" aria-labelledby="asa-demo-title">
-  <div style="display:flex; flex-direction:column; height:90vh; max-height:680px;">
-    <!-- Header -->
-    <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #313244; flex-shrink:0;">
-      <div>
-        <h2 id="asa-demo-title" style="font-size:18px; font-weight:600; color:#cdd6f4; margin:0;">
-          ASA Autobots — Multi-Agent Delivery System
-        </h2>
-        <p style="font-size:13px; color:#a6adc8; margin:4px 0 0;">BDI executor · LLM coordinator · PDDL planner · built with a teammate</p>
-      </div>
-      <button id="asa-close" aria-label="Close demo" style="background:none;border:1px solid #313244;color:#a6adc8;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
+---
+// ASA Autobots demo — animated pipeline walkthrough (real vocabulary/PDDL,
+// labeled illustrative). All logic in src/scripts/asa-demo.ts.
+import DemoDialog from './DemoDialog.astro';
+import { Icon } from 'astro-icon/components';
+
+const steps = [
+  'STRIPS PDDL path plan',
+  'LLM coordinator assigns task',
+  'BDI executor → pickup',
+  'BDI executor → deliver',
+  'Delivered · back to idle',
+];
+---
+
+<DemoDialog
+  id="asa-demo"
+  title="ASA Autobots — multi-agent delivery"
+  subtitle="BDI Physical Executor · LLM Cognitive Coordinator (llama-3.3-70b) · STRIPS PDDL — built with a teammate"
+>
+  <div slot="main" class="flex min-h-0 flex-1 flex-col items-center justify-center gap-md p-md">
+    <div class="w-full max-w-[520px]">
+      <canvas id="asa-canvas" class="w-full rounded-[var(--radius-control)] border border-border"></canvas>
+    </div>
+    <div class="flex flex-wrap items-center justify-center gap-sm">
+      <button
+        id="asa-play-pause"
+        type="button"
+        class="inline-flex cursor-pointer items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-xs text-[13px] font-bold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        <span id="asa-icon-pause"><Icon name="lucide:pause" width={13} height={13} aria-hidden="true" /></span>
+        <span id="asa-icon-play" class="hidden"><Icon name="lucide:play" width={13} height={13} aria-hidden="true" /></span>
+        <span id="asa-play-label">Pause</span>
+      </button>
+      <button
+        id="asa-restart"
+        type="button"
+        class="inline-flex cursor-pointer items-center gap-xs rounded-[var(--radius-control)] border border-border px-md py-xs text-[13px] font-semibold text-subtext transition-colors hover:border-accent/40 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        <Icon name="lucide:rotate-ccw" width={13} height={13} aria-hidden="true" />
+        Restart
+      </button>
+    </div>
+    <p class="text-center text-[11px] text-subtext">
+      Illustrative animation of the real pipeline — the live system runs against the Deliveroo
+      simulator with a real LLM in the loop.
+    </p>
+  </div>
+
+  <div slot="aside">
+    <!-- Pipeline stepper -->
+    <div>
+      <div class="demo-kicker mb-sm">pipeline</div>
+      <ol class="flex flex-col gap-sm">
+        {steps.map((label, i) => (
+          <li data-asa-step={i} class="flex items-center gap-sm text-[13px] text-subtext">
+            <span class="inline-block h-2.5 w-2.5 shrink-0 rounded-full border border-border"></span>
+            {label}
+          </li>
+        ))}
+      </ol>
+      <div
+        id="asa-action-log"
+        class="mt-sm min-h-[40px] rounded-[var(--radius-control)] bg-base p-sm font-mono text-[11px] leading-relaxed text-text"
+      ></div>
     </div>
 
-    <!-- Body -->
-    <div style="display:flex; flex:1; overflow:hidden; min-height:0;">
-      <!-- Canvas -->
-      <div style="flex:1; position:relative; min-width:0; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:16px;">
-        <canvas id="asa-canvas" width="460" height="380" style="border-radius:8px; border:1px solid #313244; max-width:100%;"></canvas>
-        <div style="display:flex; gap:8px; margin-top:12px; flex-wrap:wrap; justify-content:center;">
-          <button id="asa-play-pause" style="background:#cba6f7;color:#1e1e2e;border:none;border-radius:6px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;">⏸ Pause</button>
-          <button id="asa-restart" style="background:transparent;border:1px solid #313244;color:#a6adc8;border-radius:6px;padding:6px 14px;font-size:13px;cursor:pointer;">↺ Restart</button>
-        </div>
+    <!-- Legend -->
+    <div>
+      <div class="demo-kicker mb-sm">legend</div>
+      <ul class="flex flex-col gap-xs text-[12px] text-text">
+        <li class="flex items-center gap-sm"><span class="inline-block h-3 w-3 rounded-[3px] bg-accent"></span>BDI agent</li>
+        <li class="flex items-center gap-sm"><span class="text-[15px]">📦</span>parcel (spawn tile)</li>
+        <li class="flex items-center gap-sm"><span class="text-[15px]">🎯</span>delivery zone</li>
+        <li class="flex items-center gap-sm"><span class="inline-block h-0.5 w-4 border-t-2 border-dashed border-accent"></span>planned PDDL route</li>
+      </ul>
+    </div>
+
+    <!-- Who built what -->
+    <div class="flex flex-col gap-sm text-[12px] leading-relaxed">
+      <div class="demo-kicker">architecture & credit</div>
+      <div class="border-l-2 border-accent pl-sm">
+        <strong class="text-accent">My role:</strong>
+        <span class="text-text">BDI executor, PDDL planning integration, belief base design. Led architecture decisions.</span>
       </div>
-
-      <!-- Legend + explanation -->
-      <div style="width:280px;flex-shrink:0;overflow-y:auto;border-left:1px solid #313244;padding:16px;display:flex;flex-direction:column;gap:16px;">
-        <div>
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;margin-bottom:8px;">Legend</div>
-          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
-            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">🤖</span><span style="color:#cdd6f4;"><strong>BDI Agent</strong> — picks up & delivers</span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">🍕</span><span style="color:#cdd6f4;"><strong>Restaurant</strong> — order pickup</span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><span style="font-size:18px;">📦</span><span style="color:#cdd6f4;"><strong>Delivery point</strong></span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><span style="width:14px;height:14px;background:rgb(203 166 247/0.5);border-radius:50%;display:inline-block;"></span><span style="color:#cdd6f4;"><strong>PDDL path</strong></span></div>
-          </div>
-        </div>
-
-        <div>
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;margin-bottom:8px;">Current action</div>
-          <div id="asa-action-log" style="font-size:12px;color:#cdd6f4;line-height:1.6;min-height:60px;background:#1e1e2e;border-radius:6px;padding:8px;font-family:'JetBrains Mono',monospace;"></div>
-        </div>
-
-        <div>
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;margin-bottom:8px;">Architecture</div>
-          <div style="display:flex;flex-direction:column;gap:8px;font-size:12px;color:#cdd6f4;line-height:1.5;">
-            <div style="border-left:2px solid #cba6f7;padding-left:8px;"><strong style="color:#cba6f7;">My role:</strong> Designed the BDI executor, PDDL planning integration, and the belief/desire/intention belief base. Led architecture decisions.</div>
-            <div style="border-left:2px solid #a6adc8;padding-left:8px;"><strong>Teammate:</strong> Built the LLM coordination layer and the message-passing protocol between agents.</div>
-            <div style="border-left:2px solid #a6e3a1;padding-left:8px;"><strong style="color:#a6e3a1;">Result:</strong> ~91.5% test coverage, 3-layer agent architecture working in real time.</div>
-          </div>
-        </div>
+      <div class="border-l-2 border-border pl-sm">
+        <strong class="text-text">Teammate:</strong>
+        <span class="text-text">LLM coordination layer and the agent message-passing protocol.</span>
+      </div>
+      <div class="border-l-2 border-green pl-sm">
+        <strong class="text-green">Result:</strong>
+        <span class="text-text">~91.5% test coverage, 3-layer agent architecture running in real time.</span>
       </div>
     </div>
   </div>
-</dialog>
+</DemoDialog>
 
-<script is:inline>
-(function () {
-  const canvas = document.getElementById('asa-canvas');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width;
-  const H = canvas.height;
-  const COLS = 8, ROWS = 7;
-  const CELL = Math.min(Math.floor(W / COLS), Math.floor(H / ROWS));
-  const OX = Math.floor((W - COLS * CELL) / 2);
-  const OY = Math.floor((H - ROWS * CELL) / 2);
-
-  const COLORS = {
-    base: '#1e1e2e', mantle: '#181825', border: '#313244',
-    text: '#cdd6f4', sub: '#a6adc8', accent: '#cba6f7',
-    green: '#a6e3a1', red: '#f38ba8', yellow: '#f9e2af',
-  };
-
-  // Fixed map elements
-  const restaurants = [{ c: 1, r: 1 }, { c: 5, r: 1 }, { c: 3, r: 5 }];
-  const deliveries   = [{ c: 6, r: 4 }, { c: 1, r: 5 }, { c: 7, r: 1 }];
-
-  // Animation phases
-  const PHASES = [
-    { label: '📋 PDDL Planner computing optimal route…', msg: 'PDDL: (move agent r1 c1)\n(pickup order)\n(move agent r4 c6)\n(deliver order)', pathFrom: {c:1,r:1}, pathTo: {c:6,r:4}, t: 0, duration: 80 },
-    { label: '🧠 LLM Coordinator: "Confirm delivery to zone 3"', msg: 'LLM [Llama 3.3 70B]:\n"Plan verified. Assign\nBDI agent to order #42.\nPriority: HIGH"', pathFrom: null, pathTo: null, t: 0, duration: 60 },
-    { label: '🤖 BDI Agent moving to restaurant…', msg: 'BDI belief update:\n- has_order: false\n- target: restaurant(1,1)\n- intention: PICKUP', pathFrom: {c:4,r:4}, pathTo: {c:1,r:1}, t: 0, duration: 100 },
-    { label: '🤖 BDI Agent picked up order, en route…', msg: 'BDI belief update:\n- has_order: true\n- target: delivery(6,4)\n- intention: DELIVER', pathFrom: {c:1,r:1}, pathTo: {c:6,r:4}, t: 0, duration: 110 },
-    { label: '✅ Delivery complete! Agent returns to standby.', msg: 'BDI event fired:\n- order #42 delivered\n- reward: +10 pts\n- returning to idle', pathFrom: {c:6,r:4}, pathTo: {c:4,r:4}, t: 0, duration: 70 },
-  ];
-
-  let phaseIdx = 0;
-  let agentPos = { c: 4, r: 4 };
-  let running = true;
-  let animId = null;
-  let bubbleAlpha = 0;
-  let deliveredFlash = 0;
-
-  function lerp(a, b, t) { return a + (b - a) * t; }
-
-  function cellCenter(c, r) {
-    return { x: OX + c * CELL + CELL / 2, y: OY + r * CELL + CELL / 2 };
-  }
-
-  function drawGrid() {
-    ctx.fillStyle = COLORS.mantle;
-    ctx.fillRect(0, 0, W, H);
-    for (let r = 0; r < ROWS; r++) {
-      for (let c = 0; c < COLS; c++) {
-        ctx.fillStyle = (c + r) % 2 === 0 ? 'rgb(30 30 46/0.6)' : 'rgb(24 24 37/0.8)';
-        ctx.fillRect(OX + c * CELL, OY + r * CELL, CELL, CELL);
-        ctx.strokeStyle = COLORS.border;
-        ctx.lineWidth = 0.5;
-        ctx.strokeRect(OX + c * CELL, OY + r * CELL, CELL, CELL);
-      }
-    }
-  }
-
-  function drawPath(from, to, alpha) {
-    if (!from || !to) return;
-    const f = cellCenter(from.c, from.r);
-    const t2 = cellCenter(to.c, to.r);
-    ctx.save();
-    ctx.globalAlpha = alpha * 0.5;
-    ctx.strokeStyle = COLORS.accent;
-    ctx.lineWidth = 2;
-    ctx.setLineDash([4, 4]);
-    ctx.beginPath();
-    ctx.moveTo(f.x, f.y);
-    // Simple L-shaped path
-    ctx.lineTo(t2.x, f.y);
-    ctx.lineTo(t2.x, t2.y);
-    ctx.stroke();
-    ctx.setLineDash([]);
-    ctx.restore();
-  }
-
-  function drawEmoji(emoji, x, y, size) {
-    ctx.save();
-    ctx.font = `${size}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(emoji, x, y);
-    ctx.restore();
-  }
-
-  function drawLabel(text, x, y) {
-    ctx.save();
-    ctx.font = '10px "JetBrains Mono", monospace';
-    ctx.fillStyle = COLORS.sub;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'top';
-    ctx.fillText(text, x, y + 2);
-    ctx.restore();
-  }
-
-  function drawBubble(text, x, y, alpha) {
-    if (alpha <= 0) return;
-    const lines = text.split('\n');
-    const lh = 15;
-    const pad = 10;
-    const bw = 170;
-    const bh = lines.length * lh + pad * 2;
-    let bx = x + 18;
-    let by = y - bh - 8;
-    if (bx + bw > W - 4) bx = x - bw - 18;
-    if (by < 4) by = y + 18;
-
-    ctx.save();
-    ctx.globalAlpha = alpha;
-    ctx.fillStyle = '#313244';
-    ctx.beginPath();
-    ctx.roundRect(bx, by, bw, bh, 6);
-    ctx.fill();
-    ctx.strokeStyle = COLORS.accent;
-    ctx.lineWidth = 1;
-    ctx.stroke();
-
-    ctx.font = '11px "JetBrains Mono", monospace';
-    ctx.fillStyle = COLORS.text;
-    ctx.textAlign = 'left';
-    ctx.textBaseline = 'top';
-    lines.forEach((line, i) => {
-      ctx.fillText(line, bx + pad, by + pad + i * lh);
-    });
-    ctx.restore();
-  }
-
-  function setLog(text) {
-    const el = document.getElementById('asa-action-log');
-    if (el) el.textContent = text;
-  }
-
-  function frame() {
-    if (!running) return;
-    const phase = PHASES[phaseIdx];
-    phase.t = Math.min(phase.t + 1, phase.duration);
-    const t = phase.t / phase.duration;
-
-    // Move agent along path
-    if (phase.pathFrom && phase.pathTo) {
-      agentPos.c = lerp(phase.pathFrom.c, phase.pathTo.c, t);
-      agentPos.r = lerp(phase.pathFrom.r, phase.pathTo.r, t);
-    }
-
-    bubbleAlpha = t < 0.1 ? t / 0.1 : t > 0.85 ? (1 - t) / 0.15 : 1;
-    if (phaseIdx === 4) deliveredFlash = t > 0.7 ? (t - 0.7) / 0.3 : 0;
-
-    // Draw
-    drawGrid();
-
-    // Draw PDDL path
-    if (phaseIdx === 0 || phaseIdx === 3) {
-      drawPath(phase.pathFrom, phase.pathTo, t);
-    }
-
-    // Draw restaurants
-    restaurants.forEach((r, i) => {
-      const { x, y } = cellCenter(r.c, r.r);
-      drawEmoji('🍕', x, y, 22);
-      drawLabel(`R${i+1}`, x, y + CELL / 2 - 14);
-    });
-
-    // Draw deliveries
-    deliveries.forEach((d, i) => {
-      const { x, y } = cellCenter(d.c, d.r);
-      if (i === 0 && deliveredFlash > 0) {
-        ctx.save();
-        ctx.globalAlpha = deliveredFlash * 0.5;
-        ctx.fillStyle = COLORS.green;
-        ctx.beginPath();
-        ctx.arc(x, y, CELL / 2, 0, Math.PI * 2);
-        ctx.fill();
-        ctx.restore();
-      }
-      drawEmoji('📦', x, y, 20);
-    });
-
-    // Draw agent
-    const { x: ax, y: ay } = cellCenter(Math.round(agentPos.c), Math.round(agentPos.r));
-    const realX = OX + agentPos.c * CELL + CELL / 2;
-    const realY = OY + agentPos.r * CELL + CELL / 2;
-
-    // Glow
-    ctx.save();
-    const grad = ctx.createRadialGradient(realX, realY, 2, realX, realY, CELL * 0.6);
-    grad.addColorStop(0, 'rgb(203 166 247 / 0.25)');
-    grad.addColorStop(1, 'transparent');
-    ctx.fillStyle = grad;
-    ctx.beginPath();
-    ctx.arc(realX, realY, CELL * 0.6, 0, Math.PI * 2);
-    ctx.fill();
-    ctx.restore();
-
-    drawEmoji('🤖', realX, realY, 24);
-
-    // Has order indicator
-    if (phaseIdx === 3) {
-      ctx.save();
-      ctx.font = '14px sans-serif';
-      ctx.textAlign = 'center';
-      ctx.textBaseline = 'middle';
-      ctx.fillText('📦', realX + 14, realY - 12);
-      ctx.restore();
-    }
-
-    // Speech bubble
-    drawBubble(phase.msg, realX, realY, bubbleAlpha);
-
-    setLog(phase.label);
-
-    if (phase.t >= phase.duration) {
-      setTimeout(() => {
-        phaseIdx = (phaseIdx + 1) % PHASES.length;
-        PHASES[phaseIdx].t = 0;
-        animId = requestAnimationFrame(frame);
-      }, 800);
-      return;
-    }
-
-    animId = requestAnimationFrame(frame);
-  }
-
-  function startAnim() {
-    if (animId) cancelAnimationFrame(animId);
-    animId = requestAnimationFrame(frame);
-  }
-
-  document.getElementById('asa-demo').addEventListener('demo-open', () => {
-    running = true;
-    phaseIdx = 0;
-    PHASES.forEach(p => p.t = 0);
-    agentPos = { c: 4, r: 4 };
-    startAnim();
-  });
-
-  document.getElementById('asa-demo').addEventListener('close', () => {
-    running = false;
-    if (animId) cancelAnimationFrame(animId);
-  });
-
-  document.getElementById('asa-close').addEventListener('click', () => {
-    document.getElementById('asa-demo').close();
-  });
-
-  document.getElementById('asa-play-pause').addEventListener('click', () => {
-    running = !running;
-    document.getElementById('asa-play-pause').textContent = running ? '⏸ Pause' : '▶ Resume';
-    if (running) startAnim();
-  });
-
-  document.getElementById('asa-restart').addEventListener('click', () => {
-    phaseIdx = 0;
-    PHASES.forEach(p => p.t = 0);
-    agentPos = { c: 4, r: 4 };
-    running = true;
-    document.getElementById('asa-play-pause').textContent = '⏸ Pause';
-    startAnim();
-  });
-})();
+<script>
+  import { initAsaDemo } from '../scripts/asa-demo';
+  initAsaDemo();
 </script>
