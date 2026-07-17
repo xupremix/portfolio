@@ -4,17 +4,17 @@ milestone: v1.0
 milestone_name: milestone
 current_phase: 1
 current_phase_name: Foundation & Shell
-status: verified
+status: verifying
 stopped_at: Verified Phase 1 (passed, 6/6 must-haves)
-last_updated: "2026-07-17T16:03:57.000Z"
+last_updated: "2026-07-17T16:21:42.284Z"
 last_activity: 2026-07-17
-last_activity_desc: Verified Phase 1 (Foundation & Shell) — status passed, 6/6 must-haves verified
+last_activity_desc: "Verified Phase 1: status passed, 6/6 must-haves verified (see .planning/phases/01-foundation-shell/01-VERIFICATION.md)"
 progress:
   total_phases: 5
-  completed_phases: 1
-  total_plans: 2
-  completed_plans: 2
-  percent: 20
+  completed_phases: 2
+  total_plans: 3
+  completed_plans: 3
+  percent: 40
 ---
 
 # Project State
@@ -30,7 +30,7 @@ See: .planning/PROJECT.md (updated 2026-07-17)
 
 Phase: 1 of 5 (Foundation & Shell) — VERIFIED
 Plan: 2 of 2 in current phase
-Status: Phase complete and verified — ready to plan Phase 2
+Status: Phase complete — ready for verification
 Last activity: 2026-07-17 — Verified Phase 1: status passed, 6/6 must-haves verified (see .planning/phases/01-foundation-shell/01-VERIFICATION.md)
 
 Progress: [██████████] 100%
@@ -57,6 +57,7 @@ Progress: [██████████] 100%
 *Updated after each plan completion*
 | Phase 01-foundation-shell P01 | 4min | 3 tasks | 13 files |
 | Phase 01 P02 | 5min | 3 tasks | 6 files |
+| Phase 02-hero P01 | 5min | 2 tasks | 2 files |
 
 ## Accumulated Context
 
@@ -73,6 +74,7 @@ Recent decisions affecting current work:
 - [Phase 01]: 01-02: Kept Nav's scroll-listener and keyboard-toggle logic in one shared inline script block to preserve UI-SPEC's near-zero-JS constraint
 - [Phase 01]: 01-02: Deferred the plan's visual/keyboard human-check to end-of-phase verification per config.json human_verify_mode: end-of-phase (no checkpoint:human-verify task in this plan; ran fully autonomously)
 - [Phase 01]: Verification: deferred human-check items (Catppuccin Mocha rendering, scroll swap, hamburger click/keyboard, focus rings) independently confirmed via real headless-Chromium session against `npm run dev`; goal-backward VERIFICATION.md status: passed, 6/6 must-haves verified, 0 gaps
+- [Phase ?]: 02-hero: 02-01: Deferred human-check (responsive/focus-ring/reduced-motion verification) to end-of-phase verification per config.json human_verify_mode: end-of-phase
 
 ### Pending Todos
 
@@ -92,6 +94,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-17T16:03:57.000Z
+Last session: 2026-07-17T16:21:00.946Z
 Stopped at: Verified Phase 1 (passed, 6/6 must-haves) — next: plan Phase 2 (Hero)
 Resume file: None

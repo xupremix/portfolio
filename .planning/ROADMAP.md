@@ -18,7 +18,7 @@ recruiter landing on the live URL gets everything the Core Value promises in und
 Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Shell** - Astro+Tailwind project scaffolded with a cohesive design system and a site-wide nav/footer shell (completed 2026-07-17, verified 2026-07-17)
-- [ ] **Phase 2: Hero** - First-impression hero section with name, role, tagline, and a CTA toward projects/contact
+- [x] **Phase 2: Hero** - First-impression hero section with name, role, tagline, and a CTA toward projects/contact (completed 2026-07-17)
 - [ ] **Phase 3: Projects Showcase** - Featured project cards (with correct in-progress/team framing) plus a secondary "more on GitHub" list
 - [ ] **Phase 4: Skills, Experience & Contact** - Skills, education/tutoring experience, in-page CV, and actionable contact info
 - [ ] **Phase 5: Polish & Deploy** - Responsive breakpoints, SEO/meta tags, and a clean static build ready to deploy
@@ -59,10 +59,10 @@ Plans:
   3. The hero includes a clear visual cue (CTA, link, or scroll indicator) directing attention toward the projects or contact section.
   4. The hero section renders correctly and legibly at 375px (mobile), 768px (tablet), and 1440px (desktop) widths.
 
-**Plans**: 0/1 plans complete
+**Plans**: 1/1 plans complete
 Plans:
 
-- [ ] 02-01-PLAN.md — Build Hero.astro (name/role/tagline/CTA/scroll-cue) and mount it as the first section in index.astro
+- [x] 02-01-PLAN.md — Build Hero.astro (name/role/tagline/CTA/scroll-cue) and mount it as the first section in index.astro
 
 **UI hint**: yes
 
@@ -122,7 +122,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
 | 1. Foundation & Shell | 2/2 | Verified   | 2026-07-17 |
-| 2. Hero | 0/1 | Not started | - |
+| 2. Hero | 1/1 | Complete   | 2026-07-17 |
 | 3. Projects Showcase | 0/TBD | Not started | - |
 | 4. Skills, Experience & Contact | 0/TBD | Not started | - |
 | 5. Polish & Deploy | 0/TBD | Not started | - |

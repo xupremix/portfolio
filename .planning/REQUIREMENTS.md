@@ -13,8 +13,8 @@
 
 ### Hero
 
-- [ ] **HERO-01**: Hero section displays name, current role/positioning ("ML student, University of Trento"), and a one-line tagline
-- [ ] **HERO-02**: Hero section makes a strong first impression and directs attention toward projects/contact
+- [x] **HERO-01**: Hero section displays name, current role/positioning ("ML student, University of Trento"), and a one-line tagline
+- [x] **HERO-02**: Hero section makes a strong first impression and directs attention toward projects/contact
 
 ### Projects
 
@@ -68,8 +68,8 @@ Deferred — not in current roadmap.
 | SETUP-01 | Phase 1 | Verified |
 | SETUP-02 | Phase 1 | Verified |
 | SETUP-03 | Phase 1 | Verified |
-| HERO-01 | Phase 2 | Pending |
-| HERO-02 | Phase 2 | Pending |
+| HERO-01 | Phase 2 | Complete |
+| HERO-02 | Phase 2 | Complete |
 | PROJ-01 | Phase 3 | Pending |
 | PROJ-02 | Phase 3 | Pending |
 | PROJ-03 | Phase 3 | Pending |
