@@ -1,73 +1,93 @@
 ---
+// Hero: gradient name, quiet subheadline, verifiable stats strip (each metric
+// links to the project card that backs it), ambient blobs with gentle pointer
+// parallax (disabled for reduced motion / touch).
 import { Icon } from 'astro-icon/components';
+
+const stats = [
+  { value: '81.5%', label: 'RMSE ↓ on KITTI', href: '#project-signal' },
+  { value: '0.9765', label: 'intent acc · ATIS', href: '#project-nlu' },
+  { value: '~91.5%', label: 'test cov · ASA', href: '#project-asa' },
+];
 ---
 
 <section
   id="hero"
-  class="relative flex flex-col items-center justify-center text-center px-lg md:px-xl min-h-[calc(100vh_-_64px)] overflow-hidden"
+  class="relative flex min-h-[calc(100svh-64px)] flex-col items-center justify-center overflow-hidden px-lg text-center md:px-xl"
 >
-  <!-- Animated gradient blobs -->
-  <div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden">
+  <!-- Animated gradient blobs (two hues for depth) -->
+  <div aria-hidden="true" id="hero-blobs" class="pointer-events-none absolute inset-0 overflow-hidden">
     <div
-      class="absolute top-[15%] left-[10%] w-[700px] h-[700px] rounded-full"
-      style="background: radial-gradient(circle, rgb(203 166 247 / 0.08) 0%, transparent 65%); animation: blob-float 20s ease-in-out infinite;"
+      class="hero-blob absolute top-[15%] left-[10%] h-[700px] w-[700px] rounded-full"
+      data-parallax="8"
     ></div>
     <div
-      class="absolute bottom-[10%] right-[5%] w-[550px] h-[550px] rounded-full"
-      style="background: radial-gradient(circle, rgb(203 166 247 / 0.06) 0%, transparent 65%); animation: blob-float-alt 25s ease-in-out infinite;"
+      class="hero-blob-alt absolute right-[5%] bottom-[10%] h-[550px] w-[550px] rounded-full"
+      data-parallax="-6"
+    ></div>
+    <div
+      class="hero-blob-blue absolute top-[40%] left-[45%] h-[600px] w-[600px] rounded-full"
+      data-parallax="4"
     ></div>
   </div>
 
-  <!-- Subtle dot grid -->
-  <div
-    aria-hidden="true"
-    class="pointer-events-none absolute inset-0"
-    style="background-image: radial-gradient(circle, rgb(205 214 244 / 0.07) 1px, transparent 1px); background-size: 30px 30px;"
-  ></div>
+  <!-- Dot grid, fading toward the edges -->
+  <div aria-hidden="true" class="hero-dots pointer-events-none absolute inset-0"></div>
 
   <!-- Content -->
-  <div class="relative flex flex-col items-center max-w-[52rem]">
+  <div class="relative flex max-w-[52rem] flex-col items-center">
     <p
-      class="hero-animate text-label font-mono font-semibold text-accent tracking-widest uppercase"
+      class="hero-animate font-mono text-label font-semibold tracking-widest text-accent uppercase"
       data-delay="1"
     >
       ML Student · University of Trento
     </p>
 
-    <h1
-      class="hero-animate mt-sm text-display font-semibold text-text"
-      data-delay="2"
-    >
+    <h1 class="hero-animate gradient-text mt-sm text-display font-semibold" data-delay="2">
       Filippo Lollato
     </h1>
 
     <p
-      class="hero-animate mt-md text-heading font-semibold text-subtext"
+      class="hero-animate mt-md max-w-[38rem] text-[clamp(1.125rem,1rem+0.6vw,1.375rem)] leading-relaxed text-balance text-subtext"
       data-delay="3"
-      style="line-height: 1.35;"
     >
-      I design systems from first principles —<br />
-      <span class="text-text">compile-time safe ML in Rust</span>, multi-agent AI,<br class="hidden sm:block" />
-      and deep learning pipelines that reach production.
+      I design systems from first principles —
+      <span class="font-semibold text-text">compile-time safe ML in Rust</span>, multi-agent AI, and
+      deep learning pipelines that reach production.
     </p>
 
-    <div
-      class="hero-animate mt-xl flex flex-col sm:flex-row items-center gap-md"
-      data-delay="4"
-    >
+    <div class="hero-animate mt-xl flex flex-col items-center gap-md sm:flex-row" data-delay="4">
       <a
         href="#projects"
-        class="inline-flex items-center gap-xs bg-accent text-base rounded-md px-md py-sm text-label font-semibold focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none hover:opacity-90 transition-opacity"
+        class="inline-flex items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-sm text-label font-semibold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
         See my work
         <Icon name="lucide:arrow-down" width={14} height={14} aria-hidden="true" />
       </a>
       <a
         href="#contact"
-        class="text-label font-semibold text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+        class="text-label font-semibold text-text transition-colors hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
         Get in touch →
       </a>
+    </div>
+
+    <!-- Stats strip: every number is real and links to its project card -->
+    <div
+      class="hero-animate mt-2xl flex flex-wrap items-center justify-center gap-x-xl gap-y-md border-t border-border/60 pt-lg"
+      data-delay="5"
+    >
+      {stats.map((stat) => (
+        <a
+          href={stat.href}
+          class="group flex flex-col items-center gap-xs focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+        >
+          <span class="font-mono text-[17px] font-semibold text-accent">{stat.value}</span>
+          <span class="font-mono text-[11px] tracking-wide text-subtext uppercase transition-colors group-hover:text-text">
+            {stat.label}
+          </span>
+        </a>
+      ))}
     </div>
   </div>
 
@@ -75,23 +95,81 @@ import { Icon } from 'astro-icon/components';
     href="#projects"
     id="hero-scroll-cue"
     aria-label="Scroll to projects"
-    class="hero-animate absolute bottom-xl text-subtext hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
-    data-delay="5"
+    class="hero-animate absolute bottom-xl text-subtext transition-colors hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+    data-delay="6"
   >
     <Icon name="lucide:chevron-down" width={24} height={24} aria-hidden="true" />
   </a>
 </section>
 
 <style>
+  .hero-blob {
+    background: radial-gradient(circle, rgb(203 166 247 / 0.08) 0%, transparent 65%);
+    animation: blob-float 20s ease-in-out infinite;
+  }
+  .hero-blob-alt {
+    background: radial-gradient(circle, rgb(203 166 247 / 0.06) 0%, transparent 65%);
+    animation: blob-float-alt 25s ease-in-out infinite;
+  }
+  .hero-blob-blue {
+    background: radial-gradient(circle, rgb(137 180 250 / 0.05) 0%, transparent 65%);
+    animation: blob-float 30s ease-in-out infinite reverse;
+  }
+  .hero-dots {
+    background-image: radial-gradient(circle, rgb(205 214 244 / 0.07) 1px, transparent 1px);
+    background-size: 30px 30px;
+    mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, black, transparent);
+  }
   #hero-scroll-cue {
     animation: hero-bounce 2.2s ease-in-out infinite;
-    animation-delay: 1.8s;
+    animation-delay: 2s;
   }
   @keyframes hero-bounce {
     0%, 100% { transform: translateY(0); }
-    50%       { transform: translateY(7px); }
+    50%      { transform: translateY(7px); }
   }
   @media (prefers-reduced-motion: reduce) {
-    #hero-scroll-cue { animation: none; }
+    #hero-scroll-cue,
+    .hero-blob,
+    .hero-blob-alt,
+    .hero-blob-blue { animation: none; }
   }
 </style>
+
+<script>
+  // Gentle pointer parallax on the blobs. Skipped entirely for reduced-motion
+  // preferences and coarse (touch) pointers.
+  const fine = window.matchMedia('(pointer: fine)').matches;
+  const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (fine && motionOk) {
+    const blobs = document.querySelectorAll<HTMLElement>('[data-parallax]');
+    let targetX = 0;
+    let targetY = 0;
+    let curX = 0;
+    let curY = 0;
+    let rafId = 0;
+
+    window.addEventListener(
+      'pointermove',
+      (e) => {
+        targetX = e.clientX / window.innerWidth - 0.5;
+        targetY = e.clientY / window.innerHeight - 0.5;
+        if (!rafId) rafId = requestAnimationFrame(tick);
+      },
+      { passive: true },
+    );
+
+    function tick() {
+      curX += (targetX - curX) * 0.06;
+      curY += (targetY - curY) * 0.06;
+      blobs.forEach((blob) => {
+        const depth = Number(blob.dataset.parallax);
+        // translate is separate from the keyframe transform, so wrap in a var
+        blob.style.translate = `${curX * depth * 4}px ${curY * depth * 4}px`;
+      });
+      const settled = Math.abs(targetX - curX) < 0.001 && Math.abs(targetY - curY) < 0.001;
+      rafId = settled ? 0 : requestAnimationFrame(tick);
+    }
+  }
+</script>
