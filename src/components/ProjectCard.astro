@@ -82,9 +82,12 @@ const { name, description, tech, href, status, teamCredit, impact, role, demoId 
       const id = btn.dataset.demoId;
       if (!id) return;
       const dialog = document.getElementById(id) as HTMLDialogElement | null;
-      dialog?.showModal();
+      if (!dialog) return;
+      dialog.showModal();
+      // Lock page scroll while a modal is open; DemoDialog unlocks on 'close'.
+      document.body.style.overflow = 'hidden';
       // Fire a custom event so demos can lazy-init
-      dialog?.dispatchEvent(new CustomEvent('demo-open'));
+      dialog.dispatchEvent(new CustomEvent('demo-open'));
     });
   });
 </script>

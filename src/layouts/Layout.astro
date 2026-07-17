@@ -71,30 +71,8 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
       );
       document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
 
-      // ── Dialog: close on backdrop click ───────────────────
-      document.querySelectorAll('dialog').forEach((dialog) => {
-        dialog.addEventListener('click', (e) => {
-          const rect = dialog.getBoundingClientRect();
-          const clickedOutside =
-            e.clientX < rect.left ||
-            e.clientX > rect.right ||
-            e.clientY < rect.top  ||
-            e.clientY > rect.bottom;
-          if (clickedOutside) dialog.close();
-        });
-      });
-
-      // ── Dialog: close on Escape (already native, but ensure body scroll) ──
-      document.querySelectorAll('dialog').forEach((dialog) => {
-        dialog.addEventListener('close', () => {
-          document.body.style.overflow = '';
-        });
-        dialog.addEventListener('toggle', () => {
-          if ((dialog as HTMLDialogElement).open) {
-            document.body.style.overflow = 'hidden';
-          }
-        });
-      });
+      // Dialog behavior (backdrop close, scroll lock/unlock) lives in
+      // src/components/DemoDialog.astro — do not duplicate it here.
     </script>
   </body>
 </html>
