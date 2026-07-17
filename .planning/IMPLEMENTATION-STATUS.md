@@ -31,9 +31,9 @@
 | 2 | Global tokens & styles | DONE | src/styles/global.css | 06835ce* |
 | 3 | DemoDialog shell + canvas helpers | DONE | src/components/DemoDialog.astro, src/scripts/canvas.ts, src/layouts/Layout.astro, src/components/ProjectCard.astro | see git log |
 | 4 | Kindle demo rebuild | DONE | src/components/KindleDemo.astro, src/scripts/kindle-demo.ts, src/scripts/rust-editor.ts, src/demo-code/kindle/*.rs, src/generated/kindle-outputs.json, scripts/capture-kindle-outputs.mjs | see git log |
-| 5 | ASA demo rebuild | TODO | src/components/AsaDemo.astro, src/scripts/asa-demo.ts | — |
-| 6 | Signal demo rebuild | TODO | src/components/SignalDemo.astro, src/scripts/signal-demo.ts | — |
-| 7 | NLU demo rebuild | TODO | src/components/NluDemo.astro | — |
+| 5 | ASA demo rebuild | DONE | src/components/AsaDemo.astro, src/scripts/asa-demo.ts | see git log |
+| 6 | Signal demo rebuild | DONE | src/components/SignalDemo.astro, src/scripts/signal-demo.ts | see git log |
+| 7 | NLU demo rebuild | DONE | src/components/NluDemo.astro (uses REAL ATIS test rows + real report metrics; no separate ts file needed) | see git log |
 | 8 | Nav upgrade | TODO | src/components/Nav.astro | — |
 | 9 | Hero upgrade | TODO | src/components/Hero.astro | — |
 | 10 | About + Projects flagship + Skills/Badge | TODO | About.astro, Projects.astro, ProjectCard.astro, Skills.astro, Badge.astro | — |
