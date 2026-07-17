@@ -77,10 +77,10 @@ Deferred — not in current roadmap.
 | SKIL-01 | Phase 4 | Pending |
 | CV-01 | Phase 4 | Pending |
 | CV-02 | Phase 4 | Pending |
-| CONT-01 | Phase 5 | Pending |
-| POL-01 | Phase 6 | Pending |
-| POL-02 | Phase 6 | Pending |
-| POL-03 | Phase 6 | Pending |
+| CONT-01 | Phase 4 | Pending |
+| POL-01 | Phase 5 | Pending |
+| POL-02 | Phase 5 | Pending |
+| POL-03 | Phase 5 | Pending |
 
 **Coverage:**
 - v1 requirements: 16 total
@@ -89,4 +89,4 @@ Deferred — not in current roadmap.
 
 ---
 *Requirements defined: 2026-07-17*
-*Last updated: 2026-07-17 after initial definition*
+*Last updated: 2026-07-17 after roadmap creation (5-phase structure; CONT-01 consolidated into Phase 4, Polish/Deploy renumbered to Phase 5)*
