@@ -1,250 +1,106 @@
-<!-- SignalDemo.astro — Multi-Object Tracking Canvas Visualizer -->
-<dialog id="signal-demo" aria-labelledby="signal-demo-title">
-  <div style="display:flex;flex-direction:column;height:90vh;max-height:660px;">
-    <!-- Header -->
-    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #313244;flex-shrink:0;">
-      <div>
-        <h2 id="signal-demo-title" style="font-size:18px;font-weight:600;color:#cdd6f4;margin:0;">
-          signal_image_video — Multi-Object Tracking
-        </h2>
-        <p style="font-size:13px;color:#a6adc8;margin:4px 0 0;">CTRV-EKF vs Linear Kalman · 81.5% RMSE reduction</p>
-      </div>
-      <button id="signal-close" aria-label="Close" style="background:none;border:1px solid #313244;color:#a6adc8;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
+---
+// signal_image_video demo — live tracking simulation with honestly computed
+// RMSE. All logic in src/scripts/signal-demo.ts.
+import DemoDialog from './DemoDialog.astro';
+import { Icon } from 'astro-icon/components';
+---
+
+<DemoDialog
+  id="signal-demo"
+  title="signal_image_video — multi-object tracking"
+  subtitle="Constant-velocity Kalman vs CTRV-EKF prediction, simulated live in your browser"
+>
+  <div slot="main" class="flex min-h-0 flex-1 flex-col items-center justify-center gap-md p-md">
+    <!-- Predictor toggle -->
+    <div role="tablist" class="flex overflow-hidden rounded-[var(--radius-control)] border border-border">
+      <button
+        type="button"
+        role="tab"
+        data-mode="linear"
+        aria-selected="true"
+        class="signal-mode-btn cursor-pointer bg-accent/15 px-lg py-xs font-mono text-[12px] font-bold text-accent transition-colors"
+      >
+        Linear KF
+      </button>
+      <button
+        type="button"
+        role="tab"
+        data-mode="ctrv"
+        aria-selected="false"
+        class="signal-mode-btn cursor-pointer border-l border-border px-lg py-xs font-mono text-[12px] font-bold text-subtext transition-colors"
+      >
+        CTRV-EKF
+      </button>
     </div>
 
-    <!-- Body -->
-    <div style="display:flex;flex:1;overflow:hidden;min-height:0;">
-      <!-- Canvas side -->
-      <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;min-width:0;">
-        <!-- Toggle -->
-        <div style="display:flex;gap:0;margin-bottom:12px;border:1px solid #313244;border-radius:8px;overflow:hidden;">
-          <button class="tracker-btn active-tracker" data-mode="linear" style="padding:6px 20px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:rgb(243 139 168/0.2);color:#f38ba8;transition:all 0.2s;">Linear KF ❌</button>
-          <button class="tracker-btn" data-mode="ctrv" style="padding:6px 20px;font-size:12px;font-weight:700;cursor:pointer;border:none;background:transparent;color:#a6adc8;transition:all 0.2s;">CTRV-EKF ✅</button>
-        </div>
-        <canvas id="signal-canvas" width="480" height="340" style="border-radius:8px;border:1px solid #313244;max-width:100%;"></canvas>
-        <div style="display:flex;gap:8px;margin-top:10px;">
-          <button id="signal-play-pause" style="background:#cba6f7;color:#1e1e2e;border:none;border-radius:6px;padding:6px 16px;font-size:13px;font-weight:700;cursor:pointer;">⏸ Pause</button>
-        </div>
+    <div class="w-full max-w-[540px]">
+      <canvas id="signal-canvas" class="w-full rounded-[var(--radius-control)] border border-border"></canvas>
+    </div>
+
+    <button
+      id="signal-play-pause"
+      type="button"
+      class="inline-flex cursor-pointer items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-xs text-[13px] font-bold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+    >
+      <span id="signal-icon-pause"><Icon name="lucide:pause" width={13} height={13} aria-hidden="true" /></span>
+      <span id="signal-icon-play" class="hidden"><Icon name="lucide:play" width={13} height={13} aria-hidden="true" /></span>
+      <span id="signal-play-label">Pause</span>
+    </button>
+  </div>
+
+  <div slot="aside">
+    <!-- Live metric: computed from the on-screen gap, never canned -->
+    <div>
+      <div class="demo-kicker mb-sm">RMSE — this simulation</div>
+      <div class="flex items-baseline gap-sm">
+        <span id="signal-rmse" class="font-mono text-[32px] leading-none font-semibold text-text">—</span>
+        <span class="font-mono text-[12px] text-subtext">px</span>
       </div>
+      <div class="mt-xs font-mono text-[11px] text-subtext">
+        predictor: <span id="signal-mode-label" class="text-text">Linear KF</span> · 500&nbsp;ms horizon
+      </div>
+      <div class="mt-sm">
+        <span id="signal-delta" class="inline-flex items-center rounded-full border border-border px-sm py-xs font-mono text-[11px] text-subtext">measuring…</span>
+      </div>
+      <div class="mt-sm w-full">
+        <canvas id="signal-spark" class="w-full"></canvas>
+        <div class="mt-xs text-[10px] text-subtext">running RMSE, last ~10 s (shared scale across both predictors)</div>
+      </div>
+    </div>
 
-      <!-- Stats + explanation -->
-      <div style="width:260px;flex-shrink:0;overflow-y:auto;border-left:1px solid #313244;padding:16px;display:flex;flex-direction:column;gap:16px;">
-        <div>
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;margin-bottom:8px;">Live metrics</div>
-          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-family:'JetBrains Mono',monospace;">
-            <div style="display:flex;justify-content:space-between;"><span style="color:#a6adc8;">RMSE</span><span id="signal-rmse" style="color:#cdd6f4;">—</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:#a6adc8;">Mode</span><span id="signal-mode-label" style="color:#cdd6f4;">Linear KF</span></div>
-            <div style="display:flex;justify-content:space-between;"><span style="color:#a6adc8;">Tracks</span><span style="color:#cdd6f4;">3 objects</span></div>
-          </div>
-        </div>
+    <!-- Legend -->
+    <div>
+      <div class="demo-kicker mb-sm">legend</div>
+      <ul class="flex flex-col gap-xs text-[12px] text-text">
+        <li class="flex items-center gap-sm"><span class="inline-block h-3 w-5 rounded-[3px] border-2 border-sapphire bg-sapphire/15"></span>ground truth + ID</li>
+        <li class="flex items-center gap-sm"><span class="inline-block h-3 w-5 rounded-[3px] border-2 border-dashed border-sapphire"></span>prediction (same hue, dashed)</li>
+        <li class="flex items-center gap-sm"><span class="inline-block h-0.5 w-5 border-t border-dashed border-subtext"></span>prediction error</li>
+      </ul>
+      <p class="mt-xs text-[11px] leading-relaxed text-subtext">
+        Three tracked objects on cornering paths: <span class="text-sapphire">ID1</span> ellipse,
+        <span class="text-yellow">ID2</span> fast circle, <span class="text-maroon">ID3</span> wide sweep.
+        The dashed box is what the filter predicted 500&nbsp;ms ago for right now.
+      </p>
+    </div>
 
-        <div>
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;margin-bottom:8px;">Legend</div>
-          <div style="display:flex;flex-direction:column;gap:6px;font-size:12px;">
-            <div style="display:flex;align-items:center;gap:8px;"><span style="width:20px;height:3px;background:#a6e3a1;display:inline-block;border-radius:2px;"></span><span style="color:#cdd6f4;">Actual position</span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><span style="width:20px;height:3px;border:2px dashed #cba6f7;display:inline-block;border-radius:2px;"></span><span style="color:#cdd6f4;">Predicted position</span></div>
-            <div style="display:flex;align-items:center;gap:8px;"><span style="width:10px;height:10px;background:rgb(137 220 235/0.4);border:1px solid #89dceb;display:inline-block;border-radius:2px;"></span><span style="color:#cdd6f4;">Bounding box + ID</span></div>
-          </div>
-        </div>
-
-        <div>
-          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;margin-bottom:8px;">What's shown</div>
-          <div style="font-size:12px;color:#cdd6f4;line-height:1.6;">
-            <p style="margin:0 0 8px;">Toggle between <strong>Linear Kalman</strong> (constant velocity, predictions drift on curved paths) and <strong>CTRV-EKF</strong> (Constant Turn Rate and Velocity — handles curves).</p>
-            <div style="border-left:2px solid #a6e3a1;padding-left:8px;margin-top:8px;"><strong style="color:#a6e3a1;">Result:</strong> 81.5% lower RMSE. Curved trajectories are where the linear model fails.</div>
-          </div>
-        </div>
+    <!-- What's shown + the real benchmark claim, clearly separated -->
+    <div class="flex flex-col gap-sm text-[12px] leading-relaxed text-text">
+      <div class="demo-kicker">what's shown</div>
+      <p>
+        Both predictors run the genuine motion-model math: constant-velocity extrapolation
+        drifts on curves; CTRV propagation follows them. The RMSE above is computed live
+        from the on-screen gap — toggle predictors and watch it respond.
+      </p>
+      <div class="border-l-2 border-green pl-sm">
+        <strong class="text-green">On KITTI:</strong> the full pipeline (CTRV-EKF +
+        Hungarian assignment, camera–LiDAR fusion) cut RMSE by
+        <span class="font-mono">81.5%</span> vs the linear baseline.
       </div>
     </div>
   </div>
-</dialog>
+</DemoDialog>
 
-<script is:inline>
-(function () {
-  const canvas = document.getElementById('signal-canvas');
-  const ctx = canvas.getContext('2d');
-  const W = canvas.width, H = canvas.height;
-
-  let mode = 'linear'; // 'linear' | 'ctrv'
-  let running = true;
-  let animId = null;
-  let t = 0;
-
-  const TRACK_COLORS = ['#89dceb', '#a6e3a1', '#fab387'];
-  const BOX_W = 42, BOX_H = 30;
-
-  // True circular/curved trajectories for 3 objects
-  function truePath(id, t) {
-    if (id === 0) {
-      // Curved arc — top area
-      const angle = t * 0.025 + Math.PI * 0.2;
-      return { x: W * 0.2 + Math.cos(angle) * 130, y: H * 0.3 + Math.sin(angle) * 80 };
-    } else if (id === 1) {
-      // Diagonal straight-ish with slight curve
-      const angle = t * 0.02 + Math.PI * 1.1;
-      return { x: W * 0.7 + Math.cos(angle) * 110, y: H * 0.55 + Math.sin(angle * 0.6) * 60 };
-    } else {
-      // S-curve path
-      return {
-        x: W * 0.15 + (t * 0.8) % (W * 0.7),
-        y: H * 0.65 + Math.sin(t * 0.04) * 40,
-      };
-    }
-  }
-
-  // Linear prediction: assume constant velocity (poor on curves)
-  function linearPred(id, t) {
-    const delay = 18;
-    const cur = truePath(id, t);
-    const old = truePath(id, t - delay);
-    // Project velocity forward — drifts on curves
-    const vx = (cur.x - old.x) / delay;
-    const vy = (cur.y - old.y) / delay;
-    const drift = id === 0 ? 22 : id === 1 ? 18 : 12; // more drift on curvy paths
-    return { x: cur.x + vx * drift + Math.sin(t * 0.03 + id) * 16, y: cur.y + vy * drift + Math.cos(t * 0.04 + id) * 12 };
-  }
-
-  // CTRV-EKF prediction: much tighter on curves
-  function ctrvPred(id, t) {
-    const cur = truePath(id, t);
-    return { x: cur.x + (Math.random() - 0.5) * 3, y: cur.y + (Math.random() - 0.5) * 3 };
-  }
-
-  function computeRMSE() {
-    let sum = 0;
-    const ids = [0, 1, 2];
-    ids.forEach(id => {
-      const actual = truePath(id, t);
-      const pred = mode === 'linear' ? linearPred(id, t) : ctrvPred(id, t);
-      const dx = actual.x - pred.x, dy = actual.y - pred.y;
-      sum += dx*dx + dy*dy;
-    });
-    return Math.sqrt(sum / ids.length).toFixed(1);
-  }
-
-  function drawFrame() {
-    // Background — dark road scene
-    ctx.fillStyle = '#1e1e2e';
-    ctx.fillRect(0, 0, W, H);
-
-    // Road markings
-    ctx.strokeStyle = 'rgb(49 50 68/0.5)';
-    ctx.lineWidth = 1;
-    for (let y = 0; y < H; y += 40) {
-      ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(W, y); ctx.stroke();
-    }
-    for (let x = 0; x < W; x += 40) {
-      ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, H); ctx.stroke();
-    }
-
-    // Tracks
-    [0, 1, 2].forEach((id) => {
-      const actual = truePath(id, t);
-      const pred = mode === 'linear' ? linearPred(id, t) : ctrvPred(id, t);
-      const col = TRACK_COLORS[id];
-
-      // Trail (actual path)
-      ctx.save();
-      ctx.strokeStyle = col;
-      ctx.lineWidth = 1.5;
-      ctx.globalAlpha = 0.35;
-      ctx.beginPath();
-      for (let i = Math.max(0, t - 80); i <= t; i += 2) {
-        const p = truePath(id, i);
-        i === Math.max(0, t - 80) ? ctx.moveTo(p.x, p.y) : ctx.lineTo(p.x, p.y);
-      }
-      ctx.stroke();
-      ctx.restore();
-
-      // Prediction error line
-      ctx.save();
-      ctx.strokeStyle = '#cba6f7';
-      ctx.lineWidth = 1;
-      ctx.setLineDash([4, 4]);
-      ctx.globalAlpha = 0.7;
-      ctx.beginPath();
-      ctx.moveTo(actual.x, actual.y);
-      ctx.lineTo(pred.x, pred.y);
-      ctx.stroke();
-      ctx.setLineDash([]);
-      ctx.restore();
-
-      // Actual bounding box
-      ctx.save();
-      ctx.strokeStyle = col;
-      ctx.lineWidth = 2;
-      ctx.fillStyle = `${col}22`;
-      const bx = actual.x - BOX_W / 2, by = actual.y - BOX_H / 2;
-      ctx.fillRect(bx, by, BOX_W, BOX_H);
-      ctx.strokeRect(bx, by, BOX_W, BOX_H);
-
-      // ID label
-      ctx.fillStyle = col;
-      ctx.font = 'bold 10px "JetBrains Mono", monospace';
-      ctx.textAlign = 'left';
-      ctx.textBaseline = 'bottom';
-      ctx.fillText(`ID${id+1}`, bx + 2, by - 1);
-      ctx.restore();
-
-      // Predicted box (dashed)
-      ctx.save();
-      ctx.strokeStyle = '#cba6f7';
-      ctx.lineWidth = 1.5;
-      ctx.setLineDash([3, 3]);
-      ctx.globalAlpha = 0.6;
-      ctx.strokeRect(pred.x - BOX_W/2, pred.y - BOX_H/2, BOX_W, BOX_H);
-      ctx.setLineDash([]);
-      ctx.restore();
-    });
-
-    // RMSE overlay
-    const rmse = computeRMSE();
-    document.getElementById('signal-rmse').textContent = `${rmse} px`;
-    document.getElementById('signal-mode-label').textContent = mode === 'linear' ? 'Linear KF' : 'CTRV-EKF';
-    document.getElementById('signal-rmse').style.color = mode === 'linear' ? '#f38ba8' : '#a6e3a1';
-  }
-
-  function tick() {
-    if (!running) return;
-    t += 1;
-    drawFrame();
-    animId = requestAnimationFrame(tick);
-  }
-
-  function start() {
-    if (animId) cancelAnimationFrame(animId);
-    animId = requestAnimationFrame(tick);
-  }
-
-  document.getElementById('signal-demo').addEventListener('demo-open', () => {
-    running = true; t = 0; start();
-  });
-  document.getElementById('signal-demo').addEventListener('close', () => {
-    running = false;
-    if (animId) cancelAnimationFrame(animId);
-  });
-  document.getElementById('signal-close').addEventListener('click', () => {
-    document.getElementById('signal-demo').close();
-  });
-  document.getElementById('signal-play-pause').addEventListener('click', () => {
-    running = !running;
-    document.getElementById('signal-play-pause').textContent = running ? '⏸ Pause' : '▶ Resume';
-    if (running) start();
-  });
-  document.querySelectorAll('.tracker-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      mode = btn.dataset.mode;
-      document.querySelectorAll('.tracker-btn').forEach(b => {
-        const isLinear = b.dataset.mode === 'linear';
-        const active = b === btn;
-        b.style.background = active
-          ? (mode === 'linear' ? 'rgb(243 139 168/0.2)' : 'rgb(166 227 161/0.2)')
-          : 'transparent';
-        b.style.color = active
-          ? (mode === 'linear' ? '#f38ba8' : '#a6e3a1')
-          : '#a6adc8';
-      });
-    });
-  });
-})();
+<script>
+  import { initSignalDemo } from '../scripts/signal-demo';
+  initSignalDemo();
 </script>
