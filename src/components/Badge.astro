@@ -1,0 +1,19 @@
+---
+interface Props {
+  label: string;
+  variant?: 'default' | 'progress';
+}
+
+const { label, variant = 'default' } = Astro.props;
+---
+
+<span
+  class:list={[
+    'inline-flex items-center rounded-full px-sm py-xs text-label font-mono',
+    variant === 'progress'
+      ? 'border border-accent text-accent'
+      : 'border border-border text-subtext bg-mantle',
+  ]}
+>
+  {label}
+</span>
