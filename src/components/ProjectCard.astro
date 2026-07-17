@@ -1,0 +1,46 @@
+---
+import { Icon } from 'astro-icon/components';
+import Badge from './Badge.astro';
+
+interface Props {
+  name: string;
+  description: string;
+  tech: string[];
+  href: string;
+  status?: 'in-progress' | 'team';
+  teamCredit?: string;
+}
+
+const { name, description, tech, href, status, teamCredit } = Astro.props;
+---
+
+<article class="bg-mantle border border-border rounded-md p-md flex flex-col gap-md h-full">
+  <div class="flex flex-col gap-sm">
+    <div class="flex items-center gap-sm">
+      <h3 class="text-heading font-semibold text-text">{name}</h3>
+      {status === 'in-progress' && <Badge label="In Progress" variant="progress" />}
+      {status === 'team' && <Badge label="Team Project" variant="default" />}
+    </div>
+    {status === 'team' && teamCredit && (
+      <p class="text-label text-subtext">{teamCredit}</p>
+    )}
+  </div>
+
+  <p class="text-body text-text">{description}</p>
+
+  <div class="flex flex-wrap gap-xs">
+    {tech.map((item) => (
+      <Badge label={item} variant="default" />
+    ))}
+  </div>
+
+  <a
+    href={href}
+    target="_blank"
+    rel="noopener noreferrer"
+    class="mt-auto inline-flex items-center gap-xs text-label font-semibold text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+  >
+    <Icon name="lucide:github" width={16} height={16} aria-hidden="true" />
+    View on GitHub
+  </a>
+</article>
