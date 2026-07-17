@@ -64,6 +64,10 @@ A recruiter who lands on the site for 60 seconds understands who Filippo is, see
 | In-page CV instead of PDF download | No physical CV exists yet | — Pending |
 | Skip domain research phase | Domain (personal portfolio site) is well-understood; real project content already gathered directly from repos | ✓ Good |
 
+## Known Gotchas
+
+- **`max-w-*`/`w-*`/`h-*`/`min-w-*`/`min-h-*`/`max-h-*` utilities resolve through the custom spacing scale, not Tailwind's defaults.** `src/styles/global.css`'s `@theme static` block names the custom spacing tokens `xs/sm/md/lg/xl/2xl/3xl` (matching Tailwind v4's own reserved size-scale key names). Tailwind v4 compiles `max-w-2xl` to `var(--spacing-2xl)` (48px) — NOT the classic 672px container width. Confirmed by inspecting compiled CSS in Phase 2 (`.max-w-2xl{max-width:var(--spacing-2xl)}`), which silently broke Hero.astro's content width (fixed by using an explicit arbitrary value: `max-w-[42rem]`). **When a component needs a real content-width constraint (not the 8pt spacing scale), use an explicit arbitrary value like `max-w-[42rem]`/`max-w-[36rem]`/`max-w-[60ch]` — never `max-w-{xs,sm,md,lg,xl,2xl,3xl}`.** `h-3xl` (64px, the nav height) is a correct/intentional use of the spacing scale, not an instance of this bug — the trap is specifically using these tokens where a *content/container* width or height was intended instead of the spacing scale.
+
 ## Evolution
 
 This document evolves at phase transitions and milestone boundaries.
