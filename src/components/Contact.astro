@@ -1,0 +1,36 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<section id="contact" class="py-3xl px-lg md:px-xl border-t border-border/40">
+  <div class="max-w-[72rem] mx-auto">
+    <div class="reveal">
+      <h2 class="text-display font-semibold gradient-text inline-block">Get in Touch</h2>
+      <p class="mt-sm text-body text-subtext max-w-[44rem]">
+        I'm especially interested in research-adjacent roles, systems-level ML, and teams that care
+        about correctness. Whether it's a full-time position, a collaboration, or just an interesting
+        problem — I read everything.
+      </p>
+    </div>
+
+    <div class="reveal mt-2xl flex flex-col sm:flex-row gap-md" data-delay="1">
+      <a
+        href="mailto:lollatofilippo@gmail.com"
+        class="inline-flex items-center gap-sm bg-accent text-base rounded-md px-md py-sm text-label font-semibold focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none hover:opacity-90 transition-opacity"
+      >
+        <Icon name="lucide:mail" width={16} height={16} aria-hidden="true" />
+        lollatofilippo@gmail.com
+      </a>
+
+      <a
+        href="https://github.com/xupremix"
+        target="_blank"
+        rel="noopener noreferrer"
+        class="inline-flex items-center gap-sm border border-border rounded-md px-md py-sm text-label font-semibold text-text hover:text-accent hover:border-accent/40 focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+      >
+        <Icon name="lucide:github" width={16} height={16} aria-hidden="true" />
+        github.com/xupremix
+      </a>
+    </div>
+  </div>
+</section>

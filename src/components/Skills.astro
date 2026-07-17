@@ -1,0 +1,129 @@
+---
+import Badge from './Badge.astro';
+import { Icon } from 'astro-icon/components';
+
+const skillGroups: { heading: string; icon: string; items: string[]; primary?: string[] }[] = [
+  {
+    heading: "Systems & Languages",
+    icon: "lucide:cpu",
+    items: ["Rust", "C++", "Python"],
+    primary: ["Rust", "Python"],
+  },
+  {
+    heading: "ML Frameworks",
+    icon: "lucide:brain",
+    items: ["PyTorch", "tch-rs", "Burn", "ONNX", "HuggingFace Transformers"],
+    primary: ["PyTorch"],
+  },
+  {
+    heading: "ML Deployment",
+    icon: "lucide:server",
+    items: ["ONNX Runtime", "Axum", "REST APIs", "Docker"],
+  },
+  {
+    heading: "Tools & Other",
+    icon: "lucide:wrench",
+    items: ["Git", "Node.js", "PDDL", "PyQt6", "Jupyter"],
+  },
+];
+
+const experience: {
+  role: string;
+  org: string;
+  period: string;
+  description: string;
+  tag: string;
+  tagColor: string;
+}[] = [
+  {
+    role: "ML Student",
+    org: "University of Trento",
+    period: "2024 — present",
+    description:
+      "Master's level coursework and projects spanning deep learning, NLP, computer vision, reinforcement learning, and autonomous systems. Lead architect on the ASA Autobots multi-agent capstone.",
+    tag: "Student · Researcher",
+    tagColor: "#cba6f7",
+  },
+  {
+    role: "University Tutor",
+    org: "University of Trento",
+    period: "2024 — present",
+    description:
+      "Tutoring undergraduate students in algorithms, data structures, and foundational programming. Teaching to others accelerates my own mastery — and it builds the leadership muscle of making complex ideas accessible.",
+    tag: "Teaching · Leadership",
+    tagColor: "#a6e3a1",
+  },
+];
+---
+
+<section id="skills" class="py-3xl px-lg md:px-xl">
+  <div class="max-w-[72rem] mx-auto">
+    <!-- Skills heading -->
+    <div class="reveal">
+      <h2 class="text-display font-semibold gradient-text inline-block">Skills</h2>
+      <p class="mt-sm text-body text-subtext">
+        The tools I reach for when building systems that actually run.
+      </p>
+    </div>
+
+    <div class="mt-2xl grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-lg">
+      {skillGroups.map((group, i) => (
+        <div
+          class="reveal bg-mantle border border-border rounded-md p-md flex flex-col gap-sm border-l-2"
+          style="border-left-color: rgb(203 166 247 / 0.5);"
+          data-delay={String(i + 1)}
+        >
+          <div class="flex items-center gap-xs">
+            <Icon name={group.icon} width={14} height={14} class="text-accent" aria-hidden="true" />
+            <h3 class="text-label font-semibold text-subtext uppercase tracking-wider">
+              {group.heading}
+            </h3>
+          </div>
+          <div class="flex flex-wrap gap-xs">
+            {group.items.map((item) => (
+              <Badge
+                label={item}
+                variant={group.primary?.includes(item) ? 'progress' : 'default'}
+              />
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+
+    <!-- Experience heading -->
+    <div class="reveal mt-3xl">
+      <h2 class="text-display font-semibold gradient-text inline-block">Experience</h2>
+      <p class="mt-sm text-body text-subtext">
+        Where I study, build, teach, and lead.
+      </p>
+    </div>
+
+    <div class="mt-2xl flex flex-col gap-lg">
+      {experience.map((item, i) => (
+        <div
+          class="reveal bg-mantle border border-border rounded-md p-md flex flex-col gap-sm border-l-2"
+          style={`border-left-color: ${item.tagColor};`}
+          data-delay={String(i + 1)}
+        >
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-xs">
+            <div class="flex flex-col gap-xs">
+              <h3 class="text-heading font-semibold text-text">{item.role}</h3>
+              <div class="flex items-center gap-sm flex-wrap">
+                <p class="text-label text-accent font-semibold">{item.org}</p>
+                <span
+                  class="text-label font-semibold px-sm py-xs rounded-full"
+                  style={`background: ${item.tagColor}20; color: ${item.tagColor}; border: 1px solid ${item.tagColor}40;`}
+                >
+                  {item.tag}
+                </span>
+              </div>
+            </div>
+            <span class="text-label text-subtext font-semibold shrink-0">{item.period}</span>
+          </div>
+          <p class="text-body text-text">{item.description}</p>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

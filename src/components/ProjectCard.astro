@@ -9,38 +9,82 @@ interface Props {
   href: string;
   status?: 'in-progress' | 'team';
   teamCredit?: string;
+  impact?: string;
+  role?: string;
+  demoId?: string;
 }
 
-const { name, description, tech, href, status, teamCredit } = Astro.props;
+const { name, description, tech, href, status, teamCredit, impact, role, demoId } = Astro.props;
 ---
 
-<article class="bg-mantle border border-border rounded-md p-md flex flex-col gap-md h-full">
-  <div class="flex flex-col gap-sm">
-    <div class="flex items-center gap-sm">
-      <h3 class="text-heading font-semibold text-text">{name}</h3>
-      {status === 'in-progress' && <Badge label="In Progress" variant="progress" />}
-      {status === 'team' && <Badge label="Team Project" variant="default" />}
+<article class="card-hover bg-mantle border border-border rounded-md p-md flex flex-col gap-md h-full">
+  <!-- Header: name + badges -->
+  <div class="flex flex-col gap-xs">
+    <div class="flex items-start justify-between gap-sm">
+      <h3 class="text-heading font-semibold text-text leading-snug">{name}</h3>
+      <div class="flex items-center gap-xs shrink-0 pt-xs">
+        {status === 'in-progress' && <Badge label="In Progress" variant="progress" />}
+        {status === 'team' && <Badge label="Team" variant="default" />}
+      </div>
     </div>
+    {role && (
+      <p class="text-label text-subtext">{role}</p>
+    )}
     {status === 'team' && teamCredit && (
-      <p class="text-label text-subtext">{teamCredit}</p>
+      <p class="text-label text-subtext italic">{teamCredit}</p>
     )}
   </div>
 
+  <!-- Description -->
   <p class="text-body text-text">{description}</p>
 
+  <!-- Impact callout -->
+  {impact && (
+    <div class="border-l-2 border-accent pl-sm py-xs bg-accent/5 rounded-r-sm">
+      <p class="text-label font-semibold text-accent">{impact}</p>
+    </div>
+  )}
+
+  <!-- Tech badges -->
   <div class="flex flex-wrap gap-xs">
     {tech.map((item) => (
       <Badge label={item} variant="default" />
     ))}
   </div>
 
-  <a
-    href={href}
-    target="_blank"
-    rel="noopener noreferrer"
-    class="mt-auto inline-flex items-center gap-xs text-label font-semibold text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
-  >
-    <Icon name="lucide:github" width={16} height={16} aria-hidden="true" />
-    View on GitHub
-  </a>
+  <!-- Footer: GitHub + optional Try Demo -->
+  <div class="mt-auto flex items-center justify-between gap-sm flex-wrap">
+    <a
+      href={href}
+      target="_blank"
+      rel="noopener noreferrer"
+      class="inline-flex items-center gap-xs text-label font-semibold text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+    >
+      <Icon name="lucide:github" width={16} height={16} aria-hidden="true" />
+      View on GitHub
+    </a>
+    {demoId && (
+      <button
+        type="button"
+        data-demo-id={demoId}
+        class="demo-open-btn inline-flex items-center gap-xs text-label font-semibold text-accent border border-accent/40 hover:border-accent hover:bg-accent/10 rounded-md px-sm py-xs focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors cursor-pointer"
+      >
+        <Icon name="lucide:play" width={12} height={12} aria-hidden="true" />
+        Try Demo
+      </button>
+    )}
+  </div>
 </article>
+
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.demo-open-btn').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const id = btn.dataset.demoId;
+      if (!id) return;
+      const dialog = document.getElementById(id) as HTMLDialogElement | null;
+      dialog?.showModal();
+      // Fire a custom event so demos can lazy-init
+      dialog?.dispatchEvent(new CustomEvent('demo-open'));
+    });
+  });
+</script>

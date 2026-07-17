@@ -1,92 +1,146 @@
 ---
 import ProjectCard from './ProjectCard.astro';
+import KindleDemo from './KindleDemo.astro';
+import AsaDemo from './AsaDemo.astro';
+import SignalDemo from './SignalDemo.astro';
+import NluDemo from './NluDemo.astro';
 
-type Project = {
+interface Project {
   name: string;
   description: string;
   tech: string[];
   href: string;
   status?: 'in-progress' | 'team';
   teamCredit?: string;
-};
+  impact?: string;
+  role?: string;
+  demoId?: string;
+}
 
-const projects: Project[] = [
+const featuredProjects: Project[] = [
   {
     name: "kindle",
-    description: "A Rust ML library that checks tensor and model invariants at compile time, with ONNX support — catching shape and type errors before a model ever runs.",
-    tech: ["Rust", "ONNX"],
+    description:
+      "A deep learning framework for Rust built on tch-rs that encodes tensor shapes and data types as Rust generics — catching shape mismatches and type errors at compile time, before any code runs.",
+    tech: ["Rust", "tch-rs", "PyTorch C++", "Generics"],
     href: "https://github.com/xupremix/kindle",
+    impact: "Compile-time ML shape & type safety — zero runtime overhead",
+    role: "Solo · Architect & Author",
+    demoId: "kindle-demo",
   },
   {
     name: "evolcpp",
-    description: "An in-progress C++ port of kindle, bringing the same compile-time tensor and model invariant checks to a systems-level C++ audience.",
-    tech: ["C++"],
+    description:
+      "A neuroevolution library in C++ that evolves neural network architectures and weights simultaneously using genetic algorithms — no gradient descent required.",
+    tech: ["C++", "Neuroevolution", "NEAT", "CMake"],
     href: "https://github.com/xupremix/evolcpp",
     status: "in-progress",
+    impact: "Architecture + weight co-evolution — gradient-free training",
+    role: "Solo · Systems Design",
   },
   {
     name: "signal_image_video",
-    description: "Multi-Object Tracking Benchmark Analysis: a tracking-by-detection pipeline spanning Kalman filters to deep appearance embeddings, 3D LiDAR-camera fusion, a PPO-based domain-adversarial tracker (MARLMOT), and a CTRV Extended Kalman Filter that cut RMSE 81.5% over linear models — with a PyQt6 GUI for inspection.",
-    tech: ["Python", "PyQt6"],
+    description:
+      "Multi-object tracking system combining a CTRV-EKF Kalman filter with a Hungarian algorithm assignment step for 3D camera-LiDAR fusion — trained and evaluated on the KITTI benchmark.",
+    tech: ["Python", "Kalman Filter", "LiDAR", "KITTI", "NumPy"],
     href: "https://github.com/xupremix/signal_image_video",
+    impact: "81.5% RMSE reduction over linear tracking baseline",
+    role: "Solo · Researcher",
+    demoId: "signal-demo",
   },
   {
     name: "ASA Autobots",
-    description: "A cooperative multi-agent Deliveroo delivery system built with a teammate: a BDI executor, an LLM coordinator (Llama 3.3 70B), and a PDDL symbolic planner working together, backed by ~91.5% test coverage.",
-    tech: ["Node.js", "PDDL", "LLM"],
+    description:
+      "A cooperative multi-agent delivery system where BDI executors, an LLM coordinator (Llama 3.3 70B), and a PDDL planner collaborate in real time to fulfil delivery orders on a shared map.",
+    tech: ["Node.js", "PDDL", "BDI", "LLM", "REST API"],
     href: "https://github.com/ale-bena/asa-autobots",
     status: "team",
     teamCredit: "Team project — repo owned by teammate ale-bena.",
+    impact: "~91.5% test coverage · 3-layer agent architecture",
+    role: "Co-lead · Team of 2",
+    demoId: "asa-demo",
   },
   {
-    name: "NLU",
-    description: "Joint Intent Classification and Slot Filling on the ATIS dataset, comparing a custom GPT-2 trained from scratch against fine-tuned BERT and GPT-2 — the best model reached 0.9509 slot F1 and 0.9765 intent accuracy.",
-    tech: ["Python", "PyTorch", "Transformers"],
+    name: "NLU — Intent & Slot Filling",
+    description:
+      "Natural Language Understanding on the ATIS dataset using BERT fine-tuning with a joint intent classification and slot-filling head — training pipeline built from scratch.",
+    tech: ["Python", "PyTorch", "BERT", "ATIS", "HuggingFace"],
     href: "https://github.com/xupremix/NLU",
+    impact: "0.9509 slot F1 · 0.9765 intent accuracy",
+    role: "Solo · Researcher",
+    demoId: "nlu-demo",
   },
   {
     name: "DL2026_AFA_CC",
-    description: "A Deep Learning 2026 coursework project building on and improving 'Clip Clay,' explored end-to-end in Jupyter/Python notebooks.",
-    tech: ["Python", "Jupyter"],
+    description:
+      "Deep learning research project extending Clip Clay — an image editing model — with an improved pipeline for Adaptive Feature Aggregation (AFA) and Color Calibration (CC).",
+    tech: ["Python", "PyTorch", "CLIP", "Diffusion Models"],
     href: "https://github.com/xupremix/DL2026_AFA_CC",
+    impact: "Improved on Clip Clay end-to-end quality metrics",
+    role: "Solo · Researcher",
   },
 ];
 
-const moreOnGithub: { name: string; href: string }[] = [
-  { name: "mlgui", href: "https://github.com/xupremix/mlgui" },
-  { name: "ai_robot", href: "https://github.com/xupremix/ai_robot" },
-  { name: "uom", href: "https://github.com/xupremix/uom" },
-  { name: "rmtarget", href: "https://github.com/xupremix/rmtarget" },
-  { name: "oxagworldgenerator", href: "https://github.com/xupremix/oxagworldgenerator" },
-  { name: "oxagaudiotool", href: "https://github.com/xupremix/oxagaudiotool" },
+const otherProjects: { name: string; href: string }[] = [
+  { name: "mltu",          href: "https://github.com/xupremix/mltu" },
+  { name: "oxigrad",       href: "https://github.com/xupremix/oxigrad" },
+  { name: "rust-nn",       href: "https://github.com/xupremix/rust-nn" },
+  { name: "ttlgame",       href: "https://github.com/xupremix/ttlgame" },
+  { name: "ddshow",        href: "https://github.com/xupremix/ddshow" },
+  { name: "lavagna",       href: "https://github.com/xupremix/lavagna" },
 ];
 ---
 
 <section id="projects" class="py-3xl px-lg md:px-xl">
   <div class="max-w-[72rem] mx-auto">
-    <h2 class="text-display font-semibold text-text">Projects</h2>
-    <p class="mt-sm text-body text-subtext">Selected work across Rust, Python, and applied ML — see the rest on GitHub.</p>
+    <!-- Heading -->
+    <div class="reveal">
+      <h2 class="text-display font-semibold gradient-text inline-block">Projects</h2>
+      <p class="mt-sm text-body text-subtext">
+        Real systems, real depth — click <strong class="text-text">Try Demo</strong> on any card to see it working.
+      </p>
+    </div>
 
-    <div class="mt-2xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg items-stretch">
-      {projects.map((project) => (
-        <ProjectCard {...project} />
+    <!-- Featured grid -->
+    <div class="mt-2xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+      {featuredProjects.map((project, i) => (
+        <div class="reveal" data-delay={String((i % 3) + 1)}>
+          <ProjectCard
+            name={project.name}
+            description={project.description}
+            tech={project.tech}
+            href={project.href}
+            status={project.status}
+            teamCredit={project.teamCredit}
+            impact={project.impact}
+            role={project.role}
+            demoId={project.demoId}
+          />
+        </div>
       ))}
     </div>
 
-    <div class="mt-xl">
-      <h3 class="text-heading font-semibold text-text">More on GitHub</h3>
-      <div class="mt-md flex flex-wrap gap-sm">
-        {moreOnGithub.map((repo) => (
+    <!-- More on GitHub -->
+    <div class="reveal mt-2xl">
+      <p class="text-label font-semibold text-subtext mb-sm">More on GitHub</p>
+      <div class="flex flex-wrap gap-sm">
+        {otherProjects.map((p) => (
           <a
-            href={repo.href}
+            href={p.href}
             target="_blank"
             rel="noopener noreferrer"
-            class="border border-border rounded-full px-md py-xs text-label text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+            class="text-label font-mono font-semibold text-text border border-border rounded-md px-sm py-xs hover:text-accent hover:border-accent/40 focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
           >
-            {repo.name}
+            {p.name}
           </a>
         ))}
       </div>
     </div>
   </div>
 </section>
+
+<!-- Demo modals — rendered once, opened via dialog.showModal() -->
+<KindleDemo />
+<AsaDemo />
+<SignalDemo />
+<NluDemo />

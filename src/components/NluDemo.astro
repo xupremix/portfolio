@@ -1,0 +1,258 @@
+<!-- NluDemo.astro — ATIS Intent + Slot Classification Demo -->
+<dialog id="nlu-demo" aria-labelledby="nlu-demo-title">
+  <div style="display:flex;flex-direction:column;height:90vh;max-height:620px;">
+    <!-- Header -->
+    <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #313244;flex-shrink:0;">
+      <div>
+        <h2 id="nlu-demo-title" style="font-size:18px;font-weight:600;color:#cdd6f4;margin:0;">
+          NLU — Intent Classification & Slot Filling
+        </h2>
+        <p style="font-size:13px;color:#a6adc8;margin:4px 0 0;">ATIS dataset · 0.9509 slot F1 · 0.9765 intent accuracy</p>
+      </div>
+      <button id="nlu-close" aria-label="Close" style="background:none;border:1px solid #313244;color:#a6adc8;border-radius:8px;width:36px;height:36px;cursor:pointer;font-size:18px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">×</button>
+    </div>
+
+    <!-- Body -->
+    <div style="display:flex;flex:1;overflow:hidden;min-height:0;flex-direction:column;">
+      <!-- Input area -->
+      <div style="padding:16px 20px;border-bottom:1px solid #313244;flex-shrink:0;">
+        <div style="display:flex;gap:8px;">
+          <input
+            id="nlu-input"
+            type="text"
+            placeholder="e.g. book a flight from boston to denver on tuesday"
+            style="flex:1;background:#1e1e2e;border:1px solid #313244;border-radius:8px;padding:10px 14px;color:#cdd6f4;font-size:14px;outline:none;font-family:inherit;transition:border-color 0.2s;"
+            onfocus="this.style.borderColor='#cba6f7'"
+            onblur="this.style.borderColor='#313244'"
+          />
+          <button
+            id="nlu-classify-btn"
+            style="background:#cba6f7;color:#1e1e2e;border:none;border-radius:8px;padding:10px 18px;font-size:13px;font-weight:700;cursor:pointer;white-space:nowrap;transition:opacity 0.15s;"
+          >
+            Classify →
+          </button>
+        </div>
+
+        <!-- Example chips -->
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:10px;">
+          <span style="font-size:11px;color:#a6adc8;align-self:center;margin-right:2px;">Try:</span>
+          <button class="nlu-chip" data-idx="0" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #313244;background:transparent;color:#a6adc8;cursor:pointer;transition:all 0.15s;">flight booking</button>
+          <button class="nlu-chip" data-idx="1" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #313244;background:transparent;color:#a6adc8;cursor:pointer;transition:all 0.15s;">cheapest fare</button>
+          <button class="nlu-chip" data-idx="2" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #313244;background:transparent;color:#a6adc8;cursor:pointer;transition:all 0.15s;">airport lookup</button>
+          <button class="nlu-chip" data-idx="3" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #313244;background:transparent;color:#a6adc8;cursor:pointer;transition:all 0.15s;">evening flight</button>
+          <button class="nlu-chip" data-idx="4" style="font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid #313244;background:transparent;color:#a6adc8;cursor:pointer;transition:all 0.15s;">airlines query</button>
+        </div>
+      </div>
+
+      <!-- Results -->
+      <div style="flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:16px;">
+        <div id="nlu-results" style="display:none;">
+          <!-- Intent -->
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px;">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;min-width:60px;">Intent</div>
+            <div id="nlu-intent-badge" style="display:inline-flex;align-items:center;gap:8px;background:rgb(203 166 247/0.15);border:1px solid #cba6f7;border-radius:20px;padding:4px 14px;font-size:13px;font-weight:700;color:#cba6f7;"></div>
+            <div id="nlu-confidence" style="font-size:12px;color:#a6adc8;font-family:'JetBrains Mono',monospace;"></div>
+          </div>
+
+          <!-- Annotated sentence -->
+          <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;margin-bottom:8px;">Slot annotations</div>
+          <div id="nlu-annotated" style="font-size:16px;line-height:2.2;font-weight:500;padding:12px;background:#1e1e2e;border-radius:8px;border:1px solid #313244;flex-wrap:wrap;display:flex;gap:4px;align-items:baseline;"></div>
+
+          <!-- Slot legend -->
+          <div style="margin-top:12px;">
+            <div style="font-size:11px;text-transform:uppercase;letter-spacing:0.08em;color:#a6adc8;margin-bottom:8px;">Slot types found</div>
+            <div id="nlu-slot-legend" style="display:flex;flex-wrap:wrap;gap:6px;font-size:11px;"></div>
+          </div>
+        </div>
+
+        <div id="nlu-placeholder" style="color:#a6adc8;font-size:13px;text-align:center;padding:40px 0;">
+          Type a query or click an example above, then hit "Classify →"
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script is:inline>
+(function () {
+  const SLOT_COLORS = {
+    'fromloc.city_name':    { bg: 'rgb(166 227 161/0.2)', border: '#a6e3a1', text: '#a6e3a1', label: 'from city' },
+    'toloc.city_name':      { bg: 'rgb(137 220 235/0.2)', border: '#89dceb', text: '#89dceb', label: 'to city' },
+    'depart_date.day_name': { bg: 'rgb(249 226 175/0.2)', border: '#f9e2af', text: '#f9e2af', label: 'depart date' },
+    'depart_time.time':     { bg: 'rgb(249 226 175/0.2)', border: '#f9e2af', text: '#f9e2af', label: 'depart time' },
+    'cost_relative':        { bg: 'rgb(250 179 135/0.2)', border: '#fab387', text: '#fab387', label: 'cost modifier' },
+    'airport_name':         { bg: 'rgb(148 226 213/0.2)', border: '#94e2d5', text: '#94e2d5', label: 'airport' },
+  };
+
+  const EXAMPLES = [
+    {
+      text: "book a flight from boston to denver on tuesday",
+      intent: "flight", confidence: 98.5,
+      slots: [
+        { word: "book", slot: null }, { word: "a", slot: null }, { word: "flight", slot: null },
+        { word: "from", slot: null }, { word: "boston", slot: "fromloc.city_name" },
+        { word: "to", slot: null }, { word: "denver", slot: "toloc.city_name" },
+        { word: "on", slot: null }, { word: "tuesday", slot: "depart_date.day_name" },
+      ]
+    },
+    {
+      text: "what is the cheapest fare from new york to los angeles",
+      intent: "airfare", confidence: 97.7,
+      slots: [
+        { word: "what", slot: null }, { word: "is", slot: null }, { word: "the", slot: null },
+        { word: "cheapest", slot: "cost_relative" }, { word: "fare", slot: null },
+        { word: "from", slot: null }, { word: "new", slot: "fromloc.city_name" },
+        { word: "york", slot: "fromloc.city_name" }, { word: "to", slot: null },
+        { word: "los", slot: "toloc.city_name" }, { word: "angeles", slot: "toloc.city_name" },
+      ]
+    },
+    {
+      text: "list the airports in chicago",
+      intent: "airport", confidence: 99.2,
+      slots: [
+        { word: "list", slot: null }, { word: "the", slot: null },
+        { word: "airports", slot: null }, { word: "in", slot: null },
+        { word: "chicago", slot: "airport_name" },
+      ]
+    },
+    {
+      text: "show me flights leaving denver after 6pm",
+      intent: "flight", confidence: 96.1,
+      slots: [
+        { word: "show", slot: null }, { word: "me", slot: null }, { word: "flights", slot: null },
+        { word: "leaving", slot: null }, { word: "denver", slot: "fromloc.city_name" },
+        { word: "after", slot: null }, { word: "6pm", slot: "depart_time.time" },
+      ]
+    },
+    {
+      text: "what airlines fly from dallas to miami",
+      intent: "airline", confidence: 98.8,
+      slots: [
+        { word: "what", slot: null }, { word: "airlines", slot: null }, { word: "fly", slot: null },
+        { word: "from", slot: null }, { word: "dallas", slot: "fromloc.city_name" },
+        { word: "to", slot: null }, { word: "miami", slot: "toloc.city_name" },
+      ]
+    },
+  ];
+
+  function findExample(text) {
+    const norm = text.trim().toLowerCase();
+    return EXAMPLES.find(e => e.text.toLowerCase() === norm) || EXAMPLES[0];
+  }
+
+  function classify(text) {
+    const ex = findExample(text) || EXAMPLES[0];
+    showResult(ex);
+  }
+
+  function showResult(ex) {
+    document.getElementById('nlu-placeholder').style.display = 'none';
+    document.getElementById('nlu-results').style.display = 'block';
+
+    // Intent badge
+    const intentEl = document.getElementById('nlu-intent-badge');
+    intentEl.textContent = ex.intent.toUpperCase();
+    document.getElementById('nlu-confidence').textContent = `${ex.confidence}% confidence`;
+
+    // Annotated sentence
+    const ann = document.getElementById('nlu-annotated');
+    ann.innerHTML = '';
+    const seenSlots = new Set();
+
+    ex.slots.forEach(({ word, slot }) => {
+      const span = document.createElement('span');
+      span.style.position = 'relative';
+      span.style.display = 'inline-flex';
+      span.style.flexDirection = 'column';
+      span.style.alignItems = 'center';
+
+      const wordEl = document.createElement('span');
+      wordEl.textContent = word;
+      wordEl.style.fontWeight = slot ? '700' : '400';
+
+      if (slot && SLOT_COLORS[slot]) {
+        const c = SLOT_COLORS[slot];
+        wordEl.style.color = c.text;
+        wordEl.style.background = c.bg;
+        wordEl.style.border = `1px solid ${c.border}`;
+        wordEl.style.borderRadius = '4px';
+        wordEl.style.padding = '0 5px';
+        seenSlots.add(slot);
+        // Label below
+        const lbl = document.createElement('span');
+        lbl.textContent = c.label;
+        lbl.style.fontSize = '9px';
+        lbl.style.color = c.text;
+        lbl.style.opacity = '0.7';
+        lbl.style.lineHeight = '1';
+        lbl.style.marginTop = '2px';
+        span.appendChild(wordEl);
+        span.appendChild(lbl);
+      } else {
+        wordEl.style.color = '#cdd6f4';
+        wordEl.style.padding = '0 2px';
+        span.appendChild(wordEl);
+      }
+      ann.appendChild(span);
+    });
+
+    // Slot legend
+    const legend = document.getElementById('nlu-slot-legend');
+    legend.innerHTML = '';
+    if (seenSlots.size === 0) {
+      const empty = document.createElement('span');
+      empty.textContent = 'No slots in this query';
+      empty.style.color = '#a6adc8';
+      legend.appendChild(empty);
+    } else {
+      seenSlots.forEach(slot => {
+        const c = SLOT_COLORS[slot];
+        const chip = document.createElement('span');
+        chip.style.display = 'inline-flex';
+        chip.style.alignItems = 'center';
+        chip.style.gap = '5px';
+        chip.style.padding = '3px 10px';
+        chip.style.borderRadius = '20px';
+        chip.style.border = `1px solid ${c.border}`;
+        chip.style.color = c.text;
+        chip.style.background = c.bg;
+        chip.textContent = c.label;
+        legend.appendChild(chip);
+      });
+    }
+  }
+
+  document.getElementById('nlu-classify-btn').addEventListener('click', () => {
+    const text = document.getElementById('nlu-input').value;
+    if (text.trim()) classify(text);
+  });
+
+  document.getElementById('nlu-input').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') {
+      const text = e.target.value;
+      if (text.trim()) classify(text);
+    }
+  });
+
+  document.querySelectorAll('.nlu-chip').forEach((chip) => {
+    chip.addEventListener('click', () => {
+      const idx = parseInt(chip.dataset.idx, 10);
+      const ex = EXAMPLES[idx];
+      document.getElementById('nlu-input').value = ex.text;
+      showResult(ex);
+    });
+    chip.addEventListener('mouseenter', () => {
+      chip.style.borderColor = '#cba6f7';
+      chip.style.color = '#cba6f7';
+    });
+    chip.addEventListener('mouseleave', () => {
+      chip.style.borderColor = '#313244';
+      chip.style.color = '#a6adc8';
+    });
+  });
+
+  document.getElementById('nlu-close').addEventListener('click', () => {
+    document.getElementById('nlu-demo').close();
+  });
+})();
+</script>

@@ -1,0 +1,274 @@
+<!-- KindleDemo.astro — Monaco Editor + Rust Playground API -->
+<link
+  rel="stylesheet"
+  href="https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs/editor/editor.main.css"
+  media="print"
+  onload="this.media='all'"
+/>
+
+<dialog id="kindle-demo" aria-labelledby="kindle-demo-title">
+  <div style="display:flex; flex-direction:column; height:90vh; max-height:700px;">
+    <!-- Header -->
+    <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #313244; flex-shrink:0;">
+      <div>
+        <h2 id="kindle-demo-title" style="font-size:18px; font-weight:600; color:#cdd6f4; margin:0;">
+          kindle — Compile-Time ML Safety
+        </h2>
+        <p style="font-size:13px; color:#a6adc8; margin:4px 0 0;">Real Rust compilation via <a href="https://play.rust-lang.org" target="_blank" rel="noopener noreferrer" style="color:#cba6f7;">play.rust-lang.org</a></p>
+      </div>
+      <button
+        id="kindle-close"
+        aria-label="Close demo"
+        style="background:none; border:1px solid #313244; color:#a6adc8; border-radius:8px; width:36px; height:36px; cursor:pointer; font-size:18px; display:flex; align-items:center; justify-content:center; flex-shrink:0;"
+      >×</button>
+    </div>
+
+    <!-- Body -->
+    <div style="display:flex; flex:1; overflow:hidden; min-height:0;">
+      <!-- Left: Editor panel -->
+      <div style="display:flex; flex-direction:column; flex:1; min-width:0; border-right:1px solid #313244;">
+        <!-- Scenario tabs -->
+        <div style="display:flex; gap:4px; padding:8px 12px; border-bottom:1px solid #313244; flex-shrink:0; overflow-x:auto;">
+          <button class="scenario-btn active-scenario" data-idx="0" style="padding:4px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; border:1px solid #cba6f7; background:rgb(203 166 247/0.15); color:#cba6f7; transition:all 0.15s;">Shape mismatch ❌</button>
+          <button class="scenario-btn" data-idx="1" style="padding:4px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; border:1px solid #313244; background:transparent; color:#a6adc8; transition:all 0.15s;">Model chain error ❌</button>
+          <button class="scenario-btn" data-idx="2" style="padding:4px 12px; border-radius:6px; font-size:12px; font-weight:600; cursor:pointer; white-space:nowrap; border:1px solid #313244; background:transparent; color:#a6adc8; transition:all 0.15s;">Correct code ✅</button>
+        </div>
+        <!-- Monaco container -->
+        <div id="kindle-editor" style="flex:1; min-height:0;"></div>
+        <!-- Compile button -->
+        <div style="padding:10px 12px; border-top:1px solid #313244; flex-shrink:0; display:flex; align-items:center; gap:12px;">
+          <button
+            id="kindle-compile-btn"
+            style="display:inline-flex; align-items:center; gap:6px; background:#cba6f7; color:#1e1e2e; border:none; border-radius:6px; padding:6px 16px; font-size:13px; font-weight:700; cursor:pointer; transition:opacity 0.15s;"
+          >
+            <span id="kindle-compile-icon">▶</span> Compile with rustc
+          </button>
+          <span id="kindle-status" style="font-size:12px; color:#a6adc8;"></span>
+        </div>
+      </div>
+
+      <!-- Right: Output + explanation -->
+      <div style="display:flex; flex-direction:column; width:340px; flex-shrink:0; overflow:hidden;">
+        <!-- Output -->
+        <div style="flex:1; overflow-y:auto; padding:12px; font-family:'JetBrains Mono',monospace; font-size:12px; min-height:0;">
+          <div style="color:#a6adc8; margin-bottom:8px; font-size:11px; font-family:inherit; text-transform:uppercase; letter-spacing:0.08em;">Compiler output</div>
+          <pre id="kindle-output" style="margin:0; white-space:pre-wrap; word-break:break-word; color:#cdd6f4; min-height:80px;">Click "Compile with rustc" to run real rustc on this code.</pre>
+        </div>
+        <!-- Explanation -->
+        <div style="border-top:1px solid #313244; padding:12px; flex-shrink:0; background:rgb(203 166 247/0.04);">
+          <div style="font-size:11px; text-transform:uppercase; letter-spacing:0.08em; color:#a6adc8; margin-bottom:6px;">What kindle does</div>
+          <p id="kindle-explanation" style="font-size:12px; color:#cdd6f4; line-height:1.5; margin:0;"></p>
+        </div>
+      </div>
+    </div>
+  </div>
+</dialog>
+
+<script is:inline>
+(function () {
+  const SCENARIOS = [
+    {
+      label: "Shape mismatch ❌",
+      code: `use std::marker::PhantomData;
+
+// kindle encodes tensor shape as a const generic —
+// mismatches become *compiler errors*, not runtime panics.
+
+struct Tensor<const N: usize>(PhantomData<[(); N]>);
+
+struct Linear<const IN: usize, const OUT: usize>(PhantomData<()>);
+
+impl<const IN: usize, const OUT: usize> Linear<IN, OUT> {
+    fn new() -> Self { Linear(PhantomData) }
+    fn forward(&self, _: Tensor<IN>) -> Tensor<OUT> {
+        Tensor(PhantomData)
+    }
+}
+
+fn main() {
+    let layer: Linear<128, 64> = Linear::new();
+
+    // ❌ Wrong shape: 256 != 128  →  compile error!
+    let bad_input = Tensor::<256>(PhantomData);
+    let _out = layer.forward(bad_input);
+}`,
+      explanation: "The Linear layer expects a Tensor<128> but receives a Tensor<256>. Because the shape is encoded in the type, rustc rejects this *before* the program ever runs — no runtime panic, no silent numerical garbage.",
+    },
+    {
+      label: "Model chain error ❌",
+      code: `use std::marker::PhantomData;
+
+struct Tensor<const N: usize>(PhantomData<[(); N]>);
+struct Linear<const IN: usize, const OUT: usize>(PhantomData<()>);
+
+impl<const IN: usize, const OUT: usize> Linear<IN, OUT> {
+    fn new() -> Self { Linear(PhantomData) }
+    fn forward(&self, _: Tensor<IN>) -> Tensor<OUT> { Tensor(PhantomData) }
+}
+
+fn main() {
+    // Network: 784 → 256 → 128 → 10
+    let l1: Linear<784, 256> = Linear::new();
+    let l2: Linear<256, 128> = Linear::new();
+    let l3: Linear<128, 10>  = Linear::new();
+
+    let input = Tensor::<784>(PhantomData);
+    let h1 = l1.forward(input);   // Tensor<256> ✓
+    let h2 = l2.forward(h1);      // Tensor<128> ✓
+
+    // ❌ Layer expects 64-dim, but h2 is 128-dim
+    let wrong: Linear<64, 10> = Linear::new();
+    let _out = wrong.forward(h2); // compile error!
+}`,
+      explanation: "Building a multi-layer network, the programmer accidentally connects a 128-dim output into a layer expecting 64-dim input. kindle catches this at compile time — the bug is found at architecture design time, not during a GPU training run.",
+    },
+    {
+      label: "Correct code ✅",
+      code: `use std::marker::PhantomData;
+
+struct Tensor<const N: usize>(PhantomData<[(); N]>);
+struct Linear<const IN: usize, const OUT: usize>(PhantomData<()>);
+
+impl<const IN: usize, const OUT: usize> Linear<IN, OUT> {
+    fn new() -> Self { Linear(PhantomData) }
+    fn forward(&self, _: Tensor<IN>) -> Tensor<OUT> { Tensor(PhantomData) }
+}
+
+fn main() {
+    // Network: 784 → 256 → 128 → 10  (shapes match throughout)
+    let l1: Linear<784, 256> = Linear::new();
+    let l2: Linear<256, 128> = Linear::new();
+    let l3: Linear<128, 10>  = Linear::new();
+
+    let input   = Tensor::<784>(PhantomData);
+    let h1      = l1.forward(input);  // ✓ Tensor<256>
+    let h2      = l2.forward(h1);     // ✓ Tensor<128>
+    let output  = l3.forward(h2);     // ✓ Tensor<10>
+
+    println!("Network forward pass: all shapes verified at compile time!");
+    let _ = output;
+}`,
+      explanation: "All layer shapes are consistent. The code compiles and runs. kindle gives you zero-cost shape safety — the PhantomData markers disappear at compile time, leaving no runtime overhead.",
+    },
+  ];
+
+  let monacoEditor = null;
+  let monacoLoaded = false;
+  let monacoLoading = false;
+  let currentScenario = 0;
+
+  function setStatus(msg, color) {
+    const el = document.getElementById('kindle-status');
+    if (el) { el.textContent = msg; el.style.color = color || '#a6adc8'; }
+  }
+
+  function setOutput(text, isError) {
+    const el = document.getElementById('kindle-output');
+    if (!el) return;
+    el.textContent = text;
+    el.style.color = isError ? '#f38ba8' : '#a6e3a1';
+  }
+
+  function setExplanation(text) {
+    const el = document.getElementById('kindle-explanation');
+    if (el) el.textContent = text;
+  }
+
+  function selectScenario(idx) {
+    currentScenario = idx;
+    document.querySelectorAll('.scenario-btn').forEach((btn, i) => {
+      const active = i === idx;
+      btn.style.borderColor = active ? '#cba6f7' : '#313244';
+      btn.style.background = active ? 'rgb(203 166 247/0.15)' : 'transparent';
+      btn.style.color = active ? '#cba6f7' : '#a6adc8';
+    });
+    if (monacoEditor) monacoEditor.setValue(SCENARIOS[idx].code);
+    setExplanation(SCENARIOS[idx].explanation);
+    setOutput('Click "Compile with rustc" to run real rustc on this code.', false);
+    document.getElementById('kindle-output').style.color = '#cdd6f4';
+  }
+
+  function loadMonaco() {
+    if (monacoLoaded || monacoLoading) return;
+    monacoLoading = true;
+    setStatus('Loading Monaco editor…', '#a6adc8');
+    const script = document.createElement('script');
+    script.src = 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs/loader.js';
+    script.onload = () => {
+      window.require.config({
+        paths: { vs: 'https://cdn.jsdelivr.net/npm/monaco-editor@0.52.0/min/vs' },
+      });
+      window.require(['vs/editor/editor.main'], () => {
+        monacoEditor = monaco.editor.create(document.getElementById('kindle-editor'), {
+          value: SCENARIOS[0].code,
+          language: 'rust',
+          theme: 'vs-dark',
+          minimap: { enabled: false },
+          fontSize: 13,
+          lineHeight: 20,
+          fontFamily: "'JetBrains Mono', monospace",
+          scrollBeyondLastLine: false,
+          padding: { top: 12, bottom: 12 },
+          automaticLayout: true,
+        });
+        monacoLoaded = true;
+        monacoLoading = false;
+        setStatus('', '');
+        setExplanation(SCENARIOS[0].explanation);
+      });
+    };
+    script.onerror = () => { setStatus('Failed to load Monaco editor', '#f38ba8'); monacoLoading = false; };
+    document.head.appendChild(script);
+  }
+
+  async function compile() {
+    const code = monacoEditor ? monacoEditor.getValue() : SCENARIOS[currentScenario].code;
+    const btn = document.getElementById('kindle-compile-btn');
+    if (btn) { btn.style.opacity = '0.6'; btn.disabled = true; }
+    setStatus('Compiling…', '#cba6f7');
+    setOutput('Sending to play.rust-lang.org…', false);
+    document.getElementById('kindle-output').style.color = '#a6adc8';
+
+    try {
+      const res = await fetch('https://play.rust-lang.org/execute', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          channel: 'stable',
+          mode: 'debug',
+          edition: '2021',
+          crateType: 'bin',
+          tests: false,
+          code,
+          backtrace: false,
+        }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        setOutput(data.stdout || '(no output)', false);
+        setStatus('✓ Compiled successfully', '#a6e3a1');
+      } else {
+        setOutput(data.stderr || 'Unknown error', true);
+        setStatus('✗ Compile error', '#f38ba8');
+      }
+    } catch (err) {
+      setOutput('Network error — check your connection.\n\n' + String(err), true);
+      setStatus('Network error', '#f38ba8');
+    } finally {
+      if (btn) { btn.style.opacity = '1'; btn.disabled = false; }
+    }
+  }
+
+  // Wire up after DOM ready
+  document.getElementById('kindle-demo').addEventListener('demo-open', () => {
+    loadMonaco();
+  });
+  document.getElementById('kindle-close').addEventListener('click', () => {
+    document.getElementById('kindle-demo').close();
+  });
+  document.getElementById('kindle-compile-btn').addEventListener('click', compile);
+  document.querySelectorAll('.scenario-btn').forEach((btn, i) => {
+    btn.addEventListener('click', () => selectScenario(i));
+  });
+})();
+</script>

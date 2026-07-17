@@ -4,26 +4,69 @@ import { Icon } from 'astro-icon/components';
 
 <section
   id="hero"
-  class="relative flex flex-col items-center justify-center text-center px-lg md:px-xl min-h-[calc(100vh_-_64px)]"
+  class="relative flex flex-col items-center justify-center text-center px-lg md:px-xl min-h-[calc(100vh_-_64px)] overflow-hidden"
 >
-  <div class="flex flex-col items-center max-w-[42rem]">
-    <p class="text-label font-mono font-semibold text-accent">ML Student, University of Trento</p>
-    <h1 class="mt-sm text-display font-semibold text-text">Filippo Lollato</h1>
-    <p class="mt-md text-heading font-semibold text-text">
-      Systems ML, from Rust to robotics — I build things that actually run.
+  <!-- Animated gradient blobs -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden">
+    <div
+      class="absolute top-[15%] left-[10%] w-[700px] h-[700px] rounded-full"
+      style="background: radial-gradient(circle, rgb(203 166 247 / 0.08) 0%, transparent 65%); animation: blob-float 20s ease-in-out infinite;"
+    ></div>
+    <div
+      class="absolute bottom-[10%] right-[5%] w-[550px] h-[550px] rounded-full"
+      style="background: radial-gradient(circle, rgb(203 166 247 / 0.06) 0%, transparent 65%); animation: blob-float-alt 25s ease-in-out infinite;"
+    ></div>
+  </div>
+
+  <!-- Subtle dot grid -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-0"
+    style="background-image: radial-gradient(circle, rgb(205 214 244 / 0.07) 1px, transparent 1px); background-size: 30px 30px;"
+  ></div>
+
+  <!-- Content -->
+  <div class="relative flex flex-col items-center max-w-[52rem]">
+    <p
+      class="hero-animate text-label font-mono font-semibold text-accent tracking-widest uppercase"
+      data-delay="1"
+    >
+      ML Student · University of Trento
     </p>
-    <div class="mt-xl flex flex-col sm:flex-row items-center gap-md">
+
+    <h1
+      class="hero-animate mt-sm text-display font-semibold text-text"
+      data-delay="2"
+    >
+      Filippo Lollato
+    </h1>
+
+    <p
+      class="hero-animate mt-md text-heading font-semibold text-subtext"
+      data-delay="3"
+      style="line-height: 1.35;"
+    >
+      I design systems from first principles —<br />
+      <span class="text-text">compile-time safe ML in Rust</span>, multi-agent AI,<br class="hidden sm:block" />
+      and deep learning pipelines that reach production.
+    </p>
+
+    <div
+      class="hero-animate mt-xl flex flex-col sm:flex-row items-center gap-md"
+      data-delay="4"
+    >
       <a
         href="#projects"
-        class="bg-accent text-base rounded-md px-md py-xs text-label font-semibold focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+        class="inline-flex items-center gap-xs bg-accent text-base rounded-md px-md py-sm text-label font-semibold focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none hover:opacity-90 transition-opacity"
       >
-        View Projects
+        See my work
+        <Icon name="lucide:arrow-down" width={14} height={14} aria-hidden="true" />
       </a>
       <a
         href="#contact"
         class="text-label font-semibold text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
       >
-        Get in touch
+        Get in touch →
       </a>
     </div>
   </div>
@@ -32,7 +75,8 @@ import { Icon } from 'astro-icon/components';
     href="#projects"
     id="hero-scroll-cue"
     aria-label="Scroll to projects"
-    class="absolute bottom-xl text-subtext hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+    class="hero-animate absolute bottom-xl text-subtext hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+    data-delay="5"
   >
     <Icon name="lucide:chevron-down" width={24} height={24} aria-hidden="true" />
   </a>
@@ -40,22 +84,14 @@ import { Icon } from 'astro-icon/components';
 
 <style>
   #hero-scroll-cue {
-    animation: hero-bounce 2s ease-in-out infinite;
+    animation: hero-bounce 2.2s ease-in-out infinite;
+    animation-delay: 1.8s;
   }
-
   @keyframes hero-bounce {
-    0%,
-    100% {
-      transform: translateY(0);
-    }
-    50% {
-      transform: translateY(6px);
-    }
+    0%, 100% { transform: translateY(0); }
+    50%       { transform: translateY(7px); }
   }
-
   @media (prefers-reduced-motion: reduce) {
-    #hero-scroll-cue {
-      animation: none;
-    }
+    #hero-scroll-cue { animation: none; }
   }
 </style>

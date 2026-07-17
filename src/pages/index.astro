@@ -1,14 +1,21 @@
 ---
 import Layout from '../layouts/Layout.astro';
 import Hero from '../components/Hero.astro';
+import About from '../components/About.astro';
 import Projects from '../components/Projects.astro';
+import Skills from '../components/Skills.astro';
+import Contact from '../components/Contact.astro';
 ---
 
-<Layout title="Filippo Lollato">
+<Layout
+  title="Filippo Lollato — ML Engineer & Systems Developer"
+  description="Filippo Lollato — ML student at the University of Trento building compile-time safe ML in Rust, multi-agent AI systems, and deep learning pipelines that reach production."
+>
   <main>
     <Hero />
+    <About />
     <Projects />
-    <section id="skills"></section>
-    <section id="contact"></section>
+    <Skills />
+    <Contact />
   </main>
 </Layout>

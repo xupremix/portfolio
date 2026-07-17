@@ -8,22 +8,93 @@ import Footer from '../components/Footer.astro';
 
 interface Props {
   title: string;
+  description?: string;
+  ogImage?: string;
 }
 
-const { title } = Astro.props;
+const {
+  title,
+  description = "Filippo Lollato — ML student at the University of Trento. Systems ML, Rust, Python, robotics. Real projects, real depth.",
+  ogImage = "/og.png",
+} = Astro.props;
+
+const siteUrl = "https://filippolollato.dev";
+const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
-    <meta name="viewport" content="width=device-width" />
+    <link rel="canonical" href={canonicalUrl} />
+
+    <!-- Primary SEO -->
     <title>{title}</title>
+    <meta name="description" content={description} />
+    <meta name="author" content="Filippo Lollato" />
+    <meta name="keywords" content="Filippo Lollato, ML engineer, Rust, machine learning, University of Trento, portfolio" />
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, siteUrl).href} />
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:site_name" content="Filippo Lollato" />
+
+    <!-- Twitter Card -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, siteUrl).href} />
   </head>
   <body class="bg-base text-text font-sans">
     <Nav />
     <slot />
     <Footer />
+
+    <script>
+      // ── Scroll Reveal ──────────────────────────────────────
+      const revealObserver = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+              revealObserver.unobserve(entry.target);
+            }
+          });
+        },
+        { threshold: 0.08, rootMargin: '0px 0px -40px 0px' }
+      );
+      document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
+
+      // ── Dialog: close on backdrop click ───────────────────
+      document.querySelectorAll('dialog').forEach((dialog) => {
+        dialog.addEventListener('click', (e) => {
+          const rect = dialog.getBoundingClientRect();
+          const clickedOutside =
+            e.clientX < rect.left ||
+            e.clientX > rect.right ||
+            e.clientY < rect.top  ||
+            e.clientY > rect.bottom;
+          if (clickedOutside) dialog.close();
+        });
+      });
+
+      // ── Dialog: close on Escape (already native, but ensure body scroll) ──
+      document.querySelectorAll('dialog').forEach((dialog) => {
+        dialog.addEventListener('close', () => {
+          document.body.style.overflow = '';
+        });
+        dialog.addEventListener('toggle', () => {
+          if ((dialog as HTMLDialogElement).open) {
+            document.body.style.overflow = 'hidden';
+          }
+        });
+      });
+    </script>
   </body>
 </html>

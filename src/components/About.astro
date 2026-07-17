@@ -1,0 +1,37 @@
+---
+import { Icon } from 'astro-icon/components';
+
+const pillars = [
+  {
+    icon: "lucide:layers",
+    heading: "I build to depth",
+    body: "Every project here is a real system. kindle enforces ML shape safety at compile time. The ASA agent coordinates live deliveries. Depth is the default, not the exception.",
+  },
+  {
+    icon: "lucide:users",
+    heading: "I work in teams",
+    body: "ASA Autobots was built jointly with a teammate — architecture, test suite, and every design decision made together. ~91.5% test coverage wasn't an accident.",
+  },
+  {
+    icon: "lucide:zap",
+    heading: "I make it matter",
+    body: "81.5% RMSE reduction over baseline tracking. 0.9765 intent accuracy trained from scratch. I measure outcomes, not just elegance.",
+  },
+];
+---
+
+<section class="py-2xl px-lg md:px-xl border-y border-border/40 bg-mantle/30">
+  <div class="max-w-[72rem] mx-auto grid grid-cols-1 md:grid-cols-3 gap-lg">
+    {pillars.map((p, i) => (
+      <div class="reveal flex flex-col gap-sm" data-delay={String(i + 1)}>
+        <div class="flex items-center gap-sm">
+          <div class="flex items-center justify-center w-10 h-10 rounded-md bg-accent/10 text-accent shrink-0">
+            <Icon name={p.icon} width={20} height={20} aria-hidden="true" />
+          </div>
+          <h2 class="text-label font-semibold text-text">{p.heading}</h2>
+        </div>
+        <p class="text-body text-subtext pl-[52px]">{p.body}</p>
+      </div>
+    ))}
+  </div>
+</section>

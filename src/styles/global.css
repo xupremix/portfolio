@@ -33,3 +33,108 @@
   --text-display: 48px;
   --text-display--line-height: 1.1;
 }
+
+/* ── Scroll Reveal ───────────────────────────────────────── */
+.reveal {
+  opacity: 0;
+  transform: translateY(28px);
+  transition:
+    opacity 0.65s cubic-bezier(0.16, 1, 0.3, 1),
+    transform 0.65s cubic-bezier(0.16, 1, 0.3, 1);
+}
+.reveal.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+.reveal[data-delay="1"] { transition-delay: 80ms; }
+.reveal[data-delay="2"] { transition-delay: 160ms; }
+.reveal[data-delay="3"] { transition-delay: 240ms; }
+.reveal[data-delay="4"] { transition-delay: 320ms; }
+.reveal[data-delay="5"] { transition-delay: 400ms; }
+.reveal[data-delay="6"] { transition-delay: 480ms; }
+
+/* ── Hero Entrance ───────────────────────────────────────── */
+@keyframes hero-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+.hero-animate {
+  animation: hero-up 0.7s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+.hero-animate[data-delay="1"] { animation-delay: 100ms; }
+.hero-animate[data-delay="2"] { animation-delay: 220ms; }
+.hero-animate[data-delay="3"] { animation-delay: 380ms; }
+.hero-animate[data-delay="4"] { animation-delay: 540ms; }
+.hero-animate[data-delay="5"] { animation-delay: 700ms; }
+
+/* ── Blob Float ──────────────────────────────────────────── */
+@keyframes blob-float {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%     { transform: translate(40px,-30px) scale(1.06); }
+  66%     { transform: translate(-30px,20px) scale(0.94); }
+}
+@keyframes blob-float-alt {
+  0%,100% { transform: translate(0,0) scale(1); }
+  33%     { transform: translate(-35px,25px) scale(0.95); }
+  66%     { transform: translate(25px,-35px) scale(1.05); }
+}
+
+/* ── Card Hover Lift ─────────────────────────────────────── */
+.card-hover {
+  transition:
+    transform 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    box-shadow 0.25s cubic-bezier(0.16, 1, 0.3, 1),
+    border-color 0.25s ease;
+}
+.card-hover:hover {
+  transform: translateY(-5px);
+  box-shadow:
+    0 12px 40px rgb(203 166 247 / 0.10),
+    0 4px 16px rgb(0 0 0 / 0.25);
+  border-color: rgb(203 166 247 / 0.35);
+}
+
+/* ── Gradient Text ───────────────────────────────────────── */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-text) 20%, var(--color-accent) 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* ── Demo Dialog ─────────────────────────────────────────── */
+dialog {
+  background: var(--color-mantle);
+  border: 1px solid var(--color-border);
+  border-radius: 12px;
+  padding: 0;
+  max-width: min(92vw, 1100px);
+  width: 100%;
+  max-height: 90vh;
+  overflow: hidden;
+  color: var(--color-text);
+  font-family: var(--font-sans);
+}
+dialog::backdrop {
+  background: rgb(0 0 0 / 0.75);
+  backdrop-filter: blur(6px);
+}
+dialog[open] {
+  animation: dialog-in 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+@keyframes dialog-in {
+  from { opacity: 0; transform: scale(0.94) translateY(16px); }
+  to   { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+/* ── Reduced Motion ──────────────────────────────────────── */
+@media (prefers-reduced-motion: reduce) {
+  .reveal,
+  .reveal.visible       { opacity: 1; transform: none; transition: none; }
+  .hero-animate         { animation: none; opacity: 1; transform: none; }
+  dialog[open]          { animation: none; }
+  .card-hover           { transition: none; }
+  .card-hover:hover     { transform: none; box-shadow: none; }
+}
+
