@@ -1,0 +1,117 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<header
+  id="site-nav"
+  class="sticky top-0 z-50 h-3xl bg-mantle/10 backdrop-blur-md border-b border-border/50 transition-colors"
+>
+  <div class="relative flex h-full items-center justify-between px-lg md:px-xl">
+    <a href="/" class="text-label font-semibold text-text">Filippo Lollato</a>
+
+    <nav class="hidden md:flex items-center gap-lg">
+      <a
+        href="#projects"
+        class="text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+      >
+        Projects
+      </a>
+      <a
+        href="#skills"
+        class="text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+      >
+        Skills
+      </a>
+      <a
+        href="#contact"
+        class="bg-accent text-base rounded-md px-md py-xs text-label font-semibold focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        Contact
+      </a>
+    </nav>
+
+    <input type="checkbox" id="nav-toggle" class="peer sr-only" />
+    <label
+      for="nav-toggle"
+      id="nav-toggle-open"
+      tabindex="0"
+      role="button"
+      class="md:hidden flex w-11 h-11 items-center justify-center peer-checked:hidden focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+    >
+      <Icon name="lucide:menu" width={24} height={24} />
+      <span class="sr-only">Open menu</span>
+    </label>
+    <label
+      for="nav-toggle"
+      id="nav-toggle-close"
+      tabindex="0"
+      role="button"
+      class="md:hidden hidden w-11 h-11 items-center justify-center peer-checked:flex focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+    >
+      <Icon name="lucide:x" width={24} height={24} />
+      <span class="sr-only">Close menu</span>
+    </label>
+
+    <nav
+      class="md:hidden hidden peer-checked:flex flex-col gap-md absolute top-3xl inset-x-0 bg-mantle p-lg border-b border-border"
+    >
+      <a
+        href="#projects"
+        class="text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+      >
+        Projects
+      </a>
+      <a
+        href="#skills"
+        class="text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+      >
+        Skills
+      </a>
+      <a
+        href="#contact"
+        class="bg-accent text-base rounded-md px-md py-xs text-label font-semibold text-center focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        Contact
+      </a>
+    </nav>
+  </div>
+</header>
+
+<style>
+  #site-nav.is-scrolled {
+    background-color: var(--color-mantle);
+    backdrop-filter: none;
+  }
+</style>
+
+<script>
+  const nav = document.querySelector('#site-nav');
+
+  function updateScrolled() {
+    if (!nav) return;
+    if (window.scrollY > 0) {
+      nav.classList.add('is-scrolled');
+    } else {
+      nav.classList.remove('is-scrolled');
+    }
+  }
+
+  updateScrolled();
+  window.addEventListener('scroll', updateScrolled, { passive: true });
+
+  const navToggle = document.querySelector<HTMLInputElement>('#nav-toggle');
+  const toggleOpen = document.querySelector<HTMLLabelElement>('#nav-toggle-open');
+  const toggleClose = document.querySelector<HTMLLabelElement>('#nav-toggle-close');
+
+  function handleToggleKeydown(event: KeyboardEvent) {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      if (navToggle) {
+        navToggle.checked = !navToggle.checked;
+      }
+    }
+  }
+
+  toggleOpen?.addEventListener('keydown', handleToggleKeydown);
+  toggleClose?.addEventListener('keydown', handleToggleKeydown);
+</script>

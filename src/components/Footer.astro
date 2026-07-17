@@ -1,0 +1,27 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<footer
+  class="bg-mantle border-t border-border px-lg py-lg md:px-xl flex flex-col md:flex-row items-center justify-between gap-md"
+>
+  <p class="text-label text-subtext">© {new Date().getFullYear()} Filippo Lollato</p>
+  <div class="flex items-center gap-md">
+    <!-- TODO(phase-4): wire real GitHub URL -->
+    <a
+      href="#"
+      aria-label="GitHub"
+      class="text-subtext hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+    >
+      <Icon name="lucide:github" width={20} height={20} />
+    </a>
+    <!-- TODO(phase-4): wire real mailto link -->
+    <a
+      href="#"
+      aria-label="Email"
+      class="text-subtext hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+    >
+      <Icon name="lucide:mail" width={20} height={20} />
+    </a>
+  </div>
+</footer>
