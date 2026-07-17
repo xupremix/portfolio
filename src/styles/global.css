@@ -1,14 +1,21 @@
 @import "tailwindcss";
 
 @theme static {
-  /* Color */
+  /* Color — Catppuccin Mocha */
   --color-base: #1e1e2e;
   --color-mantle: #181825;
+  --color-crust: #11111b;
   --color-accent: #cba6f7;
   --color-destructive: #f38ba8;
   --color-text: #cdd6f4;
   --color-subtext: #a6adc8;
   --color-border: #313244;
+  --color-blue: #89b4fa;
+  --color-green: #a6e3a1;
+  --color-yellow: #f9e2af;
+  --color-peach: #fab387;
+  --color-sky: #89dceb;
+  --color-teal: #94e2d5;
 
   /* Spacing */
   --spacing-xs: 4px;
@@ -23,15 +30,74 @@
   --font-sans: "Inter", ui-sans-serif, system-ui, sans-serif;
   --font-mono: "JetBrains Mono", ui-monospace, monospace;
 
-  /* Typography */
+  /* Typography — fluid scale */
   --text-body: 16px;
   --text-body--line-height: 1.5;
   --text-label: 14px;
   --text-label--line-height: 1.4;
-  --text-heading: 28px;
+  --text-title: clamp(1.35rem, 1.2rem + 0.6vw, 1.625rem);
+  --text-title--line-height: 1.25;
+  --text-heading: clamp(1.375rem, 1.25rem + 0.5vw, 1.75rem);
   --text-heading--line-height: 1.2;
-  --text-display: 48px;
-  --text-display--line-height: 1.1;
+  --text-display: clamp(2.5rem, 1.6rem + 3.8vw, 4.25rem);
+  --text-display--line-height: 1.05;
+  --text-display--letter-spacing: -0.02em;
+
+  /* Shape */
+  --radius-card: 10px;
+  --radius-control: 8px;
+}
+
+/* ── Base ────────────────────────────────────────────────── */
+html {
+  scroll-padding-top: 80px;
+}
+@media (prefers-reduced-motion: no-preference) {
+  html { scroll-behavior: smooth; }
+}
+
+::selection {
+  background: rgb(203 166 247 / 0.3);
+}
+
+* {
+  scrollbar-width: thin;
+  scrollbar-color: var(--color-border) transparent;
+}
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-thumb {
+  background: var(--color-border);
+  border-radius: 5px;
+}
+::-webkit-scrollbar-track { background: transparent; }
+
+/* Film-grain overlay — kills flat fills on large dark areas */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  pointer-events: none;
+  opacity: 0.022;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+}
+
+/* ── Section eyebrow — shell-prompt label ────────────────── */
+.section-eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-accent);
+}
+.section-eyebrow::before {
+  content: "❯";
+  font-weight: 700;
+  color: var(--color-subtext);
 }
 
 /* ── Scroll Reveal ───────────────────────────────────────── */
@@ -66,6 +132,7 @@
 .hero-animate[data-delay="3"] { animation-delay: 380ms; }
 .hero-animate[data-delay="4"] { animation-delay: 540ms; }
 .hero-animate[data-delay="5"] { animation-delay: 700ms; }
+.hero-animate[data-delay="6"] { animation-delay: 860ms; }
 
 /* ── Blob Float ──────────────────────────────────────────── */
 @keyframes blob-float {
@@ -111,7 +178,7 @@ dialog {
   padding: 0;
   max-width: min(92vw, 1100px);
   width: 100%;
-  max-height: 90vh;
+  max-height: 92dvh;
   overflow: hidden;
   color: var(--color-text);
   font-family: var(--font-sans);
@@ -128,6 +195,16 @@ dialog[open] {
   to   { opacity: 1; transform: scale(1) translateY(0); }
 }
 
+/* Sidebar kicker used inside demo dialogs */
+.demo-kicker {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  color: var(--color-subtext);
+}
+
 /* ── Reduced Motion ──────────────────────────────────────── */
 @media (prefers-reduced-motion: reduce) {
   .reveal,
@@ -137,4 +214,3 @@ dialog[open] {
   .card-hover           { transition: none; }
   .card-hover:hover     { transform: none; box-shadow: none; }
 }
-
