@@ -1,7 +1,7 @@
 ---
 phase: 3
 slug: projects-showcase
-status: draft
+status: approved
 shadcn_initialized: false
 preset: none
 created: 2026-07-17
@@ -181,7 +181,7 @@ Not applicable — `Tool: none` (no shadcn initialized, inherited from Phase 1/2
   - Title (`<h3>`, Heading role, `text-text font-semibold`) → description (`<p>`, Body role, `text-text`) → tech badges row (`flex flex-wrap gap-xs`, one `<Badge variant="default">` per `tech` entry) → `mt-auto` footer link (`<a>`, Label role, `text-text hover:text-accent focus-visible:text-accent`, `lucide:github` icon + "View on GitHub", `focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none`, matching the exact focus-ring class string already shipped in `Nav.astro`/`Hero.astro`/`Footer.astro`).
 - `src/components/Projects.astro` — new component, owns `<section id="projects">` (replaces the empty placeholder currently in `index.astro`):
   - `<section id="projects" class="py-3xl px-lg md:px-xl">` → inner `<div class="max-w-[72rem] mx-auto">` (**arbitrary value, not `max-w-3xl`/etc. — see Spacing Scale gotcha note**) containing:
-    1. Section header: eyebrow-free (no Hero-style mono eyebrow here — this is a content section, not a hero), just `<h2>` "Projects" (Display) + subtitle `<p>` (Body, `text-subtext`), `mt-2xl` gap before the grid
+    1. Section header: eyebrow-free (no Hero-style mono eyebrow here — this is a content section, not a hero), just `<h2>` "Projects" (Display) + subtitle `<p>` (Body, `text-subtext`), `mt-2xl` gap before the grid. **Visual focal point:** the Display-size "Projects" `<h2>` is the primary anchor as the user scrolls into this section; the 6-card grid is the secondary draw (largest area, but no single card competes with the heading for attention); the "More on GitHub" pill row is deliberately the lowest-emphasis element (smaller text, `text-subtext`-weighted, positioned last).
     2. Featured grid: `grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg items-stretch`, rendering the 6 `<ProjectCard />` instances in the exact order from the Project Content table above
     3. `mt-xl` gap, then the "More on GitHub" block: `<h3>` heading (Heading role) + `mt-md` pill row (`flex flex-wrap gap-sm`) of the 6 secondary links
   - No client-side JS required — entirely static markup, same "near-zero JS" discipline as Phase 1/2 (Nav's scroll-listener and Hero's `prefers-reduced-motion`-respecting bounce are the only existing JS/animation on the site; this phase adds neither).
@@ -192,11 +192,11 @@ Not applicable — `Tool: none` (no shadcn initialized, inherited from Phase 1/2
 
 ## Checker Sign-Off
 
-- [ ] Dimension 1 Copywriting: PASS
-- [ ] Dimension 2 Visuals: PASS
-- [ ] Dimension 3 Color: PASS
-- [ ] Dimension 4 Typography: PASS
-- [ ] Dimension 5 Spacing: PASS
-- [ ] Dimension 6 Registry Safety: PASS
+- [x] Dimension 1 Copywriting: PASS
+- [x] Dimension 2 Visuals: PASS (initial FLAG on missing focal-point statement — resolved above)
+- [x] Dimension 3 Color: PASS
+- [x] Dimension 4 Typography: PASS
+- [x] Dimension 5 Spacing: PASS
+- [x] Dimension 6 Registry Safety: PASS
 
-**Approval:** pending
+**Approval:** approved (2026-07-17)
