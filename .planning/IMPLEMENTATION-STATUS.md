@@ -29,8 +29,8 @@
 |---|------|--------|-------|--------|
 | 1 | Install deps (codemirror, @codemirror/lang-rust, @astrojs/sitemap) | DONE | package.json | (with task 3) |
 | 2 | Global tokens & styles | DONE | src/styles/global.css | 06835ce* |
-| 3 | DemoDialog shell + canvas helpers | IN PROGRESS | src/components/DemoDialog.astro, src/scripts/canvas.ts, src/layouts/Layout.astro | — |
-| 4 | Kindle demo rebuild | TODO | src/components/KindleDemo.astro, src/scripts/kindle-demo.ts | — |
+| 3 | DemoDialog shell + canvas helpers | DONE | src/components/DemoDialog.astro, src/scripts/canvas.ts, src/layouts/Layout.astro, src/components/ProjectCard.astro | see git log |
+| 4 | Kindle demo rebuild | DONE | src/components/KindleDemo.astro, src/scripts/kindle-demo.ts, src/scripts/rust-editor.ts, src/demo-code/kindle/*.rs, src/generated/kindle-outputs.json, scripts/capture-kindle-outputs.mjs | see git log |
 | 5 | ASA demo rebuild | TODO | src/components/AsaDemo.astro, src/scripts/asa-demo.ts | — |
 | 6 | Signal demo rebuild | TODO | src/components/SignalDemo.astro, src/scripts/signal-demo.ts | — |
 | 7 | NLU demo rebuild | TODO | src/components/NluDemo.astro | — |
@@ -55,16 +55,20 @@
   listeners — now owned by DemoDialog); scroll-lock happens in `ProjectCard.astro`'s
   open handler (`document.body.style.overflow='hidden'` after `showModal()`).
 
-### Task 4 — Kindle (§0.2, §1.5, §2.2)
-- Editor: CodeMirror 6 (deps installed), lazy `import()` inside the `demo-open` handler,
-  rust language + small Catppuccin theme. Delete ALL jsdelivr/Monaco references.
-- Compile: keep POST `https://play.rust-lang.org/execute` (already correct at baseline).
-- Fallback: `FALLBACK_OUTPUTS` map (scenario index → captured rustc output) shown only
-  when fetch fails AND code is unmodified; else show the network error.
-- Color rustc output lines: `error` red (`--color-destructive`), `warning` yellow,
-  `-->` subtext, success green.
-- Fix scenario 2/3: unused `l3` variable → rename `_l3` so output shows only the real error.
-- Use DemoDialog shell; scenario tabs = segmented control with status dots (no ❌✅ in labels).
+### Task 4 — Kindle — DONE (design changed per user instruction: use the REAL library)
+Final architecture (all implemented):
+- Tabs 1–3 show REAL kindle API code (`src/demo-code/kindle/0{1,2,3}-*.rs`, single
+  source of truth imported `?raw`). Their rustc output CANNOT be produced live
+  (kindle links libtorch; playground can't build it; this machine lacks libssl-dev),
+  so output comes from `src/generated/kindle-outputs.json`, produced by
+  `node scripts/capture-kindle-outputs.mjs` run on Filippo's machine against the real
+  crate. Until captured, the demo shows an explicit "not captured yet" notice.
+  **ACTION FOR FILIPPO: run `node scripts/capture-kindle-outputs.mjs` and commit the JSON.**
+- Tab 4 "Sandbox · live rustc": self-contained const-generics pattern, editable,
+  compiles live on play.rust-lang.org from the browser; offline fallback shows a
+  pre-captured real rustc output only if the code is unedited.
+- Editor: self-hosted CodeMirror 6, lazy chunk (469K raw, loads on first open),
+  Catppuccin theme in `src/scripts/rust-editor.ts`. Zero CDN references.
 
 ### Task 5 — ASA (§0.3, §1.2, §2.3)
 Key bugs to fix in rewrite: agent must NOT move during phase 0 (planning) — separate
