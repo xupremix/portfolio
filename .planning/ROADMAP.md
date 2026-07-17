@@ -34,7 +34,10 @@ Decimal phases appear between their surrounding integers in numeric order.
   2. A defined color palette, typography scale, and spacing system are visibly and consistently applied across the page shell.
   3. A header/nav and footer are present and identical in structure across the site (even before content sections are added).
   4. Visiting the site in a browser shows a coherent, styled page shell rather than unstyled HTML.
-**Plans**: TBD
+**Plans**: 2 plans
+Plans:
+- [ ] 01-01-PLAN.md — Scaffold Astro + Tailwind v4 + fonts/icons; encode UI-SPEC design tokens as a Tailwind @theme block
+- [ ] 01-02-PLAN.md — Build Nav/Footer/Badge shell, wire Layout.astro, ship real index.astro + 404.astro
 **UI hint**: yes
 
 ### Phase 2: Hero
@@ -96,7 +99,7 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 
 | Phase | Plans Complete | Status | Completed |
 |-------|----------------|--------|-----------|
-| 1. Foundation & Shell | 0/TBD | Not started | - |
+| 1. Foundation & Shell | 0/2 | Not started | - |
 | 2. Hero | 0/TBD | Not started | - |
 | 3. Projects Showcase | 0/TBD | Not started | - |
 | 4. Skills, Experience & Contact | 0/TBD | Not started | - |
