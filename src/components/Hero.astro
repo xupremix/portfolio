@@ -1,0 +1,61 @@
+---
+import { Icon } from 'astro-icon/components';
+---
+
+<section
+  id="hero"
+  class="relative flex flex-col items-center justify-center text-center px-lg md:px-xl min-h-[calc(100vh_-_64px)]"
+>
+  <div class="flex flex-col items-center max-w-2xl">
+    <p class="text-label font-mono font-semibold text-accent">ML Student, University of Trento</p>
+    <h1 class="mt-sm text-display font-semibold text-text">Filippo Lollato</h1>
+    <p class="mt-md text-heading font-semibold text-text">
+      Systems ML, from Rust to robotics — I build things that actually run.
+    </p>
+    <div class="mt-xl flex flex-col sm:flex-row items-center gap-md">
+      <a
+        href="#projects"
+        class="bg-accent text-base rounded-md px-md py-xs text-label font-semibold focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        View Projects
+      </a>
+      <a
+        href="#contact"
+        class="text-label font-semibold text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+      >
+        Get in touch
+      </a>
+    </div>
+  </div>
+
+  <a
+    href="#projects"
+    id="hero-scroll-cue"
+    aria-label="Scroll to projects"
+    class="absolute bottom-xl text-subtext hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+  >
+    <Icon name="lucide:chevron-down" width={24} height={24} aria-hidden="true" />
+  </a>
+</section>
+
+<style>
+  #hero-scroll-cue {
+    animation: hero-bounce 2s ease-in-out infinite;
+  }
+
+  @keyframes hero-bounce {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(6px);
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    #hero-scroll-cue {
+      animation: none;
+    }
+  }
+</style>
