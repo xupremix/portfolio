@@ -35,7 +35,30 @@ const linkClass =
       >
         Contact
       </a>
+      <button
+        type="button"
+        data-mode-toggle
+        aria-label="Switch design theme"
+        title="Switch design theme"
+        class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-[var(--radius-control)] border border-border text-subtext transition-colors hover:border-accent/40 hover:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        <span data-mode-icon="ink"><Icon name="lucide:leaf" width={16} height={16} aria-hidden="true" /></span>
+        <span data-mode-icon="paper" class="hidden"><Icon name="lucide:terminal" width={16} height={16} aria-hidden="true" /></span>
+      </button>
     </nav>
+
+    <!-- Mobile: mode toggle sits beside the hamburger -->
+    <div class="ml-auto mr-xs flex items-center md:hidden">
+      <button
+        type="button"
+        data-mode-toggle
+        aria-label="Switch design theme"
+        class="flex h-9 w-9 cursor-pointer items-center justify-center rounded-[var(--radius-control)] border border-border text-subtext focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        <span data-mode-icon="ink"><Icon name="lucide:leaf" width={16} height={16} aria-hidden="true" /></span>
+        <span data-mode-icon="paper" class="hidden"><Icon name="lucide:terminal" width={16} height={16} aria-hidden="true" /></span>
+      </button>
+    </div>
 
     <input type="checkbox" id="nav-toggle" class="peer sr-only" />
     <label
@@ -129,6 +152,33 @@ const linkClass =
       if (navToggle) navToggle.checked = false;
     });
   });
+
+  // ── Design-mode toggle (ink ↔ paper) ─────────────────────
+  const THEME_COLORS: Record<string, string> = { ink: '#1e1e2e', paper: '#f4efe4' };
+
+  function applyModeUi() {
+    const mode = document.documentElement.dataset.mode === 'paper' ? 'paper' : 'ink';
+    document.querySelectorAll<HTMLElement>('[data-mode-icon]').forEach((icon) => {
+      icon.classList.toggle('hidden', icon.dataset.modeIcon !== mode);
+    });
+    document
+      .querySelector('meta[name="theme-color"]')
+      ?.setAttribute('content', THEME_COLORS[mode]);
+  }
+
+  document.querySelectorAll<HTMLButtonElement>('[data-mode-toggle]').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      const next = document.documentElement.dataset.mode === 'paper' ? 'ink' : 'paper';
+      if (next === 'paper') {
+        document.documentElement.dataset.mode = 'paper';
+      } else {
+        delete document.documentElement.dataset.mode;
+      }
+      localStorage.setItem('design-mode', next);
+      applyModeUi();
+    });
+  });
+  applyModeUi();
 
   // Active-section highlight: watch the four section anchors
   const sectionIds = ['projects', 'skills', 'experience', 'contact'];

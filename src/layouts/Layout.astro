@@ -41,6 +41,13 @@ const personJsonLd = JSON.stringify({
 <html lang="en">
   <head>
     <meta charset="utf-8" />
+    <!-- Restore the design mode (ink | paper) before first paint -->
+    <script is:inline>
+      (function () {
+        var mode = localStorage.getItem('design-mode');
+        if (mode === 'paper') document.documentElement.dataset.mode = 'paper';
+      })();
+    </script>
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#1e1e2e" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />

@@ -132,15 +132,13 @@ const otherProjects: { name: string; href: string }[] = [
           >
             {project.wide && (
               <div slot="extra" class="flex h-full flex-col justify-center rounded-[var(--radius-control)] border border-border bg-base p-md font-mono text-[12px] leading-relaxed">
-                <pre class="whitespace-pre-wrap"><span class="text-accent">type</span> <span class="text-yellow">Model</span> = (
-    <span class="text-yellow">Linear</span>&lt;<span class="text-peach">784</span>, <span class="text-peach">256</span>&gt;,
-    <span class="text-yellow">Relu</span>,
-    <span class="text-yellow">Linear</span>&lt;<span class="text-peach">128</span>, <span class="text-peach">10</span>&gt;,
-);
-<span class="text-subtext">// 256 ≠ 128 — rustc rejects this
-// chain before anything runs.</span>
-<span class="text-destructive">error</span>: the shape mismatch is
-a <span class="text-text">compile-time</span> type error</pre>
+                <pre class="whitespace-pre-wrap"><span class="text-accent">let</span> layer = <span class="text-yellow">Linear</span>::&lt;<span class="text-sky">s!</span>[<span class="text-peach">784</span>, <span class="text-peach">256</span>], Backend&gt;::new()?;
+<span class="text-accent">let</span> x = <span class="text-yellow">Tensor</span>::&lt;<span class="text-sky">s!</span>[<span class="text-peach">2</span>, <span class="text-peach">512</span>], Backend&gt;::zeros(())?;
+layer.forward(x)?;
+<span class="text-subtext">// 512 ≠ 784 — rustc rejects the
+// call before anything runs:</span>
+<span class="text-destructive">error[E0277]</span>: trait bound not
+satisfied — a <span class="text-text">compile-time</span> shape error</pre>
               </div>
             )}
           </ProjectCard>

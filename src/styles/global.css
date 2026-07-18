@@ -50,6 +50,54 @@
   --radius-control: 8px;
 }
 
+/* ── Paper mode ──────────────────────────────────────────────
+   Alternative "natural" design, toggled from the nav and persisted in
+   localStorage (key: design-mode, values: ink | paper). Every component
+   reads colors from the tokens above, so re-mapping them restyles the
+   whole site; the handful of non-token effects are overridden below. */
+html[data-mode='paper'] {
+  --color-base: #f4efe4;
+  --color-mantle: #ece5d4;
+  --color-crust: #e3dac5;
+  --color-accent: #4e6e38;
+  --color-destructive: #a8452f;
+  --color-text: #2e2a20;
+  --color-subtext: #6e6553;
+  --color-border: #d7cbb1;
+  --color-blue: #44619b;
+  --color-green: #3f7a4f;
+  --color-yellow: #93700f;
+  --color-peach: #a85f2a;
+  --color-sky: #3d6f8e;
+  --color-teal: #2f7568;
+  --color-sapphire: #2f6d8c;
+  --color-maroon: #96463c;
+}
+
+/* Editorial voice: humanist serif display over the warm paper */
+html[data-mode='paper'] h1,
+html[data-mode='paper'] h2,
+html[data-mode='paper'] h3 {
+  font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
+  letter-spacing: 0;
+}
+
+/* Stronger grain reads as paper texture on the light surface */
+html[data-mode='paper'] body::after {
+  opacity: 0.05;
+}
+
+/* No neon glow on paper — soft natural shadow instead */
+html[data-mode='paper'] .card-hover:hover {
+  box-shadow:
+    0 12px 32px rgb(78 110 56 / 0.12),
+    0 4px 14px rgb(46 42 32 / 0.10);
+}
+
+html[data-mode='paper'] ::selection {
+  background: rgb(78 110 56 / 0.25);
+}
+
 /* ── Base ────────────────────────────────────────────────── */
 html {
   scroll-padding-top: 80px;

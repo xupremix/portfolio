@@ -16,7 +16,7 @@
 // Colors: track identity uses sapphire/yellow/maroon (CVD-validated trio);
 // predictions are the SAME hue dashed (color follows the entity).
 
-import { setupCanvas, motionSafe, themeColor, type SizedCanvas } from './canvas';
+import { setupCanvas, motionSafe, themeColor, withAlpha, type SizedCanvas } from './canvas';
 
 const TRACK_TOKENS = ['sapphire', 'yellow', 'maroon'] as const;
 const BOX_W = 40;
@@ -132,8 +132,8 @@ function drawScene() {
   ctx.fillStyle = themeColor('base');
   ctx.fillRect(0, 0, w, h);
 
-  // Recessive grid
-  ctx.strokeStyle = 'rgb(49 50 68 / 0.35)';
+  // Recessive grid (token-based so both design modes render correctly)
+  ctx.strokeStyle = withAlpha(themeColor('border'), 0.4);
   ctx.lineWidth = 1;
   for (let y = 0; y < h; y += 40) {
     ctx.beginPath();
