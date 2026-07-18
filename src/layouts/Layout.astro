@@ -2,7 +2,11 @@
 import '../styles/global.css';
 import '@fontsource/inter/400.css';
 import '@fontsource/inter/600.css';
+import '@fontsource/jetbrains-mono/400.css';
 import '@fontsource/jetbrains-mono/600.css';
+// Preload the two above-the-fold fonts (hashed URLs via Vite).
+import interRegularWoff2 from '@fontsource/inter/files/inter-latin-400-normal.woff2?url';
+import interSemiboldWoff2 from '@fontsource/inter/files/inter-latin-600-normal.woff2?url';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
 
@@ -18,23 +22,38 @@ const {
   ogImage = "/og.png",
 } = Astro.props;
 
-const siteUrl = "https://filippolollato.dev";
+const siteUrl = Astro.site ?? new URL("https://filippolollato.dev");
 const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
+
+const personJsonLd = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Filippo Lollato",
+  url: siteUrl.href,
+  email: "mailto:lollatofilippo@gmail.com",
+  jobTitle: "ML Student & Systems Developer",
+  affiliation: { "@type": "CollegeOrUniversity", name: "University of Trento" },
+  sameAs: ["https://github.com/xupremix"],
+  knowsAbout: ["Machine Learning", "Rust", "Multi-agent systems", "Computer Vision", "NLP"],
+});
 ---
 
 <html lang="en">
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#1e1e2e" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
     <link rel="icon" href="/favicon.ico" />
     <link rel="canonical" href={canonicalUrl} />
+    <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="preload" as="font" type="font/woff2" href={interRegularWoff2} crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href={interSemiboldWoff2} crossorigin />
 
     <!-- Primary SEO -->
     <title>{title}</title>
     <meta name="description" content={description} />
     <meta name="author" content="Filippo Lollato" />
-    <meta name="keywords" content="Filippo Lollato, ML engineer, Rust, machine learning, University of Trento, portfolio" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
@@ -50,6 +69,8 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(ogImage, siteUrl).href} />
+
+    <script type="application/ld+json" set:html={personJsonLd} />
   </head>
   <body class="bg-base text-text font-sans">
     <Nav />

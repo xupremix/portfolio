@@ -9,7 +9,9 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "og": "node scripts/generate-og.mjs",
+    "capture:kindle": "node scripts/capture-kindle-outputs.mjs"
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
