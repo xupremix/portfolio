@@ -1,5 +1,5 @@
 <!-- NluDemo.astro — ATIS Intent + Slot Classification Demo -->
-<dialog id="nlu-demo" aria-labelledby="nlu-demo-title">
+<dialog id="nlu-demo" aria-labelledby="nlu-demo-title" class="w-full max-w-5xl bg-mantle rounded-xl border border-border shadow-2xl backdrop:bg-base/80 backdrop:backdrop-blur-sm p-0 m-auto">
   <div style="display:flex;flex-direction:column;height:90vh;max-height:620px;">
     <!-- Header -->
     <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px;border-bottom:1px solid #313244;flex-shrink:0;">
@@ -140,9 +140,27 @@
     return EXAMPLES.find(e => e.text.toLowerCase() === norm) || EXAMPLES[0];
   }
 
-  function classify(text) {
-    const ex = findExample(text) || EXAMPLES[0];
-    showResult(ex);
+  async function classify(text) {
+    const btn = document.getElementById('nlu-classify-btn');
+    if (btn) { btn.style.opacity = '0.6'; btn.disabled = true; btn.textContent = 'Classifying…'; }
+    
+    try {
+      const res = await fetch('/api/nlu', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ text }),
+      });
+      const data = await res.json();
+      if (data.success) {
+        showResult(data.result);
+      } else {
+        alert("Server error: " + data.stderr);
+      }
+    } catch (err) {
+      alert("Network error: " + String(err));
+    } finally {
+      if (btn) { btn.style.opacity = '1'; btn.disabled = false; btn.textContent = 'Classify →'; }
+    }
   }
 
   function showResult(ex) {

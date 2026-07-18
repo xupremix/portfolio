@@ -21,22 +21,22 @@ const featuredProjects: Project[] = [
   {
     name: "kindle",
     description:
-      "A deep learning framework for Rust built on tch-rs that encodes tensor shapes and data types as Rust generics — catching shape mismatches and type errors at compile time, before any code runs.",
+      "A deep learning framework for Rust built on tch-rs that leverages const generics to encode tensor shapes and data types. This allows the Rust compiler to catch shape mismatches and type errors before runtime, providing a safer ML development experience.",
     tech: ["Rust", "tch-rs", "PyTorch C++", "Generics"],
     href: "https://github.com/xupremix/kindle",
-    impact: "Compile-time ML shape & type safety — zero runtime overhead",
-    role: "Solo · Architect & Author",
+    impact: "Compile-time ML shape & type safety",
+    role: "Solo Project",
     demoId: "kindle-demo",
   },
   {
     name: "evolcpp",
     description:
-      "A neuroevolution library in C++ that evolves neural network architectures and weights simultaneously using genetic algorithms — no gradient descent required.",
-    tech: ["C++", "Neuroevolution", "NEAT", "CMake"],
+      "A C++ port of kindle. Initially designed as a neuroevolution library to evolve neural network architectures and weights using genetic algorithms, it now serves as a robust C++ implementation of kindle's compile-time safety principles.",
+    tech: ["C++", "Templates", "Machine Learning", "CMake"],
     href: "https://github.com/xupremix/evolcpp",
     status: "in-progress",
-    impact: "Architecture + weight co-evolution — gradient-free training",
-    role: "Solo · Systems Design",
+    impact: "C++ implementation of compile-time shape safety",
+    role: "Solo Project",
   },
   {
     name: "signal_image_video",
@@ -44,8 +44,8 @@ const featuredProjects: Project[] = [
       "Multi-object tracking system combining a CTRV-EKF Kalman filter with a Hungarian algorithm assignment step for 3D camera-LiDAR fusion — trained and evaluated on the KITTI benchmark.",
     tech: ["Python", "Kalman Filter", "LiDAR", "KITTI", "NumPy"],
     href: "https://github.com/xupremix/signal_image_video",
-    impact: "81.5% RMSE reduction over linear tracking baseline",
-    role: "Solo · Researcher",
+    impact: "Reduced RMSE over linear tracking baseline",
+    role: "Solo Project",
     demoId: "signal-demo",
   },
   {
@@ -66,8 +66,8 @@ const featuredProjects: Project[] = [
       "Natural Language Understanding on the ATIS dataset using BERT fine-tuning with a joint intent classification and slot-filling head — training pipeline built from scratch.",
     tech: ["Python", "PyTorch", "BERT", "ATIS", "HuggingFace"],
     href: "https://github.com/xupremix/NLU",
-    impact: "0.9509 slot F1 · 0.9765 intent accuracy",
-    role: "Solo · Researcher",
+    impact: "High accuracy intent classification",
+    role: "Solo Project",
     demoId: "nlu-demo",
   },
   {
@@ -77,17 +77,17 @@ const featuredProjects: Project[] = [
     tech: ["Python", "PyTorch", "CLIP", "Diffusion Models"],
     href: "https://github.com/xupremix/DL2026_AFA_CC",
     impact: "Improved on Clip Clay end-to-end quality metrics",
-    role: "Solo · Researcher",
+    role: "Solo Project",
   },
 ];
 
 const otherProjects: { name: string; href: string }[] = [
-  { name: "mltu",          href: "https://github.com/xupremix/mltu" },
-  { name: "oxigrad",       href: "https://github.com/xupremix/oxigrad" },
-  { name: "rust-nn",       href: "https://github.com/xupremix/rust-nn" },
-  { name: "ttlgame",       href: "https://github.com/xupremix/ttlgame" },
-  { name: "ddshow",        href: "https://github.com/xupremix/ddshow" },
-  { name: "lavagna",       href: "https://github.com/xupremix/lavagna" },
+  { name: "mlgui",               href: "https://github.com/xupremix/mlgui" },
+  { name: "ai_robot",            href: "https://github.com/xupremix/ai_robot" },
+  { name: "uom",                 href: "https://github.com/xupremix/uom" },
+  { name: "rmtarget",            href: "https://github.com/xupremix/rmtarget" },
+  { name: "oxagworldgenerator",  href: "https://github.com/xupremix/oxagworldgenerator" },
+  { name: "oxagaudiotool",       href: "https://github.com/xupremix/oxagaudiotool" },
 ];
 ---
 

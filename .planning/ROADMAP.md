@@ -19,9 +19,9 @@ Decimal phases appear between their surrounding integers in numeric order.
 
 - [x] **Phase 1: Foundation & Shell** - Astro+Tailwind project scaffolded with a cohesive design system and a site-wide nav/footer shell (completed 2026-07-17, verified 2026-07-17)
 - [x] **Phase 2: Hero** - First-impression hero section with name, role, tagline, and a CTA toward projects/contact (completed 2026-07-17, verified 2026-07-17)
-- [ ] **Phase 3: Projects Showcase** - Featured project cards (with correct in-progress/team framing) plus a secondary "more on GitHub" list
-- [ ] **Phase 4: Skills, Experience & Contact** - Skills, education/tutoring experience, in-page CV, and actionable contact info
-- [ ] **Phase 5: Polish & Deploy** - Responsive breakpoints, SEO/meta tags, and a clean static build ready to deploy
+- [x] **Phase 3: Projects Showcase** - Featured project cards (with correct in-progress/team framing) plus a secondary "more on GitHub" list
+- [x] **Phase 4: Skills, Experience & Contact** - Skills, education/tutoring experience, in-page CV, and actionable contact info
+- [x] **Phase 5: Polish & Deploy** - Responsive breakpoints, SEO/meta tags, and a clean static build ready to deploy
 
 ## Phase Details
 
@@ -123,6 +123,6 @@ Phases execute in numeric order: 1 → 2 → 3 → 4 → 5
 |-------|----------------|--------|-----------|
 | 1. Foundation & Shell | 2/2 | Verified   | 2026-07-17 |
 | 2. Hero | 1/1 | Verified   | 2026-07-17 |
-| 3. Projects Showcase | 0/TBD | Not started | - |
-| 4. Skills, Experience & Contact | 0/TBD | Not started | - |
-| 5. Polish & Deploy | 0/TBD | Not started | - |
+| 3. Projects Showcase | 1/1 | Verified | 2026-07-17 |
+| 4. Skills, Experience & Contact | 1/1 | Verified | 2026-07-17 |
+| 5. Polish & Deploy | 1/1 | Verified | 2026-07-17 |

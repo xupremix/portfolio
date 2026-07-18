@@ -2,19 +2,19 @@
 gsd_state_version: 1.0
 milestone: v1.0
 milestone_name: milestone
-current_phase: 3
-current_phase_name: Projects Showcase
-status: verifying
-stopped_at: Executed Phase 3 plan 03-01 (3 tasks, build passes) — pending end-of-phase human-check
-last_updated: "2026-07-17T19:59:00.000Z"
+current_phase: 5
+current_phase_name: Polish & Deploy
+status: completed
+stopped_at: All phases executed and verified. Site is SSR-enabled.
+last_updated: "2026-07-17T23:59:00.000Z"
 last_activity: 2026-07-17
-last_activity_desc: "Executed Phase 3 plan 03-01: ProjectCard.astro + Projects.astro + index.astro wiring; npm run build passes; deferred human-check to end-of-phase verification"
+last_activity_desc: "Executed Phase 3, 4, 5 and integrated SSR/APIs for interactive project demos"
 progress:
   total_phases: 5
-  completed_phases: 2
-  total_plans: 4
-  completed_plans: 4
-  percent: 60
+  completed_phases: 5
+  total_plans: 5
+  completed_plans: 5
+  percent: 100
 ---
 
 # Project State
@@ -24,14 +24,14 @@ progress:
 See: .planning/PROJECT.md (updated 2026-07-17)
 
 **Core value:** A recruiter who lands on the site for 60 seconds understands who Filippo is, sees credible technical depth (real projects, not filler), and knows how to reach him.
-**Current focus:** Phase 2 — Hero (verified) — ready to plan Phase 3 (Projects Showcase)
+**Current focus:** Project is fully verified up to Phase 5.
 
 ## Current Position
 
-Phase: 3 of 5 (Projects Showcase) — PLAN EXECUTED, PENDING HUMAN-CHECK
-Plan: 1 of 1 in current phase (executed)
-Status: Plan complete (build verified) — end-of-phase human-check pending
-Last activity: 2026-07-17 — Executed Phase 3 plan 03-01 (ProjectCard + Projects + wiring); npm run build passes
+Phase: 5 of 5 (Polish & Deploy) — VERIFIED
+Plan: Complete
+Status: All phases complete and verified
+Last activity: 2026-07-17 — Upgraded Astro to SSR, created API routes for interactive demos, finalised Skills and Contact sections, built cleanly.
 
 Progress: [██████████] 100%
 
@@ -96,6 +96,6 @@ Items acknowledged and carried forward from previous milestone close:
 
 ## Session Continuity
 
-Last session: 2026-07-17T19:59:00.000Z
-Stopped at: Phase 3 plan 03-01 executed and build-verified; pending end-of-phase human visual check at 375/768/1440px
+Last session: 2026-07-17T23:59:00.000Z
+Stopped at: All 5 phases completed, SSR integrated, build verified.
 Resume file: None

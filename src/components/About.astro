@@ -4,18 +4,18 @@ import { Icon } from 'astro-icon/components';
 const pillars = [
   {
     icon: "lucide:layers",
-    heading: "I build to depth",
-    body: "Every project here is a real system. kindle enforces ML shape safety at compile time. The ASA agent coordinates live deliveries. Depth is the default, not the exception.",
+    heading: "Creative Problem Solving",
+    body: "I enjoy tackling complex problems by building robust systems from the ground up, whether it's exploring compile-time safety or designing multi-agent architectures.",
   },
   {
     icon: "lucide:users",
-    heading: "I work in teams",
-    body: "ASA Autobots was built jointly with a teammate — architecture, test suite, and every design decision made together. ~91.5% test coverage wasn't an accident.",
+    heading: "Collaborative Teamwork",
+    body: "I strongly believe in the power of collaboration. Co-leading the ASA Autobots project allowed me to work closely with a teammate to design a comprehensive system together.",
   },
   {
     icon: "lucide:zap",
-    heading: "I make it matter",
-    body: "81.5% RMSE reduction over baseline tracking. 0.9765 intent accuracy trained from scratch. I measure outcomes, not just elegance.",
+    heading: "Impactful Decisions",
+    body: "I try to focus on measurable results and practical applications. Whether it's reducing tracking error on KITTI or achieving high accuracy in NLU tasks, I want my work to have a tangible impact.",
   },
 ];
 ---
@@ -33,5 +33,16 @@ const pillars = [
         <p class="text-body text-subtext pl-[52px]">{p.body}</p>
       </div>
     ))}
+  </div>
+
+  <div class="max-w-[72rem] mx-auto mt-2xl flex justify-center reveal" data-delay="4">
+    <a
+      href="/cv.pdf"
+      target="_blank"
+      class="inline-flex items-center gap-sm border border-border rounded-md px-md py-sm text-label font-semibold text-text hover:text-accent hover:border-accent/40 focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+    >
+      <Icon name="lucide:file-text" width={16} height={16} aria-hidden="true" />
+      Download CV
+    </a>
   </div>
 </section>

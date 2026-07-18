@@ -18,29 +18,29 @@
 
 ### Projects
 
-- [ ] **PROJ-01**: Featured project cards for kindle, evolcpp, signal_image_video, ASA Autobots, NLU, and DL2026_AFA_CC, each with name, description, tech stack, and link
-- [ ] **PROJ-02**: evolcpp card is visually marked as in-progress/upcoming, not a finished project
-- [ ] **PROJ-03**: ASA Autobots card credits it as a team project (repo owned by teammate ale-bena)
-- [ ] **PROJ-04**: Secondary "more on GitHub" list linking to remaining public repos (mlgui, ai_robot, uom, rmtarget, oxagworldgenerator, oxagaudiotool)
+- [x] **PROJ-01**: Featured project cards for kindle, evolcpp, signal_image_video, ASA Autobots, NLU, and DL2026_AFA_CC, each with name, description, tech stack, and link
+- [x] **PROJ-02**: evolcpp card is visually marked as in-progress/upcoming, not a finished project
+- [x] **PROJ-03**: ASA Autobots card credits it as a team project (repo owned by teammate ale-bena)
+- [x] **PROJ-04**: Secondary "more on GitHub" list linking to remaining public repos (mlgui, ai_robot, uom, rmtarget, oxagworldgenerator, oxagaudiotool)
 
 ### Skills
 
-- [ ] **SKIL-01**: Skills section lists Rust, Python, ML stack (PyTorch/tch/Burn/ONNX/HuggingFace transformers), and ML hosting/deployment
+- [x] **SKIL-01**: Skills section lists Rust, Python, ML stack (PyTorch/tch/Burn/ONNX/HuggingFace transformers), and ML hosting/deployment
 
 ### Experience & CV
 
-- [ ] **CV-01**: Experience/education section covers current ML studies at University of Trento and the university tutoring role
-- [ ] **CV-02**: In-page CV/resume section presents bio, skills, and experience directly on the page (no PDF exists yet)
+- [x] **CV-01**: Experience/education section covers current ML studies at University of Trento and the university tutoring role
+- [x] **CV-02**: In-page CV/resume section presents bio, skills, and experience directly on the page (no PDF exists yet)
 
 ### Contact
 
-- [ ] **CONT-01**: Contact section/footer displays actionable email (lollatofilippo@gmail.com, mailto link) and GitHub link (github.com/xupremix)
+- [x] **CONT-01**: Contact section/footer displays actionable email (lollatofilippo@gmail.com, mailto link) and GitHub link (github.com/xupremix)
 
 ### Polish & Deploy
 
-- [ ] **POL-01**: Site is responsive across mobile, tablet, and desktop breakpoints
-- [ ] **POL-02**: Site has meta tags/SEO basics (title, description, Open Graph tags) for link sharing
-- [ ] **POL-03**: Site builds cleanly as a static site, ready to deploy to a hosting provider (Vercel/Netlify/GitHub Pages — TBD)
+- [x] **POL-01**: Site is responsive across mobile, tablet, and desktop breakpoints
+- [x] **POL-02**: Site has meta tags/SEO basics (title, description, Open Graph tags) for link sharing
+- [x] **POL-03**: Site builds cleanly as a static site, ready to deploy to a hosting provider (Vercel/Netlify/GitHub Pages — TBD)
 
 ## v2 Requirements
 
@@ -70,17 +70,17 @@ Deferred — not in current roadmap.
 | SETUP-03 | Phase 1 | Verified |
 | HERO-01 | Phase 2 | Verified |
 | HERO-02 | Phase 2 | Verified |
-| PROJ-01 | Phase 3 | Pending |
-| PROJ-02 | Phase 3 | Pending |
-| PROJ-03 | Phase 3 | Pending |
-| PROJ-04 | Phase 3 | Pending |
-| SKIL-01 | Phase 4 | Pending |
-| CV-01 | Phase 4 | Pending |
-| CV-02 | Phase 4 | Pending |
-| CONT-01 | Phase 4 | Pending |
-| POL-01 | Phase 5 | Pending |
-| POL-02 | Phase 5 | Pending |
-| POL-03 | Phase 5 | Pending |
+| PROJ-01 | Phase 3 | Verified |
+| PROJ-02 | Phase 3 | Verified |
+| PROJ-03 | Phase 3 | Verified |
+| PROJ-04 | Phase 3 | Verified |
+| SKIL-01 | Phase 4 | Verified |
+| CV-01 | Phase 4 | Verified |
+| CV-02 | Phase 4 | Verified |
+| CONT-01 | Phase 4 | Verified |
+| POL-01 | Phase 5 | Verified |
+| POL-02 | Phase 5 | Verified |
+| POL-03 | Phase 5 | Verified |
 
 **Coverage:**
 

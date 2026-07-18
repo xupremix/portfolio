@@ -6,7 +6,7 @@
   onload="this.media='all'"
 />
 
-<dialog id="kindle-demo" aria-labelledby="kindle-demo-title">
+<dialog id="kindle-demo" aria-labelledby="kindle-demo-title" class="w-full max-w-5xl bg-mantle rounded-xl border border-border shadow-2xl backdrop:bg-base/80 backdrop:backdrop-blur-sm p-0 m-auto">
   <div style="display:flex; flex-direction:column; height:90vh; max-height:700px;">
     <!-- Header -->
     <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #313244; flex-shrink:0;">
@@ -230,18 +230,10 @@ fn main() {
     document.getElementById('kindle-output').style.color = '#a6adc8';
 
     try {
-      const res = await fetch('https://play.rust-lang.org/execute', {
+      const res = await fetch('/api/kindle', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          channel: 'stable',
-          mode: 'debug',
-          edition: '2021',
-          crateType: 'bin',
-          tests: false,
-          code,
-          backtrace: false,
-        }),
+        body: JSON.stringify({ code }),
       });
       const data = await res.json();
       if (data.success) {

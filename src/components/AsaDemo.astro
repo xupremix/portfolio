@@ -1,5 +1,5 @@
 <!-- AsaDemo.astro — Multi-Agent Deliveroo Canvas Animation -->
-<dialog id="asa-demo" aria-labelledby="asa-demo-title">
+<dialog id="asa-demo" aria-labelledby="asa-demo-title" class="w-full max-w-5xl bg-mantle rounded-xl border border-border shadow-2xl backdrop:bg-base/80 backdrop:backdrop-blur-sm p-0 m-auto">
   <div style="display:flex; flex-direction:column; height:90vh; max-height:680px;">
     <!-- Header -->
     <div style="display:flex; align-items:center; justify-content:space-between; padding:16px 20px; border-bottom:1px solid #313244; flex-shrink:0;">
@@ -59,11 +59,11 @@
   const ctx = canvas.getContext('2d');
   const W = canvas.width;
   const H = canvas.height;
+  // Map and grid variables
   const COLS = 8, ROWS = 7;
   const CELL = Math.min(Math.floor(W / COLS), Math.floor(H / ROWS));
   const OX = Math.floor((W - COLS * CELL) / 2);
   const OY = Math.floor((H - ROWS * CELL) / 2);
-
   const COLORS = {
     base: '#1e1e2e', mantle: '#181825', border: '#313244',
     text: '#cdd6f4', sub: '#a6adc8', accent: '#cba6f7',
@@ -73,15 +73,6 @@
   // Fixed map elements
   const restaurants = [{ c: 1, r: 1 }, { c: 5, r: 1 }, { c: 3, r: 5 }];
   const deliveries   = [{ c: 6, r: 4 }, { c: 1, r: 5 }, { c: 7, r: 1 }];
-
-  // Animation phases
-  const PHASES = [
-    { label: '📋 PDDL Planner computing optimal route…', msg: 'PDDL: (move agent r1 c1)\n(pickup order)\n(move agent r4 c6)\n(deliver order)', pathFrom: {c:1,r:1}, pathTo: {c:6,r:4}, t: 0, duration: 80 },
-    { label: '🧠 LLM Coordinator: "Confirm delivery to zone 3"', msg: 'LLM [Llama 3.3 70B]:\n"Plan verified. Assign\nBDI agent to order #42.\nPriority: HIGH"', pathFrom: null, pathTo: null, t: 0, duration: 60 },
-    { label: '🤖 BDI Agent moving to restaurant…', msg: 'BDI belief update:\n- has_order: false\n- target: restaurant(1,1)\n- intention: PICKUP', pathFrom: {c:4,r:4}, pathTo: {c:1,r:1}, t: 0, duration: 100 },
-    { label: '🤖 BDI Agent picked up order, en route…', msg: 'BDI belief update:\n- has_order: true\n- target: delivery(6,4)\n- intention: DELIVER', pathFrom: {c:1,r:1}, pathTo: {c:6,r:4}, t: 0, duration: 110 },
-    { label: '✅ Delivery complete! Agent returns to standby.', msg: 'BDI event fired:\n- order #42 delivered\n- reward: +10 pts\n- returning to idle', pathFrom: {c:6,r:4}, pathTo: {c:4,r:4}, t: 0, duration: 70 },
-  ];
 
   let phaseIdx = 0;
   let agentPos = { c: 4, r: 4 };
@@ -280,7 +271,25 @@
     animId = requestAnimationFrame(frame);
   }
 
-  document.getElementById('asa-demo').addEventListener('demo-open', () => {
+  let PHASES = [];
+
+  async function fetchPhases() {
+    try {
+      const res = await fetch('/api/asa');
+      const data = await res.json();
+      if (data.success) {
+        PHASES = data.phases;
+      }
+    } catch (e) {
+      console.error('Failed to fetch ASA phases', e);
+    }
+  }
+
+  document.getElementById('asa-demo').addEventListener('demo-open', async () => {
+    if (PHASES.length === 0) {
+      await fetchPhases();
+    }
+    if (PHASES.length === 0) return; // Fallback
     running = true;
     phaseIdx = 0;
     PHASES.forEach(p => p.t = 0);

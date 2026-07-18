@@ -50,6 +50,9 @@ const canonicalUrl = new URL(Astro.url.pathname, siteUrl).href;
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
     <meta name="twitter:image" content={new URL(ogImage, siteUrl).href} />
+
+    <!-- Analytics Placeholder -->
+    <script defer data-domain="filippolollato.dev" src="https://plausible.io/js/script.js"></script>
   </head>
   <body class="bg-base text-text font-sans">
     <Nav />
