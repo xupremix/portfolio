@@ -34,12 +34,33 @@
 | 5 | ASA demo rebuild | DONE | src/components/AsaDemo.astro, src/scripts/asa-demo.ts | see git log |
 | 6 | Signal demo rebuild | DONE | src/components/SignalDemo.astro, src/scripts/signal-demo.ts | see git log |
 | 7 | NLU demo rebuild | DONE | src/components/NluDemo.astro (uses REAL ATIS test rows + real report metrics; no separate ts file needed) | see git log |
-| 8 | Nav upgrade | TODO | src/components/Nav.astro | — |
-| 9 | Hero upgrade | TODO | src/components/Hero.astro | — |
-| 10 | About + Projects flagship + Skills/Badge | TODO | About.astro, Projects.astro, ProjectCard.astro, Skills.astro, Badge.astro | — |
-| 11 | Experience split + Contact/Footer + 404 | TODO | Experience.astro (new), Skills.astro, Contact.astro, Footer.astro, 404.astro, index.astro, Nav.astro | — |
-| 12 | SEO/OG/sitemap/fonts | TODO | Layout.astro, astro.config.mjs, public/og.png, public/robots.txt, scripts/generate-og.mjs | — |
-| 13 | Verification gate | TODO | — | — |
+| 8 | Nav upgrade | DONE | src/components/Nav.astro | see git log |
+| 9 | Hero upgrade | DONE | src/components/Hero.astro | see git log |
+| 10 | About + Projects flagship + Skills/Badge | DONE | About.astro, Projects.astro, ProjectCard.astro, Skills.astro, Badge.astro | see git log |
+| 11 | Experience split + Contact/Footer + 404 | DONE | Experience.astro (new), Contact.astro, Footer.astro, 404.astro, index.astro | see git log |
+| 12 | SEO/OG/sitemap/fonts | DONE | Layout.astro, astro.config.mjs, public/og.png, public/robots.txt, scripts/generate-og.mjs, package.json (og + capture:kindle scripts) | see git log |
+| 13 | Verification gate | DONE | scripts/visual-check.mjs (screenshot driver, reusable) | see git log |
+
+## Verification results so far (task 13)
+
+- `npm run build` clean; dist 1.5M total.
+- Grep gates PASS: 0 `style="` attrs, 0 `/api/` refs, 0 CDN refs; only raw hex left
+  is the `theme-color` meta (can't use CSS vars there — allowed).
+- All 14 anchors/ids present in dist/index.html (sections, demos, project-* deep links,
+  nav-progress). 404.html present and served with real 404 status; og.png + robots 200.
+- Bundle budgets PASS: initial JS 8.8 KB gz; CodeMirror lazy chunk 155 KB gz
+  (loads only when kindle demo opens); CSS 22.8 KB gz.
+- Screenshot review (desktop 1440 + mobile 390, via `node scripts/visual-check.mjs <port>`
+  with SHOT_DIR set): hero, all sections, all four demo dialogs, mobile dialog, 404 —
+  all reviewed. Zero page JS errors across every page/dialog interaction.
+- Bugs found by screenshots and FIXED: `.section-eyebrow` was inline-flex (overlapped
+  headings) → block flex; DemoDialog main area collapsed on mobile (`flex-1 min-h-0`
+  in stacked scroll) → `max-lg:flex-none`; signal RMSE window polluted by sim warm-up
+  samples → warm-up guard before sampling.
+- WATCH OUT: a stale preview/dev server from the MAIN checkout may be running on common
+  ports (it serves the OLD site with a Plausible script). Always preview on a random
+  high port. Also: the new footer says "no trackers" — if Plausible is added later,
+  reword that line.
 
 *Commit hashes: run `git log --oneline` to confirm; fill in when updating.
 

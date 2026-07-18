@@ -270,7 +270,9 @@ function frame(now: number) {
   simMs += dt;
   sinceSample += dt;
 
-  if (scene && sinceSample >= SAMPLE_EVERY_MS) {
+  // Warm-up guard: until the sim is HORIZON+LOOKBACK old, predictFor clamps
+  // its base time and both models produce meaningless error — don't sample it.
+  if (scene && simMs > HORIZON_MS + LOOKBACK_MS + 150 && sinceSample >= SAMPLE_EVERY_MS) {
     sinceSample = 0;
     const { w, h } = scene.size();
     // Both models sampled every tick so the comparison is always live.

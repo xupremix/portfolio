@@ -86,7 +86,8 @@ body::after {
 
 /* ── Section eyebrow — shell-prompt label ────────────────── */
 .section-eyebrow {
-  display: inline-flex;
+  display: flex;
+  width: fit-content;
   align-items: center;
   gap: 8px;
   font-family: var(--font-mono);
