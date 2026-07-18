@@ -15,14 +15,12 @@
   },
   "dependencies": {
     "@astrojs/sitemap": "^3.7.3",
-    "@codemirror/lang-rust": "^6.0.2",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@iconify-json/lucide": "^1.2.117",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.1.1",
     "astro-icon": "^1.1.5",
-    "codemirror": "^6.0.2",
     "tailwindcss": "^4.3.3"
   },
   "devDependencies": {

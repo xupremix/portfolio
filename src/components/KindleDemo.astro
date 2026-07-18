@@ -1,26 +1,72 @@
 ---
-// kindle demo — real kindle API scenarios (captured rustc output) + a live
-// playground sandbox. All logic in src/scripts/kindle-demo.ts.
+// kindle demo — three real-API scenarios, fully rendered at BUILD time:
+// code via Astro's Shiki <Code> (no editor, no CodeMirror chunk) and compiler
+// output straight from src/generated/kindle-outputs.json, which is produced by
+// `npm run capture:kindle` against the actual crate (~/kindle, dev branch).
+// The only client JS is tab switching. Nothing is compiled in the browser.
 import DemoDialog from './DemoDialog.astro';
-import { Icon } from 'astro-icon/components';
+import { Code } from 'astro:components';
+import shapeCode from '../demo-code/kindle/01-shape-mismatch.rs?raw';
+import dtypeCode from '../demo-code/kindle/02-dtype-mismatch.rs?raw';
+import spectrumCode from '../demo-code/kindle/03-shape-spectrum.rs?raw';
+import captured from '../generated/kindle-outputs.json';
 
-const tabs = [
-  { label: 'Shape mismatch', dot: 'bg-destructive' },
-  { label: 'Dtype mismatch', dot: 'bg-destructive' },
-  { label: 'Compiles + runs', dot: 'bg-green' },
-  { label: 'Sandbox · live rustc', dot: 'bg-accent' },
+interface Scenario {
+  key: string;
+  label: string;
+  dot: string;
+  code: string;
+  explanation: string;
+}
+
+const scenarios: Scenario[] = [
+  {
+    key: '01-shape-mismatch',
+    label: 'Shape mismatch',
+    dot: 'bg-destructive',
+    code: shapeCode,
+    explanation:
+      'A Linear<s![784, 256]> layer receives a batch shaped s![2, 512]. Shapes live in the type system, so rustc rejects the forward call during type checking — the bug is caught at design time, not hours into a training run.',
+  },
+  {
+    key: '02-dtype-mismatch',
+    label: 'Dtype mismatch',
+    dot: 'bg-destructive',
+    code: dtypeCode,
+    explanation:
+      'Both tensors are 2×2, but one is f32 and the other f64. The element type is part of the tensor type too, so mixing dtypes fails to compile. In dynamic frameworks this surfaces as a runtime cast error or silent precision loss.',
+  },
+  {
+    key: '03-shape-spectrum',
+    label: 'Static · partial · dynamic',
+    dot: 'bg-green',
+    code: spectrumCode,
+    explanation:
+      'The same Tensor covers the whole spectrum: fully static shapes (everything checked, nothing passed at runtime), partially static (a dyn batch dim you pass at runtime while the 784 features stay compiler-checked), and fully dynamic Dyn when you want framework-style flexibility. This compiles and runs on the Candle backend.',
+  },
 ];
+
+type Entry = { success: boolean; output: string } | null;
+const outputs = captured.outputs as Record<string, Entry>;
+
+/** Color rustc output lines: errors red, hints/locations muted. */
+function lineClass(line: string): string {
+  if (/^error(\[|:| )/.test(line)) return 'text-destructive';
+  if (/^warning/.test(line)) return 'text-yellow';
+  if (/^\s*(-->|= note|= help|\||\d+ \|)/.test(line) || /^note:|^help:/.test(line)) return 'text-subtext';
+  return 'text-text';
+}
 ---
 
 <DemoDialog
   id="kindle-demo"
   title="kindle — compile-time ML safety"
-  subtitle={`Real kindle API scenarios, plus a live sandbox on <a href="https://play.rust-lang.org" target="_blank" rel="noopener noreferrer" class="text-accent hover:underline">play.rust-lang.org</a>`}
+  subtitle="Real kindle API · compiler output captured from the actual crate"
 >
   <div slot="main" class="flex min-h-0 flex-1 flex-col">
     <!-- Scenario tabs -->
     <div role="tablist" class="flex shrink-0 gap-xs overflow-x-auto border-b border-border p-sm">
-      {tabs.map((tab, i) => (
+      {scenarios.map((s, i) => (
         <button
           type="button"
           role="tab"
@@ -30,66 +76,90 @@ const tabs = [
             i === 0 ? 'border-accent bg-accent/15 text-accent' : 'border-border bg-transparent text-subtext',
           ]}
         >
-          <span class:list={['h-2 w-2 rounded-full', tab.dot]} aria-hidden="true"></span>
-          {tab.label}
+          <span class:list={['h-2 w-2 rounded-full', s.dot]} aria-hidden="true"></span>
+          {s.label}
         </button>
       ))}
     </div>
 
-    <!-- CodeMirror mounts here (lazy-loaded on first open) -->
-    <div id="kindle-editor" class="h-[280px] min-h-0 lg:h-auto lg:flex-1"></div>
-
-    <!-- Controls -->
-    <div class="flex shrink-0 flex-wrap items-center gap-md border-t border-border p-sm px-md">
-      <button
-        id="kindle-compile-btn"
-        type="button"
-        class="hidden cursor-pointer items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-xs text-[13px] font-bold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
-      >
-        <Icon name="lucide:play" width={13} height={13} aria-hidden="true" />
-        Compile
-      </button>
-      <span id="kindle-live-hint" class="text-[12px] text-subtext">
-        Edits here aren't compiled — the Sandbox tab runs live rustc.
-      </span>
-      <span id="kindle-status" class="font-mono text-[12px] text-subtext"></span>
-    </div>
-  </div>
-
-  <div slot="aside">
-    <!-- Compiler output -->
-    <div>
-      <div class="mb-sm flex items-center justify-between">
-        <span class="demo-kicker">rustc output</span>
-        <button
-          id="kindle-copy-btn"
-          type="button"
-          aria-label="Copy compiler output"
-          class="flex h-7 w-7 cursor-pointer items-center justify-center rounded-[var(--radius-control)] border border-border text-subtext transition-colors hover:border-subtext hover:text-text focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+    <!-- One block per scenario: code left, output+explanation right -->
+    <div class="min-h-0 flex-1 lg:overflow-y-auto">
+      {scenarios.map((s, i) => (
+        <div
+          data-kindle-block={i}
+          class:list={['gap-md p-md lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(280px,5fr)]', i === 0 ? 'grid' : 'hidden']}
         >
-          <Icon name="lucide:copy" width={13} height={13} aria-hidden="true" />
-        </button>
-      </div>
-      <pre
-        id="kindle-output"
-        class="min-h-[140px] rounded-[var(--radius-control)] bg-base p-sm font-mono text-[12px] leading-relaxed whitespace-pre-wrap break-words"></pre>
-    </div>
+          <div class="kindle-code min-w-0 overflow-x-auto rounded-[var(--radius-control)] border border-border text-[13px] leading-relaxed">
+            <Code code={s.code.trimEnd()} lang="rust" theme="catppuccin-mocha" />
+          </div>
 
-    <!-- Per-scenario explanation -->
-    <div class="mt-lg">
-      <div class="demo-kicker mb-sm">what's happening</div>
-      <p id="kindle-explanation" class="text-[13px] leading-relaxed text-text"></p>
-    </div>
+          <div class="flex min-w-0 flex-col gap-md">
+            <div>
+              <div class="demo-kicker mb-sm">rustc output</div>
+              {outputs[s.key] ? (
+                <pre class="max-h-[420px] overflow-auto rounded-[var(--radius-control)] bg-crust p-sm font-mono text-[11.5px] leading-relaxed whitespace-pre">{outputs[
+                  s.key
+                ]!.output.split('\n').map((line) => (
+                  <span class={lineClass(line)}>{line + '\n'}</span>
+                ))}</pre>
+              ) : (
+                <pre class="rounded-[var(--radius-control)] bg-crust p-sm font-mono text-[11.5px] leading-relaxed whitespace-pre-wrap text-subtext">Output not captured yet — run `npm run capture:kindle` and commit src/generated/kindle-outputs.json.</pre>
+              )}
+              {outputs[s.key] && (
+                <p class:list={['mt-xs font-mono text-[11px]', outputs[s.key]!.success ? 'text-green' : 'text-destructive']}>
+                  {outputs[s.key]!.success ? '✓ compiled + ran' : '✗ rejected at compile time'}
+                  <span class="text-subtext"> · {captured.capturedWith}</span>
+                </p>
+              )}
+            </div>
 
-    <!-- Provenance — where the output really comes from -->
-    <div class="mt-lg border-l-2 border-accent/50 pl-sm">
-      <div class="demo-kicker mb-xs">provenance</div>
-      <p id="kindle-source-note" class="text-[12px] leading-relaxed text-subtext"></p>
+            <div>
+              <div class="demo-kicker mb-sm">what's happening</div>
+              <p class="text-[13px] leading-relaxed text-text">{s.explanation}</p>
+            </div>
+
+            <div class="border-l-2 border-accent/50 pl-sm">
+              <div class="demo-kicker mb-xs">provenance</div>
+              <p class="text-[12px] leading-relaxed text-subtext">
+                Real kindle API (dev branch). Code and output rendered at build time; the output was
+                captured by running cargo against the actual crate on {captured.capturedAt}.
+              </p>
+            </div>
+          </div>
+        </div>
+      ))}
     </div>
   </div>
 </DemoDialog>
 
+<style>
+  /* Shiki emits its own <pre>; keep it inside our bordered card */
+  .kindle-code :global(pre) {
+    margin: 0;
+    padding: 12px 14px;
+    background-color: var(--color-crust) !important;
+    min-width: fit-content;
+  }
+</style>
+
 <script>
-  import { initKindleDemo } from '../scripts/kindle-demo';
-  initKindleDemo();
+  // Tab switching only — everything else is prerendered.
+  const ACTIVE = ['border-accent', 'bg-accent/15', 'text-accent'];
+  const IDLE = ['border-border', 'bg-transparent', 'text-subtext'];
+
+  document.querySelectorAll<HTMLButtonElement>('.kindle-tab').forEach((tab, idx) => {
+    tab.addEventListener('click', () => {
+      document.querySelectorAll<HTMLButtonElement>('.kindle-tab').forEach((t, i) => {
+        const active = i === idx;
+        t.classList.remove(...(active ? IDLE : ACTIVE));
+        t.classList.add(...(active ? ACTIVE : IDLE));
+        t.setAttribute('aria-selected', String(active));
+      });
+      document.querySelectorAll<HTMLElement>('[data-kindle-block]').forEach((block) => {
+        const active = Number(block.dataset.kindleBlock) === idx;
+        block.classList.toggle('hidden', !active);
+        block.classList.toggle('grid', active);
+      });
+    });
+  });
 </script>

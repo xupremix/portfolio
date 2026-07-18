@@ -82,6 +82,28 @@
 - Hero stats strip → compact **proof chips** (bordered pills, inline number+label).
 - `scripts/mode-check.mjs` screenshots paper mode; `scripts/visual-check.mjs` ink mode.
 
+## Round 3 additions (July 18, later)
+
+- **Kindle demo simplified — sandbox REMOVED per user request.** No CodeMirror, no
+  playground calls, no client compile path (codemirror deps uninstalled). Three
+  scenarios rendered fully at BUILD time: code via Astro Shiki `<Code>`
+  (catppuccin-mocha; code islands stay dark in paper mode via a scoped
+  `--color-crust` override), output prerendered from kindle-outputs.json with
+  per-line coloring. Only client JS is tab switching.
+- New scenario `03-shape-spectrum` shows the full shape spectrum: fully static
+  `s![2, 784]` (`zeros(())`), partially static `s![dyn, 784]` (`zeros((32, ()))` —
+  per-dim tuple, usize for dyn dims, `()` for static), fully dynamic `Dyn`
+  (`zeros(vec![…])`). Captured: compiles + runs, prints all three tensors.
+- **Dialog centering fixed**: Tailwind preflight zeroes `<dialog>` margins →
+  `margin: auto` restored in global.css (dialogs were stuck top-left).
+- **Dialogs are full-screen sheets below 768px** (media query + `h-dvh` wrapper),
+  centered cards from md up; transforms live on window resize.
+- Paper mode softened (lower-glare base #efe9db, gentler text/borders, grain 0.03).
+- New logo/favicon: terminal-prompt mark (chevron + cursor on dark rounded tile) —
+  `public/favicon.svg`, regenerate .ico + apple-touch-icon via
+  `node scripts/generate-icons.mjs`.
+- Capture filter also drops cargo's `error: could not compile …` tail line.
+
 ## What each remaining task must do (condensed — full detail in DESIGN-OVERHAUL-PLAN.md)
 
 ### Task 3 — DemoDialog shell (§2.1 of plan)
