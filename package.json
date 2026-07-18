@@ -9,16 +9,24 @@
     "dev": "astro dev",
     "build": "astro build",
     "preview": "astro preview",
-    "astro": "astro"
+    "astro": "astro",
+    "og": "node scripts/generate-og.mjs",
+    "capture:kindle": "node scripts/capture-kindle-outputs.mjs"
   },
   "dependencies": {
-    "@astrojs/node": "^11.0.2",
+    "@astrojs/sitemap": "^3.7.3",
+    "@codemirror/lang-rust": "^6.0.2",
     "@fontsource/inter": "^5.2.8",
     "@fontsource/jetbrains-mono": "^5.2.8",
     "@iconify-json/lucide": "^1.2.117",
     "@tailwindcss/vite": "^4.3.3",
     "astro": "^7.1.1",
     "astro-icon": "^1.1.5",
+    "codemirror": "^6.0.2",
     "tailwindcss": "^4.3.3"
+  },
+  "devDependencies": {
+    "playwright-core": "^1.61.1",
+    "sharp": "^0.35.3"
   }
 }

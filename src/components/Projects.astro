@@ -1,4 +1,6 @@
 ---
+// Projects section. kindle is the flagship (wide card + code snippet pane);
+// anchors (project-*) are deep-link targets for the hero stats strip.
 import ProjectCard from './ProjectCard.astro';
 import KindleDemo from './KindleDemo.astro';
 import AsaDemo from './AsaDemo.astro';
@@ -10,128 +12,155 @@ interface Project {
   description: string;
   tech: string[];
   href: string;
+  anchor?: string;
   status?: 'in-progress' | 'team';
   teamCredit?: string;
   impact?: string;
   role?: string;
   demoId?: string;
+  wide?: boolean;
 }
 
 const featuredProjects: Project[] = [
   {
-    name: "kindle",
+    name: 'kindle',
     description:
-      "A deep learning framework for Rust built on tch-rs that leverages const generics to encode tensor shapes and data types. This allows the Rust compiler to catch shape mismatches and type errors before runtime, providing a safer ML development experience.",
-    tech: ["Rust", "tch-rs", "PyTorch C++", "Generics"],
-    href: "https://github.com/xupremix/kindle",
-    impact: "Compile-time ML shape & type safety",
-    role: "Solo Project",
-    demoId: "kindle-demo",
+      'A deep learning framework for Rust built on tch-rs that encodes tensor shapes and data types as Rust generics — catching shape mismatches and type errors at compile time, before any code runs.',
+    tech: ['Rust', 'tch-rs', 'PyTorch C++', 'Generics'],
+    href: 'https://github.com/xupremix/kindle',
+    anchor: 'project-kindle',
+    impact: 'Compile-time ML shape & type safety — zero runtime overhead',
+    role: 'Solo · Architect & Author',
+    demoId: 'kindle-demo',
+    wide: true,
   },
   {
-    name: "evolcpp",
+    name: 'evolcpp',
     description:
-      "A C++ port of kindle. Initially designed as a neuroevolution library to evolve neural network architectures and weights using genetic algorithms, it now serves as a robust C++ implementation of kindle's compile-time safety principles.",
-    tech: ["C++", "Templates", "Machine Learning", "CMake"],
-    href: "https://github.com/xupremix/evolcpp",
-    status: "in-progress",
-    impact: "C++ implementation of compile-time shape safety",
-    role: "Solo Project",
+      'A neuroevolution library in C++ that evolves neural network architectures and weights simultaneously using genetic algorithms — no gradient descent required.',
+    tech: ['C++', 'Neuroevolution', 'NEAT', 'CMake'],
+    href: 'https://github.com/xupremix/evolcpp',
+    status: 'in-progress',
+    impact: 'Architecture + weight co-evolution — gradient-free training',
+    role: 'Solo · Systems Design',
   },
   {
-    name: "signal_image_video",
+    name: 'signal_image_video',
     description:
-      "Multi-object tracking system combining a CTRV-EKF Kalman filter with a Hungarian algorithm assignment step for 3D camera-LiDAR fusion — trained and evaluated on the KITTI benchmark.",
-    tech: ["Python", "Kalman Filter", "LiDAR", "KITTI", "NumPy"],
-    href: "https://github.com/xupremix/signal_image_video",
-    impact: "Reduced RMSE over linear tracking baseline",
-    role: "Solo Project",
-    demoId: "signal-demo",
+      'Multi-object tracking system combining a CTRV-EKF Kalman filter with a Hungarian algorithm assignment step for 3D camera-LiDAR fusion — trained and evaluated on the KITTI benchmark.',
+    tech: ['Python', 'Kalman Filter', 'LiDAR', 'KITTI', 'NumPy'],
+    href: 'https://github.com/xupremix/signal_image_video',
+    anchor: 'project-signal',
+    impact: '81.5% RMSE reduction over linear tracking baseline',
+    role: 'Solo · Researcher',
+    demoId: 'signal-demo',
   },
   {
-    name: "ASA Autobots",
+    name: 'ASA Autobots',
     description:
-      "A cooperative multi-agent delivery system where BDI executors, an LLM coordinator (Llama 3.3 70B), and a PDDL planner collaborate in real time to fulfil delivery orders on a shared map.",
-    tech: ["Node.js", "PDDL", "BDI", "LLM", "REST API"],
-    href: "https://github.com/ale-bena/asa-autobots",
-    status: "team",
-    teamCredit: "Team project — repo owned by teammate ale-bena.",
-    impact: "~91.5% test coverage · 3-layer agent architecture",
-    role: "Co-lead · Team of 2",
-    demoId: "asa-demo",
+      'A cooperative multi-agent delivery system where BDI executors, an LLM coordinator (Llama 3.3 70B), and a PDDL planner collaborate in real time to fulfil delivery orders on a shared map.',
+    tech: ['Node.js', 'PDDL', 'BDI', 'LLM', 'REST API'],
+    href: 'https://github.com/ale-bena/asa-autobots',
+    anchor: 'project-asa',
+    status: 'team',
+    teamCredit: 'Team project — repo owned by teammate ale-bena.',
+    impact: '~91.5% test coverage · 3-layer agent architecture',
+    role: 'Co-lead · Team of 2',
+    demoId: 'asa-demo',
   },
   {
-    name: "NLU — Intent & Slot Filling",
+    name: 'NLU — Intent & Slot Filling',
     description:
-      "Natural Language Understanding on the ATIS dataset using BERT fine-tuning with a joint intent classification and slot-filling head — training pipeline built from scratch.",
-    tech: ["Python", "PyTorch", "BERT", "ATIS", "HuggingFace"],
-    href: "https://github.com/xupremix/NLU",
-    impact: "High accuracy intent classification",
-    role: "Solo Project",
-    demoId: "nlu-demo",
+      'Natural Language Understanding on the ATIS dataset using BERT fine-tuning with a joint intent classification and slot-filling head — training pipeline built from scratch.',
+    tech: ['Python', 'PyTorch', 'BERT', 'ATIS', 'HuggingFace'],
+    href: 'https://github.com/xupremix/NLU',
+    anchor: 'project-nlu',
+    impact: '0.9509 slot F1 · 0.9765 intent accuracy',
+    role: 'Solo · Researcher',
+    demoId: 'nlu-demo',
   },
   {
-    name: "DL2026_AFA_CC",
+    name: 'DL2026_AFA_CC',
     description:
-      "Deep learning research project extending Clip Clay — an image editing model — with an improved pipeline for Adaptive Feature Aggregation (AFA) and Color Calibration (CC).",
-    tech: ["Python", "PyTorch", "CLIP", "Diffusion Models"],
-    href: "https://github.com/xupremix/DL2026_AFA_CC",
-    impact: "Improved on Clip Clay end-to-end quality metrics",
-    role: "Solo Project",
+      'Deep learning research project extending Clip Clay — an image editing model — with an improved pipeline for Adaptive Feature Aggregation (AFA) and Color Calibration (CC).',
+    tech: ['Python', 'PyTorch', 'CLIP', 'Diffusion Models'],
+    href: 'https://github.com/xupremix/DL2026_AFA_CC',
+    impact: 'Improved on Clip Clay end-to-end quality metrics',
+    role: 'Solo · Researcher',
   },
 ];
 
 const otherProjects: { name: string; href: string }[] = [
-  { name: "mlgui",               href: "https://github.com/xupremix/mlgui" },
-  { name: "ai_robot",            href: "https://github.com/xupremix/ai_robot" },
-  { name: "uom",                 href: "https://github.com/xupremix/uom" },
-  { name: "rmtarget",            href: "https://github.com/xupremix/rmtarget" },
-  { name: "oxagworldgenerator",  href: "https://github.com/xupremix/oxagworldgenerator" },
-  { name: "oxagaudiotool",       href: "https://github.com/xupremix/oxagaudiotool" },
+  { name: 'mltu', href: 'https://github.com/xupremix/mltu' },
+  { name: 'oxigrad', href: 'https://github.com/xupremix/oxigrad' },
+  { name: 'rust-nn', href: 'https://github.com/xupremix/rust-nn' },
+  { name: 'ttlgame', href: 'https://github.com/xupremix/ttlgame' },
+  { name: 'ddshow', href: 'https://github.com/xupremix/ddshow' },
+  { name: 'lavagna', href: 'https://github.com/xupremix/lavagna' },
 ];
 ---
 
-<section id="projects" class="py-3xl px-lg md:px-xl">
-  <div class="max-w-[72rem] mx-auto">
+<section id="projects" class="px-lg py-3xl md:px-xl">
+  <div class="mx-auto max-w-[72rem]">
     <!-- Heading -->
     <div class="reveal">
-      <h2 class="text-display font-semibold gradient-text inline-block">Projects</h2>
+      <p class="section-eyebrow">work</p>
+      <h2 class="gradient-text mt-sm inline-block text-display font-semibold">Projects</h2>
       <p class="mt-sm text-body text-subtext">
-        Real systems, real depth — click <strong class="text-text">Try Demo</strong> on any card to see it working.
+        Real systems, real depth — hit <strong class="text-text">Try demo</strong> on a card to see
+        it working.
       </p>
     </div>
 
-    <!-- Featured grid -->
-    <div class="mt-2xl grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-lg">
+    <!-- Featured grid: kindle spans two columns at lg -->
+    <div class="mt-2xl grid grid-cols-1 gap-lg md:grid-cols-2 lg:grid-cols-3">
       {featuredProjects.map((project, i) => (
-        <div class="reveal" data-delay={String((i % 3) + 1)}>
+        <div class:list={['reveal', project.wide && 'md:col-span-2']} data-delay={String((i % 3) + 1)}>
           <ProjectCard
             name={project.name}
             description={project.description}
             tech={project.tech}
             href={project.href}
+            index={i + 1}
+            anchor={project.anchor}
             status={project.status}
             teamCredit={project.teamCredit}
             impact={project.impact}
             role={project.role}
             demoId={project.demoId}
-          />
+            wide={project.wide}
+          >
+            {project.wide && (
+              <div slot="extra" class="flex h-full flex-col justify-center rounded-[var(--radius-control)] border border-border bg-base p-md font-mono text-[12px] leading-relaxed">
+                <pre class="whitespace-pre-wrap"><span class="text-accent">type</span> <span class="text-yellow">Model</span> = (
+    <span class="text-yellow">Linear</span>&lt;<span class="text-peach">784</span>, <span class="text-peach">256</span>&gt;,
+    <span class="text-yellow">Relu</span>,
+    <span class="text-yellow">Linear</span>&lt;<span class="text-peach">128</span>, <span class="text-peach">10</span>&gt;,
+);
+<span class="text-subtext">// 256 ≠ 128 — rustc rejects this
+// chain before anything runs.</span>
+<span class="text-destructive">error</span>: the shape mismatch is
+a <span class="text-text">compile-time</span> type error</pre>
+              </div>
+            )}
+          </ProjectCard>
         </div>
       ))}
     </div>
 
     <!-- More on GitHub -->
     <div class="reveal mt-2xl">
-      <p class="text-label font-semibold text-subtext mb-sm">More on GitHub</p>
+      <p class="mb-sm text-label font-semibold text-subtext">More on GitHub</p>
       <div class="flex flex-wrap gap-sm">
         {otherProjects.map((p) => (
           <a
             href={p.href}
             target="_blank"
             rel="noopener noreferrer"
-            class="text-label font-mono font-semibold text-text border border-border rounded-md px-sm py-xs hover:text-accent hover:border-accent/40 focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+            class="group inline-flex items-center gap-sm rounded-[var(--radius-control)] border border-border px-sm py-xs font-mono text-label font-semibold text-text transition-colors hover:border-accent/40 hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
           >
             {p.name}
+            <span class="text-subtext transition-colors group-hover:text-accent">↗</span>
           </a>
         ))}
       </div>

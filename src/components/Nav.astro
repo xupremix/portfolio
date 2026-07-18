@@ -1,31 +1,36 @@
 ---
+// Sticky nav: terminal-style brand mark, section links with active-section
+// highlight, scroll progress bar, compact scrolled state, CSS-checkbox mobile
+// menu that closes itself when a link is tapped.
 import { Icon } from 'astro-icon/components';
+
+const links = [
+  { href: '#projects', label: 'Projects' },
+  { href: '#skills', label: 'Skills' },
+  { href: '#experience', label: 'Experience' },
+];
+
+const linkClass =
+  'nav-link text-label text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors';
 ---
 
 <header
   id="site-nav"
-  class="sticky top-0 z-50 h-3xl bg-mantle/10 backdrop-blur-md border-b border-border/50 transition-colors"
+  class="sticky top-0 z-50 h-3xl border-b border-border/50 bg-mantle/10 backdrop-blur-md transition-[height,background-color,box-shadow] duration-300"
 >
   <div class="relative flex h-full items-center justify-between px-lg md:px-xl">
-    <a href="/" class="text-label font-semibold text-text">Filippo Lollato</a>
+    <a
+      href="/"
+      class="font-mono text-label font-semibold text-text focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+    >
+      <span class="text-accent">~/</span>filippo-lollato
+    </a>
 
-    <nav class="hidden md:flex items-center gap-lg">
+    <nav class="hidden items-center gap-lg md:flex" aria-label="Site sections">
+      {links.map((link) => <a href={link.href} class={linkClass}>{link.label}</a>)}
       <a
-        href="/#projects"
-        class="text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
-      >
-        Projects
-      </a>
-      <a
-        href="/#skills"
-        class="text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
-      >
-        Skills
-      </a>
-
-      <a
-        href="/#contact"
-        class="bg-accent text-base rounded-md px-md py-xs text-label font-semibold focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+        href="#contact"
+        class="nav-link rounded-[var(--radius-control)] bg-accent px-md py-xs text-label font-semibold text-base focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
         Contact
       </a>
@@ -37,7 +42,7 @@ import { Icon } from 'astro-icon/components';
       id="nav-toggle-open"
       tabindex="0"
       role="button"
-      class="md:hidden flex w-11 h-11 items-center justify-center peer-checked:hidden focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      class="flex h-11 w-11 items-center justify-center peer-checked:hidden focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none md:hidden"
     >
       <Icon name="lucide:menu" width={24} height={24} />
       <span class="sr-only">Open menu</span>
@@ -47,73 +52,99 @@ import { Icon } from 'astro-icon/components';
       id="nav-toggle-close"
       tabindex="0"
       role="button"
-      class="md:hidden hidden w-11 h-11 items-center justify-center peer-checked:flex focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      class="hidden h-11 w-11 items-center justify-center peer-checked:flex focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none md:hidden"
     >
       <Icon name="lucide:x" width={24} height={24} />
       <span class="sr-only">Close menu</span>
     </label>
 
     <nav
-      class="md:hidden hidden peer-checked:flex flex-col gap-md absolute top-3xl inset-x-0 bg-mantle p-lg border-b border-border"
+      class="absolute inset-x-0 top-full hidden flex-col gap-md border-b border-border bg-mantle p-lg peer-checked:flex md:hidden"
+      aria-label="Site sections"
     >
+      {links.map((link) => <a href={link.href} class={linkClass}>{link.label}</a>)}
       <a
-        href="/#projects"
-        class="text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
-      >
-        Projects
-      </a>
-      <a
-        href="/#skills"
-        class="text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
-      >
-        Skills
-      </a>
-
-      <a
-        href="/#contact"
-        class="bg-accent text-base rounded-md px-md py-xs text-label font-semibold text-center focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+        href="#contact"
+        class="nav-link rounded-[var(--radius-control)] bg-accent px-md py-xs text-center text-label font-semibold text-base focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
         Contact
       </a>
     </nav>
   </div>
+
+  <!-- Scroll progress -->
+  <div
+    id="nav-progress"
+    aria-hidden="true"
+    class="absolute bottom-0 left-0 h-[2px] w-full origin-left scale-x-0 bg-accent will-change-transform"
+  ></div>
 </header>
 
 <style>
   #site-nav.is-scrolled {
+    height: 56px;
     background-color: var(--color-mantle);
     backdrop-filter: none;
+    box-shadow: 0 4px 20px rgb(0 0 0 / 0.25);
+  }
+  .nav-link[aria-current='true'] {
+    color: var(--color-accent);
+  }
+  @media (prefers-reduced-motion: reduce) {
+    #site-nav { transition: none; }
   }
 </style>
 
 <script>
   const nav = document.querySelector('#site-nav');
+  const progress = document.querySelector<HTMLElement>('#nav-progress');
 
-  function updateScrolled() {
+  function onScroll() {
     if (!nav) return;
-    if (window.scrollY > 0) {
-      nav.classList.add('is-scrolled');
-    } else {
-      nav.classList.remove('is-scrolled');
+    nav.classList.toggle('is-scrolled', window.scrollY > 0);
+    if (progress) {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      const p = max > 0 ? window.scrollY / max : 0;
+      progress.style.transform = `scaleX(${Math.min(Math.max(p, 0), 1)})`;
     }
   }
+  onScroll();
+  window.addEventListener('scroll', onScroll, { passive: true });
 
-  updateScrolled();
-  window.addEventListener('scroll', updateScrolled, { passive: true });
-
+  // Keyboard support for the checkbox-based mobile toggle
   const navToggle = document.querySelector<HTMLInputElement>('#nav-toggle');
-  const toggleOpen = document.querySelector<HTMLLabelElement>('#nav-toggle-open');
-  const toggleClose = document.querySelector<HTMLLabelElement>('#nav-toggle-close');
-
   function handleToggleKeydown(event: KeyboardEvent) {
     if (event.key === 'Enter' || event.key === ' ') {
       event.preventDefault();
-      if (navToggle) {
-        navToggle.checked = !navToggle.checked;
-      }
+      if (navToggle) navToggle.checked = !navToggle.checked;
     }
   }
+  document.querySelector('#nav-toggle-open')?.addEventListener('keydown', handleToggleKeydown);
+  document.querySelector('#nav-toggle-close')?.addEventListener('keydown', handleToggleKeydown);
 
-  toggleOpen?.addEventListener('keydown', handleToggleKeydown);
-  toggleClose?.addEventListener('keydown', handleToggleKeydown);
+  // Close the mobile menu when any nav link is tapped
+  document.querySelectorAll('#site-nav nav a').forEach((a) => {
+    a.addEventListener('click', () => {
+      if (navToggle) navToggle.checked = false;
+    });
+  });
+
+  // Active-section highlight: watch the four section anchors
+  const sectionIds = ['projects', 'skills', 'experience', 'contact'];
+  const sectionObserver = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (!entry.isIntersecting) return;
+        const id = `#${entry.target.id}`;
+        document.querySelectorAll('.nav-link').forEach((link) => {
+          link.setAttribute('aria-current', String(link.getAttribute('href') === id));
+        });
+      });
+    },
+    { rootMargin: '-40% 0px -55% 0px' },
+  );
+  sectionIds.forEach((id) => {
+    const section = document.getElementById(id);
+    if (section) sectionObserver.observe(section);
+  });
 </script>

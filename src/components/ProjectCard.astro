@@ -1,4 +1,7 @@
 ---
+// Project card. `wide` + the `extra` slot make the flagship variant (kindle):
+// content on the left, a code snippet pane on the right at lg+.
+// `anchor` gives the card a stable id so hero stats can deep-link to it.
 import { Icon } from 'astro-icon/components';
 import Badge from './Badge.astro';
 
@@ -7,71 +10,93 @@ interface Props {
   description: string;
   tech: string[];
   href: string;
+  index: number; // 1-based position, rendered as 01, 02, …
+  anchor?: string;
   status?: 'in-progress' | 'team';
   teamCredit?: string;
   impact?: string;
   role?: string;
   demoId?: string;
+  wide?: boolean;
 }
 
-const { name, description, tech, href, status, teamCredit, impact, role, demoId } = Astro.props;
+const { name, description, tech, href, index, anchor, status, teamCredit, impact, role, demoId, wide = false } =
+  Astro.props;
 ---
 
-<article class="card-hover bg-mantle border border-border rounded-md p-md flex flex-col gap-md h-full">
-  <!-- Header: name + badges -->
-  <div class="flex flex-col gap-xs">
-    <div class="flex items-start justify-between gap-sm">
-      <h3 class="text-heading font-semibold text-text leading-snug">{name}</h3>
-      <div class="flex items-center gap-xs shrink-0 pt-xs">
-        {status === 'in-progress' && <Badge label="In Progress" variant="progress" />}
-        {status === 'team' && <Badge label="Team" variant="default" />}
+<article
+  id={anchor}
+  class="card-hover group relative flex h-full scroll-mt-24 flex-col overflow-hidden rounded-[var(--radius-card)] border border-border bg-mantle p-md"
+>
+  <!-- Accent line that fades in along the top edge on hover -->
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-x-0 top-0 h-[2px] bg-gradient-to-r from-accent to-transparent opacity-0 transition-opacity duration-300 group-hover:opacity-100"
+  ></div>
+
+  <div class:list={['flex h-full flex-col gap-md', wide && 'lg:grid lg:grid-cols-[1fr_minmax(0,340px)] lg:gap-lg']}>
+    <div class="flex h-full min-w-0 flex-col gap-md">
+      <!-- Header -->
+      <div class="flex flex-col gap-xs">
+        <div class="flex items-start justify-between gap-sm">
+          <h3 class="flex items-baseline gap-sm text-title leading-snug font-semibold text-text">
+            <span class="font-mono text-[13px] font-semibold text-subtext">{String(index).padStart(2, '0')}</span>
+            {name}
+          </h3>
+          <div class="flex shrink-0 items-center gap-xs pt-xs">
+            {status === 'in-progress' && <Badge label="In Progress" variant="progress" />}
+            {status === 'team' && <Badge label="Team" variant="default" />}
+          </div>
+        </div>
+        {role && <p class="font-mono text-[12px] text-subtext">{role}</p>}
+        {status === 'team' && teamCredit && <p class="text-label text-subtext italic">{teamCredit}</p>}
+      </div>
+
+      <!-- Description -->
+      <p class="text-body text-text">{description}</p>
+
+      <!-- Impact callout -->
+      {impact && (
+        <div class="rounded-r-sm border-l-2 border-accent bg-accent/5 py-xs pl-sm">
+          <p class="font-mono text-[12px] font-semibold text-accent">{impact}</p>
+        </div>
+      )}
+
+      <!-- Tech badges -->
+      <div class="flex flex-wrap gap-xs">
+        {tech.map((item) => (
+          <Badge label={item} variant="default" />
+        ))}
+      </div>
+
+      <!-- Footer: Try Demo is the primary action; GitHub is secondary -->
+      <div class="mt-auto flex flex-wrap items-center gap-md pt-xs">
+        {demoId && (
+          <button
+            type="button"
+            data-demo-id={demoId}
+            class="demo-open-btn inline-flex cursor-pointer items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-xs text-label font-semibold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+          >
+            <Icon name="lucide:play" width={13} height={13} aria-hidden="true" />
+            Try demo
+          </button>
+        )}
+        <a
+          href={href}
+          target="_blank"
+          rel="noopener noreferrer"
+          class="inline-flex items-center gap-xs text-label font-semibold text-text transition-colors hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+        >
+          <Icon name="lucide:github" width={16} height={16} aria-hidden="true" />
+          View on GitHub
+        </a>
       </div>
     </div>
-    {role && (
-      <p class="text-label text-subtext">{role}</p>
-    )}
-    {status === 'team' && teamCredit && (
-      <p class="text-label text-subtext italic">{teamCredit}</p>
-    )}
-  </div>
 
-  <!-- Description -->
-  <p class="text-body text-text">{description}</p>
-
-  <!-- Impact callout -->
-  {impact && (
-    <div class="border-l-2 border-accent pl-sm py-xs bg-accent/5 rounded-r-sm">
-      <p class="text-label font-semibold text-accent">{impact}</p>
-    </div>
-  )}
-
-  <!-- Tech badges -->
-  <div class="flex flex-wrap gap-xs">
-    {tech.map((item) => (
-      <Badge label={item} variant="default" />
-    ))}
-  </div>
-
-  <!-- Footer: GitHub + optional Try Demo -->
-  <div class="mt-auto flex items-center justify-between gap-sm flex-wrap">
-    <a
-      href={href}
-      target="_blank"
-      rel="noopener noreferrer"
-      class="inline-flex items-center gap-xs text-label font-semibold text-text hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
-    >
-      <Icon name="lucide:github" width={16} height={16} aria-hidden="true" />
-      View on GitHub
-    </a>
-    {demoId && (
-      <button
-        type="button"
-        data-demo-id={demoId}
-        class="demo-open-btn inline-flex items-center gap-xs text-label font-semibold text-accent border border-accent/40 hover:border-accent hover:bg-accent/10 rounded-md px-sm py-xs focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors cursor-pointer"
-      >
-        <Icon name="lucide:play" width={12} height={12} aria-hidden="true" />
-        Try Demo
-      </button>
+    {wide && (
+      <div class="hidden min-w-0 lg:block">
+        <slot name="extra" />
+      </div>
     )}
   </div>
 </article>
@@ -82,9 +107,12 @@ const { name, description, tech, href, status, teamCredit, impact, role, demoId 
       const id = btn.dataset.demoId;
       if (!id) return;
       const dialog = document.getElementById(id) as HTMLDialogElement | null;
-      dialog?.showModal();
+      if (!dialog) return;
+      dialog.showModal();
+      // Lock page scroll while a modal is open; DemoDialog unlocks on 'close'.
+      document.body.style.overflow = 'hidden';
       // Fire a custom event so demos can lazy-init
-      dialog?.dispatchEvent(new CustomEvent('demo-open'));
+      dialog.dispatchEvent(new CustomEvent('demo-open'));
     });
   });
 </script>

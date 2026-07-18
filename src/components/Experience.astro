@@ -1,0 +1,81 @@
+---
+// Experience — timeline rail with tokened tag colors (no inline hex).
+const experience: {
+  role: string;
+  org: string;
+  period: string;
+  description: string;
+  tag: string;
+  toneClass: string; // dot + tag pill tone, from theme tokens
+}[] = [
+  {
+    role: 'ML Student',
+    org: 'University of Trento',
+    period: '2024 — present',
+    description:
+      "Master's level coursework and projects spanning deep learning, NLP, computer vision, reinforcement learning, and autonomous systems. Lead architect on the ASA Autobots multi-agent capstone.",
+    tag: 'Student · Researcher',
+    toneClass: 'accent',
+  },
+  {
+    role: 'University Tutor',
+    org: 'University of Trento',
+    period: '2024 — present',
+    description:
+      'Tutoring undergraduate students in algorithms, data structures, and foundational programming. Teaching to others accelerates my own mastery — and it builds the leadership muscle of making complex ideas accessible.',
+    tag: 'Teaching · Leadership',
+    toneClass: 'green',
+  },
+];
+
+const tone: Record<string, { dot: string; pill: string }> = {
+  accent: { dot: 'bg-accent', pill: 'border-accent/40 bg-accent/10 text-accent' },
+  green: { dot: 'bg-green', pill: 'border-green/40 bg-green/10 text-green' },
+  blue: { dot: 'bg-blue', pill: 'border-blue/40 bg-blue/10 text-blue' },
+};
+---
+
+<section id="experience" class="px-lg py-3xl md:px-xl">
+  <div class="mx-auto max-w-[72rem]">
+    <div class="reveal">
+      <p class="section-eyebrow">experience</p>
+      <h2 class="gradient-text mt-sm inline-block text-display font-semibold">Experience</h2>
+      <p class="mt-sm text-body text-subtext">Where I study, build, teach, and lead.</p>
+    </div>
+
+    <!-- Timeline: vertical rail with a tone dot per entry -->
+    <div class="relative mt-2xl flex flex-col gap-xl border-l-2 border-border pl-xl">
+      {experience.map((item, i) => (
+        <div class="reveal relative" data-delay={String(i + 1)}>
+          <span
+            class:list={[
+              'absolute top-[6px] -left-[41px] h-2.5 w-2.5 rounded-full ring-4 ring-base',
+              tone[item.toneClass].dot,
+            ]}
+            aria-hidden="true"
+          ></span>
+          <div class="flex flex-col gap-sm rounded-[var(--radius-card)] p-sm transition-colors hover:bg-mantle/60">
+            <div class="flex flex-col gap-xs sm:flex-row sm:items-center sm:justify-between">
+              <div class="flex flex-col gap-xs">
+                <h3 class="text-title font-semibold text-text">{item.role}</h3>
+                <div class="flex flex-wrap items-center gap-sm">
+                  <p class="text-label font-semibold text-accent">{item.org}</p>
+                  <span
+                    class:list={[
+                      'rounded-full border px-sm py-xs text-label font-semibold',
+                      tone[item.toneClass].pill,
+                    ]}
+                  >
+                    {item.tag}
+                  </span>
+                </div>
+              </div>
+              <span class="shrink-0 font-mono text-label font-semibold text-subtext">{item.period}</span>
+            </div>
+            <p class="max-w-[52rem] text-body text-text">{item.description}</p>
+          </div>
+        </div>
+      ))}
+    </div>
+  </div>
+</section>

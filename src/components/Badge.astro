@@ -1,7 +1,11 @@
 ---
+// Pill badge.
+// - default:  neutral tech/tag chip
+// - primary:  a highlighted skill (accent tint)
+// - progress: work-in-progress marker (outline accent)
 interface Props {
   label: string;
-  variant?: 'default' | 'progress';
+  variant?: 'default' | 'primary' | 'progress';
 }
 
 const { label, variant = 'default' } = Astro.props;
@@ -9,10 +13,10 @@ const { label, variant = 'default' } = Astro.props;
 
 <span
   class:list={[
-    'inline-flex items-center rounded-full px-sm py-xs text-label font-mono',
-    variant === 'progress'
-      ? 'border border-accent text-accent'
-      : 'border border-border text-subtext bg-mantle',
+    'inline-flex items-center rounded-full px-sm py-xs font-mono text-[12px]',
+    variant === 'primary' && 'border border-accent/60 bg-accent/10 font-semibold text-accent',
+    variant === 'progress' && 'border border-accent text-accent',
+    variant === 'default' && 'border border-border bg-mantle text-subtext',
   ]}
 >
   {label}

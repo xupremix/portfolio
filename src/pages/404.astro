@@ -2,15 +2,24 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Page not found">
-  <main class="flex flex-col items-center justify-center text-center gap-md py-3xl">
-    <h1 class="text-display font-semibold">Page not found</h1>
-    <p class="text-body text-subtext">That page doesn't exist. Head back to the homepage.</p>
+<Layout title="Page not found — Filippo Lollato">
+  <main class="relative flex min-h-[calc(100svh-64px)] flex-col items-center justify-center gap-md overflow-hidden px-lg text-center">
+    <p
+      aria-hidden="true"
+      class="pointer-events-none absolute font-mono text-[clamp(10rem,40vw,24rem)] leading-none font-bold text-accent/8 select-none"
+    >
+      404
+    </p>
+    <p class="section-eyebrow relative">route not found</p>
+    <h1 class="relative text-display font-semibold text-text">This page never compiled.</h1>
+    <p class="relative max-w-[28rem] text-body text-subtext">
+      The route you asked for doesn't exist — a rare case the type system can't catch.
+    </p>
     <a
       href="/"
-      class="text-accent hover:underline focus-visible:ring-2 focus-visible:ring-accent/60"
+      class="relative mt-sm inline-flex items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-sm text-label font-semibold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
     >
-      Back to homepage
+      ← Back to the homepage
     </a>
   </main>
 </Layout>
