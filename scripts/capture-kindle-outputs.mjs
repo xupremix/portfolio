@@ -30,9 +30,11 @@ if (!fs.existsSync(path.join(kindlePath, 'Cargo.toml'))) {
   process.exit(1);
 }
 
-// One scratch project, reused across scenarios so deps compile once.
-const work = fs.mkdtempSync(path.join(os.tmpdir(), 'kindle-capture-'));
-fs.mkdirSync(path.join(work, 'src'));
+// One scratch project in a PERSISTENT cache dir: the first run downloads
+// libtorch (via tch's download-libtorch feature) and compiles the full dep
+// tree; later runs reuse everything and finish in seconds.
+const work = path.join(os.homedir(), '.cache', 'kindle-demo-capture');
+fs.mkdirSync(path.join(work, 'src'), { recursive: true });
 fs.writeFileSync(
   path.join(work, 'Cargo.toml'),
   `[package]
@@ -42,9 +44,20 @@ edition = "2021"
 
 [dependencies]
 kindle = { path = "${kindlePath}" }
+# Direct dep only to enable the feature (cargo feature unification):
+# torch-sys then downloads the exact libtorch version tch expects.
+tch = { version = "0.19.0", features = ["download-libtorch"] }
 `,
 );
 fs.writeFileSync(path.join(work, 'rust-toolchain.toml'), '[toolchain]\nchannel = "nightly"\n');
+
+// Seed the scratch lockfile from kindle's own Cargo.lock so dependency
+// resolution matches the versions kindle actually builds against (a fresh
+// resolve can pick e.g. two safetensors versions and break kindle-core).
+const kindleLock = path.join(kindlePath, 'Cargo.lock');
+if (fs.existsSync(kindleLock)) {
+  fs.copyFileSync(kindleLock, path.join(work, 'Cargo.lock'));
+}
 
 function run(cmd, args) {
   try {
@@ -62,6 +75,7 @@ function cleanOutput(text) {
     .filter((l) => !/^\s*(Compiling|Finished|Running|Checking|Downloading|Downloaded|Updating|Locking|Adding|warning: unused manifest key)/.test(l))
     .join('\n')
     .replaceAll(work + path.sep, '')
+    .replaceAll(kindlePath, '~/kindle') // don't leak absolute local paths
     .trimEnd();
 }
 
@@ -85,5 +99,5 @@ existing.capturedWith = capturedWith;
 existing.capturedAt = new Date().toISOString().slice(0, 10);
 existing.outputs = outputs;
 fs.writeFileSync(outFile, JSON.stringify(existing, null, 2) + '\n');
-fs.rmSync(work, { recursive: true, force: true });
 console.log(`Wrote ${path.relative(repoRoot, outFile)} — commit this file.`);
+console.log(`(build cache kept at ${work} for fast re-runs)`);

@@ -4,10 +4,11 @@
 // menu that closes itself when a link is tapped.
 import { Icon } from 'astro-icon/components';
 
+// Absolute /# anchors so the nav also works from /404 and any future page.
 const links = [
-  { href: '#projects', label: 'Projects' },
-  { href: '#skills', label: 'Skills' },
-  { href: '#experience', label: 'Experience' },
+  { href: '/#projects', label: 'Projects' },
+  { href: '/#skills', label: 'Skills' },
+  { href: '/#experience', label: 'Experience' },
 ];
 
 const linkClass =
@@ -29,7 +30,7 @@ const linkClass =
     <nav class="hidden items-center gap-lg md:flex" aria-label="Site sections">
       {links.map((link) => <a href={link.href} class={linkClass}>{link.label}</a>)}
       <a
-        href="#contact"
+        href="/#contact"
         class="nav-link rounded-[var(--radius-control)] bg-accent px-md py-xs text-label font-semibold text-base focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
         Contact
@@ -64,7 +65,7 @@ const linkClass =
     >
       {links.map((link) => <a href={link.href} class={linkClass}>{link.label}</a>)}
       <a
-        href="#contact"
+        href="/#contact"
         class="nav-link rounded-[var(--radius-control)] bg-accent px-md py-xs text-center text-label font-semibold text-base focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
         Contact
@@ -137,7 +138,7 @@ const linkClass =
         if (!entry.isIntersecting) return;
         const id = `#${entry.target.id}`;
         document.querySelectorAll('.nav-link').forEach((link) => {
-          link.setAttribute('aria-current', String(link.getAttribute('href') === id));
+          link.setAttribute('aria-current', String((link.getAttribute('href') ?? '').endsWith(id)));
         });
       });
     },

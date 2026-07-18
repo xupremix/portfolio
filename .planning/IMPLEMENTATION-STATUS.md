@@ -82,9 +82,13 @@ Final architecture (all implemented):
   source of truth imported `?raw`). Their rustc output CANNOT be produced live
   (kindle links libtorch; playground can't build it; this machine lacks libssl-dev),
   so output comes from `src/generated/kindle-outputs.json`, produced by
-  `node scripts/capture-kindle-outputs.mjs` run on Filippo's machine against the real
-  crate. Until captured, the demo shows an explicit "not captured yet" notice.
-  **ACTION FOR FILIPPO: run `node scripts/capture-kindle-outputs.mjs` and commit the JSON.**
+  `npm run capture:kindle` against the real crate. **CAPTURED (July 2026)** with
+  rustc nightly 1.94: real E0277 `Forward<IN,OUT>` trait errors for scenarios 1–2,
+  scenario 3 compiled and ran (`Tensor[dims 2, 10; f32]`). The script needed and now
+  has: `download-libtorch` feature via cargo feature unification, a persistent build
+  cache at `~/.cache/kindle-demo-capture`, kindle's own `Cargo.lock` seeded into the
+  scratch project (a fresh resolve breaks kindle-core with duplicate safetensors),
+  and local-path sanitization. Re-runs take seconds thanks to the cache.
 - Tab 4 "Sandbox · live rustc": self-contained const-generics pattern, editable,
   compiles live on play.rust-lang.org from the browser; offline fallback shows a
   pre-captured real rustc output only if the code is unedited.
