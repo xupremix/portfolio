@@ -11,7 +11,8 @@ const { id, title, subtitle } = Astro.props;
 ---
 
 <dialog id={id} aria-labelledby={`${id}-title`}>
-  <div class="flex h-[min(88dvh,720px)] flex-col">
+  <!-- Full-height sheet on phones, fixed-height card from md up -->
+  <div class="flex h-dvh flex-col md:h-[min(88dvh,720px)]">
     <!-- Header -->
     <header class="flex shrink-0 items-start justify-between gap-md border-b border-border p-md md:px-lg">
       <div class="min-w-0">
@@ -36,11 +37,11 @@ const { id, title, subtitle } = Astro.props;
       <div class="flex min-w-0 flex-col max-lg:flex-none lg:min-h-0 lg:flex-1">
         <slot name="main" />
       </div>
-      <aside
-        class="flex shrink-0 flex-col gap-lg border-border p-md max-lg:border-t lg:w-[300px] lg:overflow-y-auto lg:border-l"
-      >
-        <slot name="aside" />
-      </aside>
+      {Astro.slots.has('aside') && (
+        <aside class="flex shrink-0 flex-col gap-lg border-border p-md max-lg:border-t lg:w-[300px] lg:overflow-y-auto lg:border-l">
+          <slot name="aside" />
+        </aside>
+      )}
     </div>
   </div>
 </dialog>

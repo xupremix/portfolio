@@ -24,7 +24,7 @@ const scenarioDir = path.join(repoRoot, 'src', 'demo-code', 'kindle');
 const outFile = path.join(repoRoot, 'src', 'generated', 'kindle-outputs.json');
 
 // Scenario 03 is expected to compile; the others are expected to fail.
-const SCENARIOS = ['01-shape-mismatch', '02-dtype-mismatch', '03-correct'];
+const SCENARIOS = ['01-shape-mismatch', '02-dtype-mismatch', '03-shape-spectrum'];
 
 if (!fs.existsSync(path.join(kindlePath, 'Cargo.toml'))) {
   console.error(`kindle repo not found at ${kindlePath} — set KINDLE_PATH.`);
@@ -88,7 +88,11 @@ function run(cmd, args) {
 function cleanOutput(text) {
   return text
     .split('\n')
-    .filter((l) => !/^\s*(Compiling|Finished|Running|Checking|Downloading|Downloaded|Updating|Locking|Adding|warning: unused manifest key)/.test(l))
+    .filter(
+      (l) =>
+        !/^\s*(Compiling|Finished|Running|Checking|Downloading|Downloaded|Updating|Locking|Adding|warning: unused manifest key)/.test(l) &&
+        !/^error: could not compile/.test(l), // cargo housekeeping, not rustc
+    )
     .join('\n')
     .replaceAll(work + path.sep, '')
     .replaceAll(kindlePath, '~/kindle') // don't leak absolute local paths
