@@ -1,36 +1,39 @@
 ---
+// Three working-principles pillars. Metric fragments are wrapped in mono
+// accent spans via set:html (static, author-controlled strings only).
 import { Icon } from 'astro-icon/components';
+
+const metric = (s: string) => `<span class="font-mono font-semibold text-accent">${s}</span>`;
 
 const pillars = [
   {
-    icon: "lucide:layers",
-    heading: "I build to depth",
-    body: "Every project here is a real system. kindle enforces ML shape safety at compile time. The ASA agent coordinates live deliveries. Depth is the default, not the exception.",
+    icon: 'lucide:layers',
+    heading: 'I build to depth',
+    body: `Every project here is a real system. kindle enforces ML shape safety at compile time. The ASA agent coordinates live deliveries. Depth is the default, not the exception.`,
   },
   {
-    icon: "lucide:users",
-    heading: "I work in teams",
-    body: "ASA Autobots was built jointly with a teammate — architecture, test suite, and every design decision made together. ~91.5% test coverage wasn't an accident.",
+    icon: 'lucide:users',
+    heading: 'I work in teams',
+    body: `ASA Autobots was built jointly with a teammate — architecture, test suite, and every design decision made together. ${metric('~91.5%')} test coverage wasn't an accident.`,
   },
   {
-    icon: "lucide:zap",
-    heading: "I make it matter",
-    body: "81.5% RMSE reduction over baseline tracking. 0.9765 intent accuracy trained from scratch. I measure outcomes, not just elegance.",
+    icon: 'lucide:zap',
+    heading: 'I make it matter',
+    body: `${metric('81.5%')} RMSE reduction over baseline tracking. ${metric('0.9765')} intent accuracy trained from scratch. I measure outcomes, not just elegance.`,
   },
 ];
 ---
 
-<section class="py-2xl px-lg md:px-xl border-y border-border/40 bg-mantle/30">
-  <div class="max-w-[72rem] mx-auto grid grid-cols-1 md:grid-cols-3 gap-lg">
-    {pillars.map((p, i) => (
-      <div class="reveal flex flex-col gap-sm" data-delay={String(i + 1)}>
-        <div class="flex items-center gap-sm">
-          <div class="flex items-center justify-center w-10 h-10 rounded-md bg-accent/10 text-accent shrink-0">
-            <Icon name={p.icon} width={20} height={20} aria-hidden="true" />
-          </div>
-          <h2 class="text-label font-semibold text-text">{p.heading}</h2>
+<section aria-labelledby="about-heading" class="border-y border-border/40 bg-mantle/30 px-lg py-2xl md:px-xl">
+  <h2 id="about-heading" class="sr-only">How I work</h2>
+  <div class="mx-auto grid max-w-[72rem] grid-cols-1 gap-lg md:grid-cols-3">
+    {pillars.map((pillar, i) => (
+      <div class="reveal group grid grid-cols-[40px_1fr] gap-x-sm gap-y-sm" data-delay={String(i + 1)}>
+        <div class="flex h-10 w-10 items-center justify-center rounded-[var(--radius-control)] bg-accent/10 text-accent transition-colors duration-200 group-hover:bg-accent group-hover:text-base">
+          <Icon name={pillar.icon} width={20} height={20} aria-hidden="true" />
         </div>
-        <p class="text-body text-subtext pl-[52px]">{p.body}</p>
+        <h3 class="self-center text-label font-semibold text-text">{pillar.heading}</h3>
+        <p class="col-start-2 text-body text-subtext"><Fragment set:html={pillar.body} /></p>
       </div>
     ))}
   </div>
