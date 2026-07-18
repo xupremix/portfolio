@@ -1,7 +1,8 @@
-// kindle itself can't build on play.rust-lang.org (it links libtorch),
-// so this sandbox distills the mechanism it is built on: tensor shapes
-// as const generics. Edit freely and hit Compile — this is real rustc,
-// running remotely on the official Rust playground.
+// kindle isn't published on crates.io, so play.rust-lang.org can't build
+// it directly. This sandbox distills the same idea into stand-alone code:
+// tensor shapes in the type system (kindle itself uses typenum type-level
+// integers plus a backend abstraction). Edit freely and hit Compile —
+// this is real rustc, running remotely on the official Rust playground.
 
 use std::marker::PhantomData;
 

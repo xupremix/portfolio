@@ -12,8 +12,8 @@
 //
 // The CodeMirror editor is lazy-loaded on first open (see rust-editor.ts).
 
-import chainCode from '../demo-code/kindle/01-chain-mismatch.rs?raw';
-import inputCode from '../demo-code/kindle/02-input-shape.rs?raw';
+import shapeCode from '../demo-code/kindle/01-shape-mismatch.rs?raw';
+import dtypeCode from '../demo-code/kindle/02-dtype-mismatch.rs?raw';
 import correctCode from '../demo-code/kindle/03-correct.rs?raw';
 import sandboxCode from '../demo-code/kindle/04-sandbox.rs?raw';
 import captured from '../generated/kindle-outputs.json';
@@ -29,20 +29,20 @@ interface Scenario {
 
 const SCENARIOS: Scenario[] = [
   {
-    key: '01-chain-mismatch',
+    key: '01-shape-mismatch',
     live: false,
     ok: false,
-    code: chainCode,
+    code: shapeCode,
     explanation:
-      'The model type chains Linear<784, 256> into Linear<128, 10> — but the middle widths disagree. kindle threads shapes through the Module trait, so rustc rejects the chain during type checking. The bug is caught at architecture-design time, not hours into a GPU training run.',
+      'A Linear<s![784, 256]> layer receives a batch shaped s![2, 512]. Shapes live in the type system (type-level integers via typenum), so rustc rejects the forward call during type checking — the bug is caught at design time, not hours into a training run.',
   },
   {
-    key: '02-input-shape',
+    key: '02-dtype-mismatch',
     live: false,
     ok: false,
-    code: inputCode,
+    code: dtypeCode,
     explanation:
-      'The model is fine; the input is not. A Rank2<1, 512> tensor reaches a layer expecting 784 features, and the program never compiles. In dynamic frameworks this exact bug surfaces as a runtime crash inside the first batch.',
+      'Both tensors are 2×2, but one is f32 and the other f64. The element type is part of the tensor type too, so mixing dtypes fails to compile. In dynamic frameworks this surfaces as a runtime cast error or silent precision loss.',
   },
   {
     key: '03-correct',
@@ -50,7 +50,7 @@ const SCENARIOS: Scenario[] = [
     ok: true,
     code: correctCode,
     explanation:
-      'Shapes agree end to end, so the program compiles and runs. The output type — Tensor<Rank2<2, 10>> — is inferred by the compiler and fully erased afterwards: shape safety with zero runtime overhead.',
+      'The model is declared as a type — Sequential<Linear<s![784,256]>, …> — and shapes agree end to end, so it compiles and runs on the Candle backend. All the shape bookkeeping is erased at compile time: zero runtime overhead.',
   },
   {
     key: '04-sandbox',
@@ -58,7 +58,7 @@ const SCENARIOS: Scenario[] = [
     ok: false,
     code: sandboxCode,
     explanation:
-      'kindle links libtorch, which the Rust playground cannot build — so this tab distills the mechanism kindle is built on: shapes as const generics. Edit the code and compile; this is real rustc running on play.rust-lang.org.',
+      "kindle isn't on crates.io, so the playground can't build it — this tab is a stand-alone distillation of the same idea using const generics (kindle itself uses typenum type-level integers plus a backend abstraction). Edit freely and compile; this is real rustc on play.rust-lang.org.",
   },
 ];
 

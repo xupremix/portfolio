@@ -64,6 +64,24 @@
 
 *Commit hashes: run `git log --oneline` to confirm; fill in when updating.
 
+## Round 2 additions (July 18, evening)
+
+- **Kindle demo targets the dev/refactor crate** at `~/kindle` (branch `dev/refactor`;
+  NOT `~/Projects/kindle`, which is the pre-refactor repo). Scenarios use the new API
+  (`s![...]` typenum shapes, `kindle::candle::CandleBackend`, `Sequential`/`seq!`,
+  `#[module]`, per-tensor dtypes). Captured outputs: real `EndsWith` E0277 shape error,
+  E0308 f32/f64 dtype error, and a run on the Candle backend (`shape=[2, 10]`).
+  Capture script default `KINDLE_PATH=~/kindle`, mirrors the repo's toolchain (stable),
+  only injects tch/download-libtorch when the target lock mentions tch.
+- **Design modes**: `ink` (default, current terminal look) ↔ `paper` (warm paper,
+  serif display, moss-green accent) toggled from the nav (leaf/terminal icon),
+  persisted in localStorage (`design-mode`), restored pre-paint in Layout head.
+  Everything flows from the `--color-*` tokens; paper-specific overrides live in
+  global.css (`html[data-mode='paper']`) + Hero blob/dot overrides; canvases read
+  tokens per frame (use `withAlpha(themeColor(...))`, never hardcoded rgb).
+- Hero stats strip → compact **proof chips** (bordered pills, inline number+label).
+- `scripts/mode-check.mjs` screenshots paper mode; `scripts/visual-check.mjs` ink mode.
+
 ## What each remaining task must do (condensed — full detail in DESIGN-OVERHAUL-PLAN.md)
 
 ### Task 3 — DemoDialog shell (§2.1 of plan)

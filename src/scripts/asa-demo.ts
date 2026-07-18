@@ -16,7 +16,7 @@
 // - During the PLAN phase the agent does NOT move: previewPath only draws the
 //   dashed route. Movement paths are Manhattan (grid legs), not diagonals.
 
-import { setupCanvas, motionSafe, themeColor, type SizedCanvas } from './canvas';
+import { setupCanvas, motionSafe, themeColor, withAlpha, type SizedCanvas } from './canvas';
 
 const COLS = 8;
 const ROWS = 7;
@@ -149,7 +149,8 @@ function draw() {
   ctx.fillRect(0, 0, w, h);
   for (let r = 0; r < ROWS; r++) {
     for (let c = 0; c < COLS; c++) {
-      ctx.fillStyle = (c + r) % 2 === 0 ? 'rgb(30 30 46 / 0.6)' : 'rgb(24 24 37 / 0.8)';
+      // Checkerboard from theme tokens so both design modes render correctly
+      ctx.fillStyle = (c + r) % 2 === 0 ? withAlpha(themeColor('base'), 0.6) : withAlpha(themeColor('crust'), 0.8);
       ctx.fillRect(ox + c * cell, oy + r * cell, cell, cell);
       ctx.strokeStyle = themeColor('border');
       ctx.lineWidth = 0.5;
@@ -224,8 +225,8 @@ function draw() {
 
   // Glow + vector robot (rounded square with eyes)
   const grad = ctx.createRadialGradient(ap.x, ap.y, 2, ap.x, ap.y, cell * 0.7);
-  grad.addColorStop(0, 'rgb(203 166 247 / 0.28)');
-  grad.addColorStop(1, 'transparent');
+  grad.addColorStop(0, withAlpha(themeColor('accent'), 0.28));
+  grad.addColorStop(1, withAlpha(themeColor('accent'), 0));
   ctx.fillStyle = grad;
   ctx.beginPath();
   ctx.arc(ap.x, ap.y, cell * 0.7, 0, Math.PI * 2);
