@@ -75,6 +75,7 @@ function cleanOutput(text) {
     .filter((l) => !/^\s*(Compiling|Finished|Running|Checking|Downloading|Downloaded|Updating|Locking|Adding|warning: unused manifest key)/.test(l))
     .join('\n')
     .replaceAll(work + path.sep, '')
+    .replaceAll(kindlePath, '~/kindle') // don't leak absolute local paths
     .trimEnd();
 }
 
