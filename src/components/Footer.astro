@@ -1,29 +1,57 @@
 ---
+// Footer — three zones: copyright, section quick links, socials + back-to-top.
 import { Icon } from 'astro-icon/components';
+
+const quickLinks = [
+  { href: '#projects', label: 'Projects' },
+  { href: '#skills', label: 'Skills' },
+  { href: '#experience', label: 'Experience' },
+  { href: '#contact', label: 'Contact' },
+];
 ---
 
-<footer
-  class="bg-mantle border-t border-border px-lg py-lg md:px-xl flex flex-col md:flex-row items-center justify-between gap-md"
->
-  <p class="text-label text-subtext">© {new Date().getFullYear()} Filippo Lollato</p>
-  <div class="flex items-center gap-md">
-    <!-- GitHub -->
-    <a
-      href="https://github.com/xupremix"
-      target="_blank"
-      rel="noopener noreferrer"
-      aria-label="GitHub"
-      class="text-subtext hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
-    >
-      <Icon name="lucide:github" width={20} height={20} />
-    </a>
-    <!-- Email -->
-    <a
-      href="mailto:lollatofilippo@gmail.com"
-      aria-label="Email"
-      class="text-subtext hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
-    >
-      <Icon name="lucide:mail" width={20} height={20} />
-    </a>
+<footer class="border-t border-border bg-mantle px-lg py-lg md:px-xl">
+  <div class="mx-auto flex max-w-[72rem] flex-col items-center justify-between gap-md md:flex-row">
+    <div class="flex flex-col items-center gap-xs md:items-start">
+      <p class="text-label text-subtext">© {new Date().getFullYear()} Filippo Lollato</p>
+      <p class="font-mono text-[11px] text-subtext/70">Built with Astro — no trackers, no cookies.</p>
+    </div>
+
+    <nav aria-label="Footer" class="flex flex-wrap items-center justify-center gap-md">
+      {quickLinks.map((link) => (
+        <a
+          href={link.href}
+          class="text-label text-subtext transition-colors hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+        >
+          {link.label}
+        </a>
+      ))}
+    </nav>
+
+    <div class="flex items-center gap-md">
+      <a
+        href="https://github.com/xupremix"
+        target="_blank"
+        rel="noopener noreferrer"
+        aria-label="GitHub"
+        class="text-subtext hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        <Icon name="lucide:github" width={20} height={20} />
+      </a>
+      <a
+        href="mailto:lollatofilippo@gmail.com"
+        aria-label="Email"
+        class="text-subtext hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        <Icon name="lucide:mail" width={20} height={20} />
+      </a>
+      <a
+        href="#hero"
+        aria-label="Back to top"
+        class="flex h-8 w-8 items-center justify-center rounded-[var(--radius-control)] border border-border text-subtext transition-colors hover:border-accent/40 hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        <Icon name="lucide:arrow-up" width={16} height={16} />
+      </a>
+    </div>
   </div>
 </footer>

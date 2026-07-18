@@ -1,36 +1,88 @@
 ---
+// Contact — closing statement, mailto + copy-email actions, availability line.
+// NOTE: confirm the availability wording with Filippo before going live.
 import { Icon } from 'astro-icon/components';
+
+const email = 'lollatofilippo@gmail.com';
 ---
 
-<section id="contact" class="py-3xl px-lg md:px-xl border-t border-border/40">
-  <div class="max-w-[72rem] mx-auto">
+<section id="contact" class="border-t border-border/40 px-lg py-3xl md:px-xl">
+  <div class="mx-auto max-w-[72rem]">
     <div class="reveal">
-      <h2 class="text-display font-semibold gradient-text inline-block">Get in Touch</h2>
-      <p class="mt-sm text-body text-subtext max-w-[44rem]">
+      <p class="section-eyebrow">contact</p>
+      <h2 class="gradient-text mt-sm inline-block text-display font-semibold">
+        Let's build something correct.
+      </h2>
+      <p class="mt-md max-w-[44rem] text-body text-subtext">
         I'm especially interested in research-adjacent roles, systems-level ML, and teams that care
-        about correctness. Whether it's a full-time position, a collaboration, or just an interesting
-        problem — I read everything.
+        about correctness. Whether it's a full-time position, a collaboration, or just an
+        interesting problem — I read everything.
       </p>
     </div>
 
-    <div class="reveal mt-2xl flex flex-col sm:flex-row gap-md" data-delay="1">
+    <div class="reveal mt-2xl flex flex-col gap-md sm:flex-row sm:items-center" data-delay="1">
       <a
-        href="mailto:lollatofilippo@gmail.com"
-        class="inline-flex items-center gap-sm bg-accent text-base rounded-md px-md py-sm text-label font-semibold focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none hover:opacity-90 transition-opacity"
+        href={`mailto:${email}`}
+        class="inline-flex items-center justify-center gap-sm rounded-[var(--radius-control)] bg-accent px-md py-sm text-label font-semibold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
         <Icon name="lucide:mail" width={16} height={16} aria-hidden="true" />
-        lollatofilippo@gmail.com
+        {email}
       </a>
+
+      <button
+        id="copy-email"
+        type="button"
+        data-email={email}
+        class="inline-flex cursor-pointer items-center justify-center gap-sm rounded-[var(--radius-control)] border border-border px-md py-sm text-label font-semibold text-text transition-colors hover:border-accent/40 hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        <span id="copy-email-idle" class="inline-flex items-center gap-sm">
+          <Icon name="lucide:copy" width={16} height={16} aria-hidden="true" />
+          Copy address
+        </span>
+        <span id="copy-email-done" class="hidden items-center gap-sm text-green">
+          <Icon name="lucide:check" width={16} height={16} aria-hidden="true" />
+          Copied
+        </span>
+      </button>
 
       <a
         href="https://github.com/xupremix"
         target="_blank"
         rel="noopener noreferrer"
-        class="inline-flex items-center gap-sm border border-border rounded-md px-md py-sm text-label font-semibold text-text hover:text-accent hover:border-accent/40 focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none transition-colors"
+        class="inline-flex items-center justify-center gap-sm rounded-[var(--radius-control)] border border-border px-md py-sm text-label font-semibold text-text transition-colors hover:border-accent/40 hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
         <Icon name="lucide:github" width={16} height={16} aria-hidden="true" />
         github.com/xupremix
       </a>
     </div>
+
+    <p class="reveal mt-lg flex items-center gap-sm font-mono text-[12px] text-subtext" data-delay="2">
+      <span class="relative flex h-2 w-2">
+        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-green/60 motion-reduce:animate-none"></span>
+        <span class="relative inline-flex h-2 w-2 rounded-full bg-green"></span>
+      </span>
+      Open to research-adjacent roles &amp; collaborations · Trento / remote
+    </p>
   </div>
 </section>
+
+<script>
+  const btn = document.getElementById('copy-email');
+  btn?.addEventListener('click', async () => {
+    const email = (btn as HTMLElement).dataset.email ?? '';
+    try {
+      await navigator.clipboard.writeText(email);
+      document.getElementById('copy-email-idle')?.classList.add('hidden');
+      const done = document.getElementById('copy-email-done');
+      done?.classList.remove('hidden');
+      done?.classList.add('inline-flex');
+      setTimeout(() => {
+        document.getElementById('copy-email-idle')?.classList.remove('hidden');
+        done?.classList.add('hidden');
+        done?.classList.remove('inline-flex');
+      }, 1600);
+    } catch {
+      // Clipboard unavailable (http, permissions) — mailto link still works.
+    }
+  });
+</script>
