@@ -9,7 +9,7 @@ fn main() -> Result<()> {
 
     // Partially static: the batch dim is dynamic — you pass
     // it at runtime; the 784 features stay compiler-checked.
-    let b = Tensor::<s![Dyn, 784], Backend>::zeros((32, ()))?;
+    let b = Tensor::<s![usize, 784], Backend>::zeros((32, ()))?;
 
     // Fully dynamic: the whole shape is runtime,
     // like any other framework when you need it.
