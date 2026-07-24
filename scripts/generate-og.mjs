@@ -38,7 +38,7 @@ const svg = `
   <rect x="96" y="470" width="220" height="6" rx="3" fill="url(#bar)"/>
 
   <text x="96" y="546" font-family="monospace" font-size="24" fill="#a6adc8">
-    <tspan fill="#cba6f7" font-weight="600">81.5%</tspan> RMSE ↓ KITTI   <tspan fill="#cba6f7" font-weight="600">0.9765</tspan> intent acc ATIS   <tspan fill="#cba6f7" font-weight="600">kindle</tspan> compile-time ML
+    <tspan fill="#cba6f7" font-weight="600">81.5%</tspan> RMSE ↓ KITTI   <tspan fill="#cba6f7" font-weight="600">0.9765</tspan> intent acc ATIS   <tspan fill="#cba6f7" font-weight="600">incin</tspan> compile-time ML
   </text>
 </svg>`;
 

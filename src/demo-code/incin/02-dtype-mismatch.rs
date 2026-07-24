@@ -1,6 +1,6 @@
-use kindle::prelude::*;
+use incin::prelude::*;
 
-type Backend = kindle::candle::CandleBackend<f32, Cpu>;
+type Backend = IncinBackend<f32, Cpu>;
 
 fn main() -> Result<()> {
     // Same shape — but different element types: f32 vs f64.

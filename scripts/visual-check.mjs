@@ -26,14 +26,14 @@ for (const id of ['projects', 'skills', 'experience', 'contact']) {
 }
 
 // Open each demo dialog and screenshot it
-for (const demo of ['kindle-demo', 'asa-demo', 'signal-demo', 'nlu-demo']) {
+for (const demo of ['incin-demo', 'asa-demo', 'signal-demo', 'nlu-demo']) {
   await page.evaluate((demo) => {
     document.querySelectorAll('dialog[open]').forEach((d) => d.close());
     const btn = document.querySelector(`[data-demo-id="${demo}"]`);
     btn.scrollIntoView({ behavior: 'instant', block: 'center' });
     btn.click();
   }, demo);
-  await page.waitForTimeout(demo === 'kindle-demo' ? 3500 : 2200); // editor lazy-load / anims
+  await page.waitForTimeout(demo === 'incin-demo' ? 3500 : 2200); // editor lazy-load / anims
   await page.screenshot({ path: path.join(outDir, `demo-${demo}.png`) });
 }
 

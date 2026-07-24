@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.12.30)  18 JUL 2026 15:25
+This is pdfTeX, Version 3.141592653-2.6-1.40.25 (TeX Live 2023/Debian) (preloaded format=pdflatex 2025.12.30)  25 JUL 2026 00:06
 entering extended mode
  restricted \write18 enabled.
  %&-line parsing enabled.
@@ -480,7 +480,7 @@ Here is how much of TeX's memory you used:
 ></usr/share/texlive/texmf-dist/fonts/type1/public/libertine/LinLibertineTB.pfb
 ></usr/share/texlive/texmf-dist/fonts/type1/public/libertine/LinLibertineTI.pfb
 >
-Output written on cv-it-it.pdf (2 pages, 256625 bytes).
+Output written on cv-it-it.pdf (2 pages, 256621 bytes).
 PDF statistics:
  64 PDF objects out of 1000 (max. 8388607)
  51 compressed objects within 1 object stream

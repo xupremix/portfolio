@@ -1,8 +1,8 @@
 ---
-// Projects section. kindle is the flagship (wide card + code snippet pane);
+// Projects section. incin is the flagship (wide card + code snippet pane);
 // anchors (project-*) are deep-link targets for the hero stats strip.
 import ProjectCard from './ProjectCard.astro';
-import KindleDemo from './KindleDemo.astro';
+import IncinDemo from './IncinDemo.astro';
 import AsaDemo from './AsaDemo.astro';
 import SignalDemo from './SignalDemo.astro';
 import NluDemo from './NluDemo.astro';
@@ -32,7 +32,7 @@ const featuredProjects = allProjects.sort((a, b) => (a.data.index || 99) - (b.da
       </p>
     </div>
 
-    <!-- Featured grid: kindle spans two columns at lg -->
+    <!-- Featured grid: incin spans two columns at lg -->
     <div class="mt-2xl grid grid-cols-1 gap-lg md:grid-cols-2 lg:grid-cols-3">
       {featuredProjects.map((project, i) => (
         <div class="reveal" data-delay={String((i % 3) + 1)}>
@@ -58,7 +58,7 @@ const featuredProjects = allProjects.sort((a, b) => (a.data.index || 99) - (b.da
 </section>
 
 <!-- Demo modals — rendered once, opened via dialog.showModal() -->
-<KindleDemo />
+<IncinDemo />
 <AsaDemo />
 <SignalDemo />
 <NluDemo />

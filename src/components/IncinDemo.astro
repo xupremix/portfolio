@@ -1,15 +1,15 @@
 ---
-// kindle demo — three real-API scenarios, fully rendered at BUILD time:
+// incin demo — three real-API scenarios, fully rendered at BUILD time:
 // code via Astro's Shiki <Code> (no editor, no CodeMirror chunk) and compiler
-// output straight from src/generated/kindle-outputs.json, which is produced by
-// `npm run capture:kindle` against the actual crate (~/kindle, dev branch).
+// output straight from src/generated/incin-outputs.json, which is produced by
+// `npm run capture:incin` against the actual crate (~/Projects/incin, develop branch).
 // The only client JS is tab switching. Nothing is compiled in the browser.
 import DemoDialog from './DemoDialog.astro';
 import { Code } from 'astro:components';
-import shapeCode from '../demo-code/kindle/01-shape-mismatch.rs?raw';
-import dtypeCode from '../demo-code/kindle/02-dtype-mismatch.rs?raw';
-import spectrumCode from '../demo-code/kindle/03-shape-spectrum.rs?raw';
-import captured from '../generated/kindle-outputs.json';
+import shapeCode from '../demo-code/incin/01-shape-mismatch.rs?raw';
+import dtypeCode from '../demo-code/incin/02-dtype-mismatch.rs?raw';
+import spectrumCode from '../demo-code/incin/03-shape-spectrum.rs?raw';
+import captured from '../generated/incin-outputs.json';
 
 interface Scenario {
   key: string;
@@ -42,7 +42,7 @@ const scenarios: Scenario[] = [
     dot: 'bg-green',
     code: spectrumCode,
     explanation:
-      'The same Tensor covers the whole spectrum: fully static shapes (everything checked, nothing passed at runtime), partially static (a dyn batch dim you pass at runtime while the 784 features stay compiler-checked), and fully dynamic Dyn when you want framework-style flexibility. This compiles and runs on the Candle backend.',
+      'The same Tensor covers the whole spectrum: fully static shapes (everything checked, nothing passed at runtime), partially static (a Dyn batch dim you pass at runtime while the 784 features stay compiler-checked), and fully dynamic Dyn when you want framework-style flexibility. This compiles and runs on native CPU & GPU backends.',
   },
 ];
 
@@ -59,9 +59,9 @@ function lineClass(line: string): string {
 ---
 
 <DemoDialog
-  id="kindle-demo"
-  title="kindle — compile-time ML safety"
-  subtitle="Real kindle API · compiler output captured from the actual crate"
+  id="incin-demo"
+  title="incin — compile-time ML safety"
+  subtitle="Real incin API · compiler output captured from the actual crate"
 >
   <div slot="main" class="flex min-h-0 flex-1 flex-col">
     <!-- Scenario tabs -->
@@ -72,7 +72,7 @@ function lineClass(line: string): string {
           role="tab"
           aria-selected={i === 0 ? 'true' : 'false'}
           class:list={[
-            'kindle-tab inline-flex shrink-0 cursor-pointer items-center gap-sm rounded-[var(--radius-control)] border px-md py-xs font-mono text-[12px] font-semibold whitespace-nowrap transition-colors',
+            'incin-tab inline-flex shrink-0 cursor-pointer items-center gap-sm rounded-[var(--radius-control)] border px-md py-xs font-mono text-[12px] font-semibold whitespace-nowrap transition-colors',
             i === 0 ? 'border-accent bg-accent/15 text-accent' : 'border-border bg-transparent text-subtext',
           ]}
         >
@@ -86,10 +86,10 @@ function lineClass(line: string): string {
     <div class="min-h-0 flex-1 lg:overflow-y-auto">
       {scenarios.map((s, i) => (
         <div
-          data-kindle-block={i}
+          data-incin-block={i}
           class:list={['gap-md p-md lg:grid-cols-[minmax(0,7fr)_minmax(280px,5fr)]', i === 0 ? 'block lg:grid' : 'hidden']}
         >
-          <div class="kindle-code min-w-0 overflow-x-auto rounded-[var(--radius-control)] border border-border text-[13px] leading-relaxed">
+          <div class="incin-code min-w-0 overflow-x-auto rounded-[var(--radius-control)] border border-border text-[13px] leading-relaxed">
             <Code code={s.code.trimEnd()} lang="rust" theme="catppuccin-mocha" />
           </div>
 
@@ -103,7 +103,7 @@ function lineClass(line: string): string {
                   <span class={lineClass(line)}>{line + '\n'}</span>
                 ))}</pre>
               ) : (
-                <pre class="rounded-[var(--radius-control)] bg-crust p-sm font-mono text-[11.5px] leading-relaxed whitespace-pre-wrap text-subtext">Output not captured yet — run `npm run capture:kindle` and commit src/generated/kindle-outputs.json.</pre>
+                <pre class="rounded-[var(--radius-control)] bg-crust p-sm font-mono text-[11.5px] leading-relaxed whitespace-pre-wrap text-subtext">Output not captured yet — run `npm run capture:incin` and commit src/generated/incin-outputs.json.</pre>
               )}
               {outputs[s.key] && (
                 <p class:list={['mt-xs font-mono text-[11px]', outputs[s.key]!.success ? 'text-green' : 'text-destructive']}>
@@ -121,7 +121,7 @@ function lineClass(line: string): string {
             <div class="border-l-2 border-accent/50 pl-sm">
               <div class="demo-kicker mb-xs">provenance</div>
               <p class="text-[12px] leading-relaxed text-subtext">
-                Real kindle API (dev branch). Code and output rendered at build time; the output was
+                Real incin API (develop branch). Code and output rendered at build time; the output was
                 captured by running cargo against the actual crate on {captured.capturedAt}.
               </p>
             </div>
@@ -134,7 +134,7 @@ function lineClass(line: string): string {
 
 <style>
   /* Shiki emits its own <pre>; keep it inside our bordered card */
-  .kindle-code :global(pre) {
+  .incin-code :global(pre) {
     margin: 0;
     padding: 12px 14px;
     background-color: var(--color-crust) !important;
@@ -147,16 +147,16 @@ function lineClass(line: string): string {
   const ACTIVE = ['border-accent', 'bg-accent/15', 'text-accent'];
   const IDLE = ['border-border', 'bg-transparent', 'text-subtext'];
 
-  document.querySelectorAll<HTMLButtonElement>('.kindle-tab').forEach((tab, idx) => {
+  document.querySelectorAll<HTMLButtonElement>('.incin-tab').forEach((tab, idx) => {
     tab.addEventListener('click', () => {
-      document.querySelectorAll<HTMLButtonElement>('.kindle-tab').forEach((t, i) => {
+      document.querySelectorAll<HTMLButtonElement>('.incin-tab').forEach((t, i) => {
         const active = i === idx;
         t.classList.remove(...(active ? IDLE : ACTIVE));
         t.classList.add(...(active ? ACTIVE : IDLE));
         t.setAttribute('aria-selected', String(active));
       });
-      document.querySelectorAll<HTMLElement>('[data-kindle-block]').forEach((block) => {
-        const active = Number(block.dataset.kindleBlock) === idx;
+      document.querySelectorAll<HTMLElement>('[data-incin-block]').forEach((block) => {
+        const active = Number(block.dataset.incinBlock) === idx;
         if (active) {
           block.classList.remove('hidden');
           block.classList.add('block', 'lg:grid');

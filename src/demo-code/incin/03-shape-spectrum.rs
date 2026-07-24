@@ -1,15 +1,15 @@
-use kindle::prelude::*;
+use incin::prelude::*;
 
-type Backend = kindle::candle::CandleBackend<f32, Cpu>;
+type Backend = IncinBackend<f32, Cpu>;
 
 fn main() -> Result<()> {
     // Fully static: every dim lives in the type,
     // so there is nothing to pass at runtime.
     let a = Tensor::<s![2, 784], Backend>::zeros(())?;
 
-    // Partially static: the batch dim is `dyn` — you pass
+    // Partially static: the batch dim is dynamic — you pass
     // it at runtime; the 784 features stay compiler-checked.
-    let b = Tensor::<s![dyn, 784], Backend>::zeros((32, ()))?;
+    let b = Tensor::<s![Dyn, 784], Backend>::zeros((32, ()))?;
 
     // Fully dynamic: the whole shape is runtime,
     // like any other framework when you need it.
