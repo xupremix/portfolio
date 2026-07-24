@@ -42,7 +42,7 @@ const scenarios: Scenario[] = [
     dot: 'bg-green',
     code: spectrumCode,
     explanation:
-      'The same Tensor covers the whole spectrum: fully static shapes (everything checked, nothing passed at runtime), partially static (a Dyn batch dim you pass at runtime while the 784 features stay compiler-checked), and fully dynamic Dyn when you want framework-style flexibility. This compiles and runs on native CPU & GPU backends.',
+      'The same Tensor covers the whole spectrum: fully static shapes (everything checked, nothing passed at runtime), partially static (a usize batch dim you pass at runtime while the 784 features stay compiler-checked), and fully dynamic Dyn when you want framework-style flexibility. This compiles and runs on native CPU & GPU backends.',
   },
 ];
 
