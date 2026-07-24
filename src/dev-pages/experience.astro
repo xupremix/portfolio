@@ -1,0 +1,301 @@
+---
+import '../styles/global.css';
+import experienceData from '../data/experience.json';
+---
+<!doctype html>
+<html lang="en" class="mocha">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Dev Mode - Experience Editor</title>
+  </head>
+  <body class="bg-base text-text min-h-screen pb-2xl">
+    <div class="mx-auto w-full max-w-[96rem] p-xl">
+      <nav class="mb-xl flex gap-md border-b border-border pb-sm">
+        <a href="/dev" class="text-subtext transition-colors hover:text-accent">Projects</a>
+        <a href="/dev/skills" class="text-subtext transition-colors hover:text-accent">Skills</a>
+        <a href="/dev/experience" class="text-accent font-semibold">Experience</a>
+      </nav>
+      
+      <div class="flex items-end justify-between mb-lg">
+        <div>
+          <h1 class="text-display font-semibold gradient-text mb-sm">Experience Editor</h1>
+          <p class="text-subtext">Edit your experience timeline with live preview and history.</p>
+        </div>
+        
+        <div class="flex gap-sm">
+          <button id="undo-btn" class="rounded-[var(--radius-control)] border border-border bg-mantle px-md py-xs font-semibold text-text transition-colors hover:border-blue hover:text-blue disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" disabled>
+            Undo
+          </button>
+          <button id="redo-btn" class="rounded-[var(--radius-control)] border border-border bg-mantle px-md py-xs font-semibold text-text transition-colors hover:border-blue hover:text-blue disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" disabled>
+            Redo
+          </button>
+          <button id="save-btn" class="rounded-[var(--radius-control)] border border-accent bg-accent/10 px-md py-xs font-semibold text-accent transition-colors hover:bg-accent/20 cursor-pointer ml-md">
+            Save Changes
+          </button>
+        </div>
+      </div>
+      
+      <p id="status-msg" class="mb-lg text-sm hidden"></p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-2xl">
+        <!-- Editor Side -->
+        <div class="flex flex-col gap-lg">
+          <div class="flex items-center justify-between border-b border-border pb-xs">
+            <h2 class="text-title font-semibold text-subtext">Editor</h2>
+            <button id="add-item-btn" class="text-label font-semibold text-accent hover:text-accent/80 transition-colors cursor-pointer">
+              + Add Experience
+            </button>
+          </div>
+          <div id="editor-container" class="flex flex-col gap-lg"></div>
+        </div>
+
+        <!-- Preview Side -->
+        <div class="flex flex-col gap-lg sticky top-lg h-fit">
+          <div class="flex items-center border-b border-border pb-xs">
+            <h2 class="text-title font-semibold text-subtext">Live Preview</h2>
+          </div>
+          <div class="rounded-[var(--radius-card)] border border-border bg-base p-lg shadow-xl" style="background-image: radial-gradient(var(--mantle) 1px, transparent 1px); background-size: 20px 20px;">
+            <div id="preview-container" class="relative flex flex-col gap-xl border-l-2 border-border pl-xl ml-xl my-md"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <script is:inline define:vars={{ initialData: experienceData }}>
+      let experience = JSON.parse(JSON.stringify(initialData));
+      
+      let history = [];
+      let historyIndex = -1;
+
+      const tone = {
+        accent: { dot: 'bg-accent', pill: 'border-accent/40 bg-accent/10 text-accent' },
+        green: { dot: 'bg-green', pill: 'border-green/40 bg-green/10 text-green' },
+        blue: { dot: 'bg-blue', pill: 'border-blue/40 bg-blue/10 text-blue' },
+        maroon: { dot: 'bg-maroon', pill: 'border-maroon/40 bg-maroon/10 text-maroon' },
+        yellow: { dot: 'bg-yellow', pill: 'border-yellow/40 bg-yellow/10 text-yellow' },
+        peach: { dot: 'bg-peach', pill: 'border-peach/40 bg-peach/10 text-peach' },
+      };
+
+      function pushState() {
+        const stateStr = JSON.stringify(experience);
+        if (historyIndex >= 0 && history[historyIndex] === stateStr) return;
+        
+        history = history.slice(0, historyIndex + 1);
+        history.push(stateStr);
+        historyIndex++;
+        updateUndoRedoButtons();
+      }
+
+      function updateUndoRedoButtons() {
+        document.getElementById('undo-btn').disabled = historyIndex <= 0;
+        document.getElementById('redo-btn').disabled = historyIndex >= history.length - 1;
+      }
+
+      function undo() {
+        if (historyIndex > 0) {
+          historyIndex--;
+          experience = JSON.parse(history[historyIndex]);
+          renderAll();
+        }
+      }
+
+      function redo() {
+        if (historyIndex < history.length - 1) {
+          historyIndex++;
+          experience = JSON.parse(history[historyIndex]);
+          renderAll();
+        }
+      }
+
+      document.getElementById('undo-btn').addEventListener('click', undo);
+      document.getElementById('redo-btn').addEventListener('click', redo);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'z') {
+          e.preventDefault();
+          undo();
+        } else if (e.ctrlKey && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) {
+          e.preventDefault();
+          redo();
+        }
+      });
+
+      function renderEditor() {
+        const container = document.getElementById('editor-container');
+        container.innerHTML = '';
+        
+        experience.forEach((item, idx) => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'rounded-[var(--radius-card)] border border-border bg-mantle p-md flex flex-col gap-md relative group';
+          
+          itemDiv.innerHTML = `
+            <div class="flex gap-md items-start">
+              <div class="flex-1 flex flex-col gap-xs">
+                <label class="text-label font-semibold text-subtext uppercase">Role</label>
+                <input type="text" class="w-full rounded-[var(--radius-control)] border border-border bg-base px-sm py-xs focus:border-accent focus:outline-none" value="${item.role.replace(/"/g, '&quot;')}" onchange="updateItem(${idx}, 'role', this.value)">
+              </div>
+              <div class="flex-1 flex flex-col gap-xs">
+                <label class="text-label font-semibold text-subtext uppercase">Organization</label>
+                <input type="text" class="w-full rounded-[var(--radius-control)] border border-border bg-base px-sm py-xs focus:border-accent focus:outline-none" value="${item.org.replace(/"/g, '&quot;')}" onchange="updateItem(${idx}, 'org', this.value)">
+              </div>
+              <div class="mt-[1.6rem] flex gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onclick="moveItemUp(${idx})" class="rounded-[var(--radius-control)] border border-border bg-mantle px-sm py-xs text-subtext transition-colors hover:text-accent hover:border-accent disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" title="Move Up" ${idx === 0 ? 'disabled' : ''}>↑</button>
+                <button onclick="moveItemDown(${idx})" class="rounded-[var(--radius-control)] border border-border bg-mantle px-sm py-xs text-subtext transition-colors hover:text-accent hover:border-accent disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" title="Move Down" ${idx === experience.length - 1 ? 'disabled' : ''}>↓</button>
+                <button onclick="removeItem(${idx})" class="rounded-[var(--radius-control)] border border-red/40 bg-red/10 px-sm py-xs text-red transition-colors hover:bg-red/20 cursor-pointer">
+                  Delete
+                </button>
+              </div>
+            </div>
+            
+            <div class="flex gap-md items-start">
+              <div class="flex-1 flex flex-col gap-xs">
+                <label class="text-label font-semibold text-subtext uppercase">Period</label>
+                <input type="text" class="w-full rounded-[var(--radius-control)] border border-border bg-base px-sm py-xs focus:border-accent focus:outline-none" value="${item.period.replace(/"/g, '&quot;')}" onchange="updateItem(${idx}, 'period', this.value)">
+              </div>
+              <div class="flex-1 flex flex-col gap-xs">
+                <label class="text-label font-semibold text-subtext uppercase">Tag</label>
+                <input type="text" class="w-full rounded-[var(--radius-control)] border border-border bg-base px-sm py-xs focus:border-accent focus:outline-none" value="${item.tag.replace(/"/g, '&quot;')}" onchange="updateItem(${idx}, 'tag', this.value)">
+              </div>
+            </div>
+
+            <div class="flex flex-col gap-xs">
+              <label class="text-label font-semibold text-subtext uppercase">Description</label>
+              <textarea class="w-full rounded-[var(--radius-control)] border border-border bg-base px-sm py-xs focus:border-accent focus:outline-none min-h-[4rem]" onchange="updateItem(${idx}, 'description', this.value)">${item.description}</textarea>
+            </div>
+            
+            <div class="flex gap-md items-end">
+              <div class="flex-1 flex flex-col gap-xs">
+                <label class="text-label font-semibold text-subtext uppercase">Tone Class</label>
+                <select class="w-full rounded-[var(--radius-control)] border border-border bg-base px-sm py-xs focus:border-accent focus:outline-none" onchange="updateItem(${idx}, 'toneClass', this.value)">
+                  <option value="accent" ${item.toneClass === 'accent' ? 'selected' : ''}>Accent</option>
+                  <option value="green" ${item.toneClass === 'green' ? 'selected' : ''}>Green</option>
+                  <option value="blue" ${item.toneClass === 'blue' ? 'selected' : ''}>Blue</option>
+                  <option value="maroon" ${item.toneClass === 'maroon' ? 'selected' : ''}>Maroon</option>
+                  <option value="yellow" ${item.toneClass === 'yellow' ? 'selected' : ''}>Yellow</option>
+                  <option value="peach" ${item.toneClass === 'peach' ? 'selected' : ''}>Peach</option>
+                </select>
+              </div>
+              <div class="flex-1"></div>
+            </div>
+          `;
+          container.appendChild(itemDiv);
+        });
+      }
+
+      function renderPreview() {
+        const container = document.getElementById('preview-container');
+        container.innerHTML = '';
+
+        experience.forEach((item) => {
+          const itemDiv = document.createElement('div');
+          itemDiv.className = 'relative';
+          
+          const currentTone = tone[item.toneClass] || tone['accent'];
+
+          itemDiv.innerHTML = `
+            <span class="absolute top-[6px] -left-[41px] h-2.5 w-2.5 rounded-full ring-4 ring-base ${currentTone.dot}" aria-hidden="true"></span>
+            <div class="flex flex-col gap-sm rounded-[var(--radius-card)] p-sm transition-colors hover:bg-mantle/60">
+              <div class="flex flex-col gap-xs sm:flex-row sm:items-center sm:justify-between">
+                <div class="flex flex-col gap-xs">
+                  <h3 class="text-title font-semibold text-text">${item.role || 'Role'}</h3>
+                  <div class="flex flex-wrap items-center gap-sm">
+                    <p class="text-label font-semibold text-accent">${item.org || 'Organization'}</p>
+                    <span class="rounded-full border px-sm py-xs text-label font-semibold ${currentTone.pill}">
+                      ${item.tag || 'Tag'}
+                    </span>
+                  </div>
+                </div>
+                <span class="shrink-0 font-mono text-label font-semibold text-subtext">${item.period || 'Period'}</span>
+              </div>
+              <p class="max-w-[52rem] text-body text-text">${item.description || 'Description goes here...'}</p>
+            </div>
+          `;
+          container.appendChild(itemDiv);
+        });
+      }
+
+      function renderAll() {
+        renderEditor();
+        renderPreview();
+      }
+
+      function triggerChange() {
+        renderAll();
+        pushState();
+      }
+
+      window.updateItem = (idx, field, val) => { 
+        experience[idx][field] = val; 
+        triggerChange();
+      };
+      
+      window.removeItem = (idx) => { 
+        experience.splice(idx, 1); 
+        triggerChange();
+      };
+
+      window.moveItemUp = (idx) => {
+        if (idx > 0) {
+          const temp = experience[idx];
+          experience[idx] = experience[idx - 1];
+          experience[idx - 1] = temp;
+          triggerChange();
+        }
+      };
+
+      window.moveItemDown = (idx) => {
+        if (idx < experience.length - 1) {
+          const temp = experience[idx];
+          experience[idx] = experience[idx + 1];
+          experience[idx + 1] = temp;
+          triggerChange();
+        }
+      };
+
+      document.getElementById('add-item-btn').addEventListener('click', () => {
+        experience.push({ 
+          role: 'New Role', 
+          org: 'Organization', 
+          period: '2024 — present', 
+          description: '', 
+          tag: 'Tag', 
+          toneClass: 'accent' 
+        });
+        triggerChange();
+      });
+
+      document.getElementById('save-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('save-btn');
+        const msg = document.getElementById('status-msg');
+        btn.textContent = 'Saving...';
+        
+        try {
+          const res = await fetch('/_dev/save-experience', {
+            method: 'POST',
+            body: JSON.stringify(experience)
+          });
+          
+          if (res.ok) {
+            msg.textContent = 'Successfully saved to src/data/experience.json!';
+            msg.className = 'mb-lg text-sm text-green block';
+          } else {
+            const data = await res.json();
+            throw new Error(data.error);
+          }
+        } catch (err) {
+          msg.textContent = 'Error: ' + err.message;
+          msg.className = 'mb-lg text-sm text-red block';
+        }
+        
+        btn.textContent = 'Save Changes';
+        setTimeout(() => msg.classList.add('hidden'), 3000);
+      });
+
+      // Initialize
+      pushState();
+      renderAll();
+    </script>
+  </body>
+</html>

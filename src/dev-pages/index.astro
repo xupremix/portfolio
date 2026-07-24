@@ -1,0 +1,104 @@
+---
+import '../styles/global.css';
+
+// Only allow access in development
+if (import.meta.env.PROD) {
+  return Astro.redirect('/');
+}
+---
+
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Dev Mode - Add Project</title>
+  </head>
+  <body class="bg-base text-text min-h-screen">
+    <div class="mx-auto w-full max-w-[48rem] p-xl">
+      <nav class="mb-xl flex gap-md border-b border-border pb-sm">
+        <a href="/dev" class="text-accent font-semibold">Projects</a>
+        <a href="/dev/skills" class="text-subtext transition-colors hover:text-accent">Skills</a>
+        <a href="/dev/experience" class="text-subtext transition-colors hover:text-accent">Experience</a>
+      </nav>
+      <h1 class="text-display font-semibold gradient-text mb-lg">Add New Project</h1>
+      <p class="text-subtext mb-xl">Create a new project entry locally. This will generate a markdown file in <code>src/content/projects/</code>.</p>
+      
+      <form id="project-form" class="flex flex-col gap-md">
+        <div class="flex flex-col gap-xs">
+          <label class="text-label font-semibold" for="name">Name *</label>
+          <input required type="text" id="name" name="name" class="w-full rounded-[var(--radius-control)] border border-border bg-mantle px-md py-sm focus:border-accent focus:outline-none" placeholder="e.g. My Cool Project" />
+        </div>
+
+        <div class="flex flex-col gap-xs">
+          <label class="text-label font-semibold" for="description">Description *</label>
+          <textarea required id="description" name="description" rows="4" class="w-full rounded-[var(--radius-control)] border border-border bg-mantle px-md py-sm focus:border-accent focus:outline-none" placeholder="Project description..."></textarea>
+        </div>
+
+        <div class="flex flex-col gap-xs">
+          <label class="text-label font-semibold" for="tech">Technologies (comma-separated) *</label>
+          <input required type="text" id="tech" name="tech" class="w-full rounded-[var(--radius-control)] border border-border bg-mantle px-md py-sm focus:border-accent focus:outline-none" placeholder="Rust, WebAssembly, React" />
+        </div>
+
+        <div class="flex flex-col gap-xs">
+          <label class="text-label font-semibold" for="href">Link (URL) *</label>
+          <input required type="url" id="href" name="href" class="w-full rounded-[var(--radius-control)] border border-border bg-mantle px-md py-sm focus:border-accent focus:outline-none" placeholder="https://github.com/..." />
+        </div>
+
+        <div class="grid grid-cols-2 gap-md">
+          <div class="flex flex-col gap-xs">
+            <label class="text-label font-semibold" for="role">Role</label>
+            <input type="text" id="role" name="role" class="w-full rounded-[var(--radius-control)] border border-border bg-mantle px-md py-sm focus:border-accent focus:outline-none" placeholder="Solo Project" />
+          </div>
+          <div class="flex flex-col gap-xs">
+            <label class="text-label font-semibold" for="impact">Impact / Highlight</label>
+            <input type="text" id="impact" name="impact" class="w-full rounded-[var(--radius-control)] border border-border bg-mantle px-md py-sm focus:border-accent focus:outline-none" placeholder="10x performance improvement" />
+          </div>
+        </div>
+
+        <button type="submit" id="submit-btn" class="mt-lg rounded-[var(--radius-control)] bg-accent px-xl py-md font-semibold text-base text-crust transition-opacity hover:opacity-90">
+          Save Project
+        </button>
+      </form>
+      
+      <div id="status" class="mt-md text-green hidden">Project saved successfully! Check your editor.</div>
+    </div>
+
+    <script>
+      document.getElementById('project-form')?.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const form = e.target as HTMLFormElement;
+        const formData = new FormData(form);
+        const data = Object.fromEntries(formData.entries());
+        
+        const btn = document.getElementById('submit-btn') as HTMLButtonElement;
+        btn.disabled = true;
+        btn.textContent = 'Saving...';
+
+        try {
+          const res = await fetch('/_dev/save-project', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(data)
+          });
+          
+          if (res.ok) {
+            form.reset();
+            const status = document.getElementById('status');
+            if (status) {
+              status.classList.remove('hidden');
+              setTimeout(() => status.classList.add('hidden'), 3000);
+            }
+          } else {
+            const err = await res.json();
+            alert('Error: ' + err.error);
+          }
+        } catch (error) {
+          alert('Network error');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = 'Save Project';
+        }
+      });
+    </script>
+  </body>
+</html>

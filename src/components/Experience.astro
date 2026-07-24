@@ -1,5 +1,8 @@
 ---
 // Experience — timeline rail with tokened tag colors (no inline hex).
+import experienceData from '../data/experience.json';
+import { Icon } from 'astro-icon/components';
+
 const experience: {
   role: string;
   org: string;
@@ -7,31 +10,15 @@ const experience: {
   description: string;
   tag: string;
   toneClass: string; // dot + tag pill tone, from theme tokens
-}[] = [
-  {
-    role: 'ML Student',
-    org: 'University of Trento',
-    period: '2024 — present',
-    description:
-      "Master's level coursework and projects spanning deep learning, NLP, computer vision, reinforcement learning, and autonomous systems. Lead architect on the ASA Autobots multi-agent capstone.",
-    tag: 'Student · Researcher',
-    toneClass: 'accent',
-  },
-  {
-    role: 'University Tutor',
-    org: 'University of Trento',
-    period: '2024 — present',
-    description:
-      'Tutoring undergraduate students in algorithms, data structures, and foundational programming. Teaching to others accelerates my own mastery — and it builds the leadership muscle of making complex ideas accessible.',
-    tag: 'Teaching · Leadership',
-    toneClass: 'green',
-  },
-];
+}[] = experienceData;
 
 const tone: Record<string, { dot: string; pill: string }> = {
   accent: { dot: 'bg-accent', pill: 'border-accent/40 bg-accent/10 text-accent' },
   green: { dot: 'bg-green', pill: 'border-green/40 bg-green/10 text-green' },
   blue: { dot: 'bg-blue', pill: 'border-blue/40 bg-blue/10 text-blue' },
+  maroon: { dot: 'bg-maroon', pill: 'border-maroon/40 bg-maroon/10 text-maroon' },
+  yellow: { dot: 'bg-yellow', pill: 'border-yellow/40 bg-yellow/10 text-yellow' },
+  peach: { dot: 'bg-peach', pill: 'border-peach/40 bg-peach/10 text-peach' },
 };
 ---
 
@@ -39,7 +26,14 @@ const tone: Record<string, { dot: string; pill: string }> = {
   <div class="mx-auto max-w-[72rem]">
     <div class="reveal">
       <p class="section-eyebrow">experience</p>
-      <h2 class="gradient-text mt-sm inline-block text-display font-semibold">Experience</h2>
+      <div class="flex items-center gap-md mt-sm">
+        <h2 class="gradient-text inline-block text-display font-semibold">Experience</h2>
+        {import.meta.env.DEV && (
+          <a href="/dev/experience" class="rounded-full border border-border bg-mantle px-sm py-xs text-xs font-semibold text-subtext transition-colors hover:border-accent hover:text-accent">
+            <Icon name="lucide:pen-tool" class="inline-block mr-xs" width={12} height={12} /> Edit
+          </a>
+        )}
+      </div>
       <p class="mt-sm text-body text-subtext">Where I study, build, teach, and lead.</p>
     </div>
 

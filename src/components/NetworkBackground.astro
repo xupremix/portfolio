@@ -1,0 +1,237 @@
+---
+// NetworkBackground.astro
+// Renders a latent space point cloud using Three.js.
+// Fixed to the background.
+---
+
+<canvas id="network-bg" class="fixed inset-0 z-[-1] pointer-events-none opacity-80"></canvas>
+
+<script>
+  import * as THREE from 'three';
+
+  // 1. Setup Scene, Camera, Renderer
+  const canvas = document.getElementById('network-bg') as HTMLCanvasElement;
+  const scene = new THREE.Scene();
+  
+  // Use a perspective camera
+  const camera = new THREE.PerspectiveCamera(60, window.innerWidth / window.innerHeight, 0.1, 1000);
+  camera.position.z = 150;
+
+  const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+  renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+  renderer.setSize(window.innerWidth, window.innerHeight);
+
+  // 2. Generate Point Cloud (GPU Tensor Lattice)
+  const gridSize = 11; // 11x11x11 = 1331 particles
+  const particleCount = gridSize * gridSize * gridSize;
+  const geometry = new THREE.BufferGeometry();
+  const positions = new Float32Array(particleCount * 3);
+  const baseOpacities = new Float32Array(particleCount);
+
+  const spacing = 19;
+  const offset = (gridSize * spacing) / 2;
+
+  let pIdx = 0;
+  for (let x = 0; x < gridSize; x++) {
+    for (let y = 0; y < gridSize; y++) {
+      for (let z = 0; z < gridSize; z++) {
+        // Strict grid with tiny jitter for a premium, high-tech metallic feel
+        positions[pIdx * 3] = (x * spacing) - offset + (Math.random() * 1.5 - 0.75);
+        positions[pIdx * 3 + 1] = (y * spacing) - offset + (Math.random() * 1.5 - 0.75);
+        positions[pIdx * 3 + 2] = (z * spacing) - offset + (Math.random() * 1.5 - 0.75);
+
+        baseOpacities[pIdx] = Math.random() * 0.5 + 0.3; // Less faded
+        pIdx++;
+      }
+    }
+  }
+
+  geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+  geometry.setAttribute('aOpacity', new THREE.BufferAttribute(baseOpacities, 1));
+
+  // Custom Shader to handle the "forward pass" wave effect
+  // We keep it extremely subtle so it's not distracting.
+  const material = new THREE.ShaderMaterial({
+    uniforms: {
+      uTime: { value: 0 },
+      uWaveCenter: { value: new THREE.Vector3(0, 0, 0) },
+      uWaveRadius: { value: 0.0 },
+      uColorBase: { value: new THREE.Color('#a6adc8') }, // subtext
+      uColorActive: { value: new THREE.Color('#cba6f7') }, // accent
+    },
+    vertexShader: `
+      uniform float uTime;
+      uniform vec3 uWaveCenter;
+      uniform float uWaveRadius;
+      
+      attribute float aOpacity;
+      
+      varying float vOpacity;
+      varying float vActiveMix;
+
+      void main() {
+        // Calculate distance from this particle to the wave center
+        float dist = distance(position, uWaveCenter);
+        
+        // The wave is a gaussian bump centered at uWaveRadius
+        float waveStrength = exp(-pow(dist - uWaveRadius, 2.0) / 150.0);
+        
+        vActiveMix = waveStrength;
+        vOpacity = aOpacity + (waveStrength * 0.15); // Toned down highlight
+
+        vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+        // Toned down size boost for a rigid premium feel
+        gl_PointSize = (1.5 + waveStrength * 1.0) * (150.0 / -mvPosition.z);
+        gl_Position = projectionMatrix * mvPosition;
+      }
+    `,
+    fragmentShader: `
+      uniform vec3 uColorBase;
+      uniform vec3 uColorActive;
+      
+      varying float vOpacity;
+      varying float vActiveMix;
+
+      void main() {
+        // Sharper, square-ish particles for a hardware/tensor look
+        float dist = distance(gl_PointCoord, vec2(0.5));
+        if (dist > 0.5) discard;
+        
+        // Harder edge for premium metallic feel
+        float alpha = smoothstep(0.5, 0.3, dist) * vOpacity;
+        
+        vec3 finalColor = mix(uColorBase, uColorActive, vActiveMix);
+        
+        gl_FragColor = vec4(finalColor, alpha);
+      }
+    `,
+    transparent: true,
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+
+  const particles = new THREE.Points(geometry, material);
+  scene.add(particles);
+
+  // 3. Add lines connecting nearest neighbors for a strict lattice network
+  const lineMaterial = new THREE.LineBasicMaterial({
+    color: 0x313244, // border color
+    transparent: true,
+    opacity: 0.25, // More visible
+    depthWrite: false,
+    blending: THREE.AdditiveBlending
+  });
+  
+  const lineIndices = [];
+  // Connect orthogonal neighbors
+  for (let i = 0; i < particleCount; i++) {
+    for (let j = i + 1; j < particleCount; j++) {
+      const dx = positions[i*3] - positions[j*3];
+      const dy = positions[i*3+1] - positions[j*3+1];
+      const dz = positions[i*3+2] - positions[j*3+2];
+      const distSq = dx*dx + dy*dy + dz*dz;
+      // spacing is 19. 19^2 = 361. We threshold at 380 to only get orthogonal lines.
+      if (distSq < 380) { 
+        lineIndices.push(i, j);
+      }
+    }
+  }
+
+  const lineGeometry = new THREE.BufferGeometry();
+  lineGeometry.setAttribute('position', geometry.getAttribute('position'));
+  lineGeometry.setIndex(lineIndices);
+  const lines = new THREE.LineSegments(lineGeometry, lineMaterial);
+  scene.add(lines);
+
+  // 4. Interaction & Animation
+  let mouseX = 0;
+  let mouseY = 0;
+  let targetX = 0;
+  let targetY = 0;
+  const windowHalfX = window.innerWidth / 2;
+  const windowHalfY = window.innerHeight / 2;
+
+  // Tilt the initial scene for dynamic depth perspective
+  scene.rotation.x = 0.29; // Inclined ~5° further downwards for depth perspective
+  scene.rotation.y = -0.385; // Rotated 2° further to the left
+
+  document.addEventListener('mousemove', (event) => {
+    // Highly reduced parallax for a rigid feel
+    mouseX = (event.clientX - windowHalfX) * 0.01;
+    mouseY = (event.clientY - windowHalfY) * 0.01;
+  });
+
+  let scrollY = 0;
+  window.addEventListener('scroll', () => {
+    scrollY = window.scrollY;
+  }, { passive: true });
+
+  let isWaveActive = false;
+  let waveProgress = 0;
+  
+  // Listen for custom forward pass event
+  window.addEventListener('trigger-forward-pass', ((e: CustomEvent) => {
+    if (isWaveActive) return; // prevent spamming
+    
+    // Map screen mouse position to 3D space roughly
+    const ndcX = (e.detail.x / window.innerWidth) * 2 - 1;
+    const ndcY = -(e.detail.y / window.innerHeight) * 2 + 1;
+    
+    // Create a vector and unproject it to get a point in 3D
+    const vector = new THREE.Vector3(ndcX, ndcY, 0.5);
+    vector.unproject(camera);
+    const dir = vector.sub(camera.position).normalize();
+    const distance = -camera.position.z / dir.z;
+    const pos = camera.position.clone().add(dir.multiplyScalar(distance));
+    
+    material.uniforms.uWaveCenter.value.copy(pos);
+    isWaveActive = true;
+    waveProgress = 0;
+  }) as EventListener);
+
+  const clock = new THREE.Clock();
+
+  function animate() {
+    requestAnimationFrame(animate);
+    const elapsedTime = clock.getElapsedTime();
+
+    // Map scroll position to camera depth to "fly into" the tensor grid
+    const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
+    const scrollFraction = Math.max(0, Math.min(1, scrollY / maxScroll));
+    // Reduced travel distance: Fly from Z=150 to Z=80 so it doesn't get distracting
+    const targetZ = 150 - (scrollFraction * 70); 
+
+    targetX = mouseX;
+    targetY = mouseY;
+    
+    // Snappy, subtle camera parallax + scroll depth
+    camera.position.x += (targetX - camera.position.x) * 0.05;
+    camera.position.y += (-targetY - camera.position.y) * 0.05;
+    camera.position.z += (targetZ - camera.position.z) * 0.05;
+    camera.lookAt(0, 0, 0);
+
+    // Wave Animation
+    if (isWaveActive) {
+      waveProgress += 2.0; // speed of the wave expanding
+      material.uniforms.uWaveRadius.value = waveProgress;
+      
+      // Stop the wave once it passes the whole cloud
+      if (waveProgress > 300) {
+        isWaveActive = false;
+        material.uniforms.uWaveRadius.value = 0;
+      }
+    }
+
+    material.uniforms.uTime.value = elapsedTime;
+    renderer.render(scene, camera);
+  }
+
+  // Handle Resize
+  window.addEventListener('resize', () => {
+    camera.aspect = window.innerWidth / window.innerHeight;
+    camera.updateProjectionMatrix();
+    renderer.setSize(window.innerWidth, window.innerHeight);
+  });
+
+  animate();
+</script>

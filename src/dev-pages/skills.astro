@@ -1,0 +1,364 @@
+---
+import '../styles/global.css';
+import skillGroupsData from '../data/skills.json';
+---
+<!doctype html>
+<html lang="en" class="mocha">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width" />
+    <title>Dev Mode - Skills Editor</title>
+  </head>
+  <body class="bg-base text-text min-h-screen pb-2xl">
+    <div class="mx-auto w-full max-w-[96rem] p-xl">
+      <nav class="mb-xl flex gap-md border-b border-border pb-sm">
+        <a href="/dev" class="text-subtext transition-colors hover:text-accent">Projects</a>
+        <a href="/dev/skills" class="text-accent font-semibold">Skills</a>
+        <a href="/dev/experience" class="text-subtext transition-colors hover:text-accent">Experience</a>
+      </nav>
+      
+      <div class="flex items-end justify-between mb-lg">
+        <div>
+          <h1 class="text-display font-semibold gradient-text mb-sm">Skills Editor</h1>
+          <p class="text-subtext">Edit your skills configuration with live preview and history.</p>
+        </div>
+        
+        <div class="flex gap-sm">
+          <button id="undo-btn" class="rounded-[var(--radius-control)] border border-border bg-mantle px-md py-xs font-semibold text-text transition-colors hover:border-blue hover:text-blue disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" disabled>
+            Undo
+          </button>
+          <button id="redo-btn" class="rounded-[var(--radius-control)] border border-border bg-mantle px-md py-xs font-semibold text-text transition-colors hover:border-blue hover:text-blue disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer" disabled>
+            Redo
+          </button>
+          <button id="save-btn" class="rounded-[var(--radius-control)] border border-accent bg-accent/10 px-md py-xs font-semibold text-accent transition-colors hover:bg-accent/20 cursor-pointer ml-md">
+            Save Changes
+          </button>
+        </div>
+      </div>
+      
+      <p id="status-msg" class="mb-lg text-sm hidden"></p>
+
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-2xl">
+        <!-- Editor Side -->
+        <div class="flex flex-col gap-lg">
+          <div class="flex items-center justify-between border-b border-border pb-xs">
+            <h2 class="text-title font-semibold text-subtext">Editor</h2>
+            <button id="add-group-btn" class="text-label font-semibold text-accent hover:text-accent/80 transition-colors cursor-pointer">
+              + Add Group
+            </button>
+          </div>
+          <div id="editor-container" class="flex flex-col gap-lg"></div>
+        </div>
+
+        <!-- Preview Side -->
+        <div class="flex flex-col gap-lg sticky top-lg h-fit">
+          <div class="flex items-center border-b border-border pb-xs">
+            <h2 class="text-title font-semibold text-subtext">Live Preview</h2>
+          </div>
+          <div class="rounded-[var(--radius-card)] border border-border bg-base p-lg shadow-xl" style="background-image: radial-gradient(var(--mantle) 1px, transparent 1px); background-size: 20px 20px;">
+            <div id="preview-container" class="grid grid-cols-1 gap-lg sm:grid-cols-2"></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <script is:inline define:vars={{ initialData: skillGroupsData }}>
+      let skills = JSON.parse(JSON.stringify(initialData));
+      
+      let history = [];
+      let historyIndex = -1;
+
+      function pushState() {
+        const stateStr = JSON.stringify(skills);
+        if (historyIndex >= 0 && history[historyIndex] === stateStr) return;
+        
+        history = history.slice(0, historyIndex + 1);
+        history.push(stateStr);
+        historyIndex++;
+        updateUndoRedoButtons();
+      }
+
+      function updateUndoRedoButtons() {
+        document.getElementById('undo-btn').disabled = historyIndex <= 0;
+        document.getElementById('redo-btn').disabled = historyIndex >= history.length - 1;
+      }
+
+      function undo() {
+        if (historyIndex > 0) {
+          historyIndex--;
+          skills = JSON.parse(history[historyIndex]);
+          renderAll();
+        }
+      }
+
+      function redo() {
+        if (historyIndex < history.length - 1) {
+          historyIndex++;
+          skills = JSON.parse(history[historyIndex]);
+          renderAll();
+        }
+      }
+
+      document.getElementById('undo-btn').addEventListener('click', undo);
+      document.getElementById('redo-btn').addEventListener('click', redo);
+
+      document.addEventListener('keydown', (e) => {
+        if (e.ctrlKey && e.key === 'z') {
+          e.preventDefault();
+          undo();
+        } else if (e.ctrlKey && (e.key === 'y' || (e.shiftKey && e.key === 'Z'))) {
+          e.preventDefault();
+          redo();
+        }
+      });
+
+      const tone = {
+        accent: { text: 'text-accent', bg: 'bg-accent/10', border: 'border-accent/40', lBorder: 'border-l-accent/50' },
+        blue: { text: 'text-blue', bg: 'bg-blue/10', border: 'border-blue/40', lBorder: 'border-l-blue/50' },
+        green: { text: 'text-green', bg: 'bg-green/10', border: 'border-green/40', lBorder: 'border-l-green/50' },
+        yellow: { text: 'text-yellow', bg: 'bg-yellow/10', border: 'border-yellow/40', lBorder: 'border-l-yellow/50' },
+        maroon: { text: 'text-maroon', bg: 'bg-maroon/10', border: 'border-maroon/40', lBorder: 'border-l-maroon/50' },
+        peach: { text: 'text-peach', bg: 'bg-peach/10', border: 'border-peach/40', lBorder: 'border-l-peach/50' },
+      };
+
+      function renderEditor() {
+        const container = document.getElementById('editor-container');
+        container.innerHTML = '';
+        
+        skills.forEach((group, groupIdx) => {
+          const groupDiv = document.createElement('div');
+          groupDiv.className = 'rounded-[var(--radius-card)] border border-border bg-mantle p-md flex flex-col gap-md transition-all relative group';
+          
+          let itemsHtml = (group.items || []).map((item, itemIdx) => {
+            const isPrimary = group.primary && group.primary.includes(item);
+            return `
+              <div class="flex items-center gap-xs rounded-full border border-border bg-base px-sm py-xs pl-md shadow-sm transition-colors group/item">
+                <input type="text" value="${item.replace(/"/g, '&quot;')}" class="w-24 bg-transparent text-label font-medium text-text focus:outline-none" onchange="updateItemName(${groupIdx}, ${itemIdx}, this.value)">
+                
+                <button onclick="moveItemLeft(${groupIdx}, ${itemIdx})" class="w-5 h-5 flex items-center justify-center rounded-full text-subtext hover:bg-border transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="Move Left" ${itemIdx === 0 ? 'disabled' : ''}>←</button>
+                <button onclick="moveItemRight(${groupIdx}, ${itemIdx})" class="w-5 h-5 flex items-center justify-center rounded-full text-subtext hover:bg-border transition-colors disabled:opacity-30 disabled:cursor-not-allowed" title="Move Right" ${itemIdx === (group.items || []).length - 1 ? 'disabled' : ''}>→</button>
+                
+                <button onclick="togglePrimary(${groupIdx}, ${itemIdx})" class="w-5 h-5 flex items-center justify-center rounded-full transition-colors ${isPrimary ? 'bg-accent/20 text-accent' : 'bg-transparent text-subtext hover:bg-border'}" title="Toggle Primary">
+                  ★
+                </button>
+                <button onclick="removeItem(${groupIdx}, ${itemIdx})" class="w-5 h-5 flex items-center justify-center rounded-full text-red/60 hover:text-red hover:bg-red/10 transition-colors" title="Delete">
+                  ×
+                </button>
+              </div>
+            `;
+          }).join('');
+
+          groupDiv.innerHTML = `
+            <div class="flex gap-md items-start">
+              <div class="flex-1 flex flex-col gap-xs">
+                <label class="text-label font-semibold text-subtext uppercase">Heading</label>
+                <input type="text" class="w-full rounded-[var(--radius-control)] border border-border bg-base px-sm py-xs focus:border-accent focus:outline-none" value="${group.heading}" onchange="updateGroup(${groupIdx}, 'heading', this.value)">
+              </div>
+              <div class="flex-1 flex flex-col gap-xs">
+                <label class="text-label font-semibold text-subtext uppercase">Icon</label>
+                <input type="text" class="w-full rounded-[var(--radius-control)] border border-border bg-base px-sm py-xs focus:border-accent focus:outline-none" value="${group.icon}" onchange="updateGroup(${groupIdx}, 'icon', this.value)">
+              </div>
+              <div class="flex-1 flex flex-col gap-xs">
+                <label class="text-label font-semibold text-subtext uppercase">Color Tone</label>
+                <select class="w-full rounded-[var(--radius-control)] border border-border bg-base px-sm py-xs focus:border-accent focus:outline-none" onchange="updateGroup(${groupIdx}, 'color', this.value)">
+                  <option value="accent" ${group.color === 'accent' || !group.color ? 'selected' : ''}>Accent</option>
+                  <option value="blue" ${group.color === 'blue' ? 'selected' : ''}>Blue</option>
+                  <option value="green" ${group.color === 'green' ? 'selected' : ''}>Green</option>
+                  <option value="yellow" ${group.color === 'yellow' ? 'selected' : ''}>Yellow</option>
+                  <option value="maroon" ${group.color === 'maroon' ? 'selected' : ''}>Maroon</option>
+                  <option value="peach" ${group.color === 'peach' ? 'selected' : ''}>Peach</option>
+                </select>
+              </div>
+              
+              <div class="mt-[1.6rem] flex gap-xs opacity-0 group-hover:opacity-100 transition-opacity">
+                <button onclick="moveGroupUp(${groupIdx})" class="rounded-[var(--radius-control)] border border-border bg-mantle px-sm py-xs text-subtext transition-colors hover:text-accent hover:border-accent disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" title="Move Up" ${groupIdx === 0 ? 'disabled' : ''}>↑</button>
+                <button onclick="moveGroupDown(${groupIdx})" class="rounded-[var(--radius-control)] border border-border bg-mantle px-sm py-xs text-subtext transition-colors hover:text-accent hover:border-accent disabled:opacity-30 disabled:cursor-not-allowed cursor-pointer" title="Move Down" ${groupIdx === skills.length - 1 ? 'disabled' : ''}>↓</button>
+                <button onclick="removeGroup(${groupIdx})" class="rounded-[var(--radius-control)] border border-red/40 bg-red/10 px-sm py-xs text-red transition-colors hover:bg-red/20 cursor-pointer">
+                  Delete
+                </button>
+              </div>
+            </div>
+            
+            <div class="flex flex-col gap-sm mt-xs">
+              <label class="text-label font-semibold text-subtext uppercase">Skills</label>
+              <div class="flex flex-wrap gap-sm items-center">
+                ${itemsHtml}
+                <button onclick="addItem(${groupIdx})" class="flex items-center justify-center rounded-full border border-dashed border-subtext/40 bg-transparent px-sm py-xs text-label font-medium text-subtext hover:border-accent hover:text-accent transition-colors cursor-pointer">
+                  + Add
+                </button>
+              </div>
+            </div>
+          `;
+          container.appendChild(groupDiv);
+        });
+      }
+
+      function renderPreview() {
+        const container = document.getElementById('preview-container');
+        container.innerHTML = '';
+
+        skills.forEach((group) => {
+          const groupDiv = document.createElement('div');
+          const currentTone = tone[group.color] || tone['accent'];
+          groupDiv.className = `flex flex-col gap-sm rounded-[var(--radius-card)] border border-border border-l-2 ${currentTone.lBorder} bg-mantle p-md`;
+          
+          let badgesHtml = (group.items || []).map((item) => {
+            const isPrimary = group.primary && group.primary.includes(item);
+            if (isPrimary) {
+              return `<span class="rounded-full border ${currentTone.border} ${currentTone.bg} px-sm py-xs text-label font-medium ${currentTone.text} shadow-sm">${item}</span>`;
+            } else {
+              return `<span class="rounded-full border border-border bg-base px-sm py-xs text-label font-medium text-text shadow-sm">${item}</span>`;
+            }
+          }).join('');
+
+          groupDiv.innerHTML = `
+            <div class="flex items-center gap-sm">
+              <span class="flex h-7 w-7 items-center justify-center rounded-[6px] ${currentTone.bg} ${currentTone.text} text-[10px] font-mono overflow-hidden" title="${group.icon}">
+                icon
+              </span>
+              <h3 class="text-label font-semibold tracking-wider text-subtext uppercase">
+                ${group.heading || 'Empty Heading'}
+              </h3>
+            </div>
+            <div class="flex flex-wrap gap-xs">
+              ${badgesHtml}
+            </div>
+          `;
+          container.appendChild(groupDiv);
+        });
+      }
+
+      function renderAll() {
+        renderEditor();
+        renderPreview();
+      }
+
+      function triggerChange() {
+        renderAll();
+        pushState();
+      }
+
+      window.updateGroup = (idx, field, val) => { 
+        skills[idx][field] = val; 
+        triggerChange();
+      };
+      
+      window.removeGroup = (idx) => { 
+        skills.splice(idx, 1); 
+        triggerChange();
+      };
+
+      window.moveGroupUp = (idx) => {
+        if (idx > 0) {
+          const temp = skills[idx];
+          skills[idx] = skills[idx - 1];
+          skills[idx - 1] = temp;
+          triggerChange();
+        }
+      };
+
+      window.moveGroupDown = (idx) => {
+        if (idx < skills.length - 1) {
+          const temp = skills[idx];
+          skills[idx] = skills[idx + 1];
+          skills[idx + 1] = temp;
+          triggerChange();
+        }
+      };
+
+      window.moveItemLeft = (groupIdx, itemIdx) => {
+        if (itemIdx > 0) {
+          const items = skills[groupIdx].items;
+          const temp = items[itemIdx];
+          items[itemIdx] = items[itemIdx - 1];
+          items[itemIdx - 1] = temp;
+          triggerChange();
+        }
+      };
+
+      window.moveItemRight = (groupIdx, itemIdx) => {
+        const items = skills[groupIdx].items;
+        if (itemIdx < items.length - 1) {
+          const temp = items[itemIdx];
+          items[itemIdx] = items[itemIdx + 1];
+          items[itemIdx + 1] = temp;
+          triggerChange();
+        }
+      };
+
+      window.updateItemName = (groupIdx, itemIdx, val) => {
+        const oldVal = skills[groupIdx].items[itemIdx];
+        skills[groupIdx].items[itemIdx] = val;
+        
+        if (skills[groupIdx].primary && skills[groupIdx].primary.includes(oldVal)) {
+          skills[groupIdx].primary = skills[groupIdx].primary.map(p => p === oldVal ? val : p);
+        }
+        triggerChange();
+      };
+
+      window.togglePrimary = (groupIdx, itemIdx) => {
+        const item = skills[groupIdx].items[itemIdx];
+        if (!skills[groupIdx].primary) skills[groupIdx].primary = [];
+        
+        if (skills[groupIdx].primary.includes(item)) {
+          skills[groupIdx].primary = skills[groupIdx].primary.filter(p => p !== item);
+        } else {
+          skills[groupIdx].primary.push(item);
+        }
+        triggerChange();
+      };
+
+      window.removeItem = (groupIdx, itemIdx) => {
+        const item = skills[groupIdx].items[itemIdx];
+        skills[groupIdx].items.splice(itemIdx, 1);
+        if (skills[groupIdx].primary) {
+          skills[groupIdx].primary = skills[groupIdx].primary.filter(p => p !== item);
+        }
+        triggerChange();
+      };
+
+      window.addItem = (groupIdx) => {
+        if (!skills[groupIdx].items) skills[groupIdx].items = [];
+        skills[groupIdx].items.push('New Skill');
+        triggerChange();
+      };
+
+      document.getElementById('add-group-btn').addEventListener('click', () => {
+        skills.push({ heading: 'New Group', icon: 'lucide:star', items: [], primary: [], color: 'accent' });
+        triggerChange();
+      });
+
+      document.getElementById('save-btn').addEventListener('click', async () => {
+        const btn = document.getElementById('save-btn');
+        const msg = document.getElementById('status-msg');
+        btn.textContent = 'Saving...';
+        
+        try {
+          const res = await fetch('/_dev/save-skills', {
+            method: 'POST',
+            body: JSON.stringify(skills)
+          });
+          
+          if (res.ok) {
+            msg.textContent = 'Successfully saved to src/data/skills.json!';
+            msg.className = 'mb-lg text-sm text-green block';
+          } else {
+            const data = await res.json();
+            throw new Error(data.error);
+          }
+        } catch (err) {
+          msg.textContent = 'Error: ' + err.message;
+          msg.className = 'mb-lg text-sm text-red block';
+        }
+        
+        btn.textContent = 'Save Changes';
+        setTimeout(() => msg.classList.add('hidden'), 3000);
+      });
+
+      // Initialize
+      pushState();
+      renderAll();
+    </script>
+  </body>
+</html>

@@ -87,7 +87,7 @@ function lineClass(line: string): string {
       {scenarios.map((s, i) => (
         <div
           data-kindle-block={i}
-          class:list={['gap-md p-md lg:grid lg:grid-cols-[minmax(0,7fr)_minmax(280px,5fr)]', i === 0 ? 'grid' : 'hidden']}
+          class:list={['gap-md p-md lg:grid-cols-[minmax(0,7fr)_minmax(280px,5fr)]', i === 0 ? 'block lg:grid' : 'hidden']}
         >
           <div class="kindle-code min-w-0 overflow-x-auto rounded-[var(--radius-control)] border border-border text-[13px] leading-relaxed">
             <Code code={s.code.trimEnd()} lang="rust" theme="catppuccin-mocha" />
@@ -97,7 +97,7 @@ function lineClass(line: string): string {
             <div>
               <div class="demo-kicker mb-sm">rustc output</div>
               {outputs[s.key] ? (
-                <pre class="max-h-[420px] overflow-auto rounded-[var(--radius-control)] bg-crust p-sm font-mono text-[11.5px] leading-relaxed whitespace-pre">{outputs[
+                <pre class="max-h-[420px] overflow-auto rounded-[var(--radius-control)] bg-crust p-sm font-mono text-[11.5px] leading-relaxed whitespace-pre-wrap break-words">{outputs[
                   s.key
                 ]!.output.split('\n').map((line) => (
                   <span class={lineClass(line)}>{line + '\n'}</span>
@@ -157,8 +157,13 @@ function lineClass(line: string): string {
       });
       document.querySelectorAll<HTMLElement>('[data-kindle-block]').forEach((block) => {
         const active = Number(block.dataset.kindleBlock) === idx;
-        block.classList.toggle('hidden', !active);
-        block.classList.toggle('grid', active);
+        if (active) {
+          block.classList.remove('hidden');
+          block.classList.add('block', 'lg:grid');
+        } else {
+          block.classList.add('hidden');
+          block.classList.remove('block', 'lg:grid');
+        }
       });
     });
   });

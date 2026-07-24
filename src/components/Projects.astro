@@ -6,98 +6,11 @@ import KindleDemo from './KindleDemo.astro';
 import AsaDemo from './AsaDemo.astro';
 import SignalDemo from './SignalDemo.astro';
 import NluDemo from './NluDemo.astro';
+import { getCollection } from 'astro:content';
+import { Icon } from 'astro-icon/components';
 
-interface Project {
-  name: string;
-  description: string;
-  tech: string[];
-  href: string;
-  anchor?: string;
-  status?: 'in-progress' | 'team';
-  teamCredit?: string;
-  impact?: string;
-  role?: string;
-  demoId?: string;
-  wide?: boolean;
-}
-
-const featuredProjects: Project[] = [
-  {
-    name: 'kindle',
-    description:
-      'A deep learning framework for Rust built on tch-rs that encodes tensor shapes and data types as Rust generics — catching shape mismatches and type errors at compile time, before any code runs.',
-    tech: ['Rust', 'tch-rs', 'PyTorch C++', 'Generics'],
-    href: 'https://github.com/xupremix/kindle',
-    anchor: 'project-kindle',
-    impact: 'Compile-time ML shape & type safety — zero runtime overhead',
-    role: 'Solo · Architect & Author',
-    demoId: 'kindle-demo',
-    wide: true,
-  },
-  {
-    name: 'evolcpp',
-    description:
-      'A neuroevolution library in C++ that evolves neural network architectures and weights simultaneously using genetic algorithms — no gradient descent required.',
-    tech: ['C++', 'Neuroevolution', 'NEAT', 'CMake'],
-    href: 'https://github.com/xupremix/evolcpp',
-    status: 'in-progress',
-    impact: 'Architecture + weight co-evolution — gradient-free training',
-    role: 'Solo · Systems Design',
-  },
-  {
-    name: 'signal_image_video',
-    description:
-      'Multi-object tracking system combining a CTRV-EKF Kalman filter with a Hungarian algorithm assignment step for 3D camera-LiDAR fusion — trained and evaluated on the KITTI benchmark.',
-    tech: ['Python', 'Kalman Filter', 'LiDAR', 'KITTI', 'NumPy'],
-    href: 'https://github.com/xupremix/signal_image_video',
-    anchor: 'project-signal',
-    impact: '81.5% RMSE reduction over linear tracking baseline',
-    role: 'Solo · Researcher',
-    demoId: 'signal-demo',
-  },
-  {
-    name: 'ASA Autobots',
-    description:
-      'A cooperative multi-agent delivery system where BDI executors, an LLM coordinator (Llama 3.3 70B), and a PDDL planner collaborate in real time to fulfil delivery orders on a shared map.',
-    tech: ['Node.js', 'PDDL', 'BDI', 'LLM', 'REST API'],
-    href: 'https://github.com/ale-bena/asa-autobots',
-    anchor: 'project-asa',
-    status: 'team',
-    teamCredit: 'Team project — repo owned by teammate ale-bena.',
-    impact: '~91.5% test coverage · 3-layer agent architecture',
-    role: 'Co-lead · Team of 2',
-    demoId: 'asa-demo',
-  },
-  {
-    name: 'NLU — Intent & Slot Filling',
-    description:
-      'Natural Language Understanding on the ATIS dataset using BERT fine-tuning with a joint intent classification and slot-filling head — training pipeline built from scratch.',
-    tech: ['Python', 'PyTorch', 'BERT', 'ATIS', 'HuggingFace'],
-    href: 'https://github.com/xupremix/NLU',
-    anchor: 'project-nlu',
-    impact: '0.9509 slot F1 · 0.9765 intent accuracy',
-    role: 'Solo · Researcher',
-    demoId: 'nlu-demo',
-  },
-  {
-    name: 'DL2026_AFA_CC',
-    description:
-      'Deep learning research project extending Clip Clay — an image editing model — with an improved pipeline for Adaptive Feature Aggregation (AFA) and Color Calibration (CC).',
-    tech: ['Python', 'PyTorch', 'CLIP', 'Diffusion Models'],
-    href: 'https://github.com/xupremix/DL2026_AFA_CC',
-    impact: 'Improved on Clip Clay end-to-end quality metrics',
-    role: 'Solo · Researcher',
-  },
-];
-
-const otherProjects: { name: string; href: string }[] = [
-  { name: 'mltu', href: 'https://github.com/xupremix/mltu' },
-  { name: 'oxigrad', href: 'https://github.com/xupremix/oxigrad' },
-  { name: 'rust-nn', href: 'https://github.com/xupremix/rust-nn' },
-  { name: 'ttlgame', href: 'https://github.com/xupremix/ttlgame' },
-  { name: 'ddshow', href: 'https://github.com/xupremix/ddshow' },
-  { name: 'lavagna', href: 'https://github.com/xupremix/lavagna' },
-];
+const allProjects = await getCollection('projects');
+const featuredProjects = allProjects.sort((a, b) => (a.data.index || 99) - (b.data.index || 99)).map(p => p.data);
 ---
 
 <section id="projects" class="px-lg py-3xl md:px-xl">
@@ -105,9 +18,16 @@ const otherProjects: { name: string; href: string }[] = [
     <!-- Heading -->
     <div class="reveal">
       <p class="section-eyebrow">work</p>
-      <h2 class="gradient-text mt-sm inline-block text-display font-semibold">Projects</h2>
+      <div class="flex items-center gap-md mt-sm">
+        <h2 class="gradient-text inline-block text-display font-semibold">Projects</h2>
+        {import.meta.env.DEV && (
+          <a href="/dev" class="rounded-full border border-border bg-mantle px-sm py-xs text-xs font-semibold text-subtext transition-colors hover:border-accent hover:text-accent">
+            <Icon name="lucide:pen-tool" class="inline-block mr-xs" width={12} height={12} /> Add Project
+          </a>
+        )}
+      </div>
       <p class="mt-sm text-body text-subtext">
-        Real systems, real depth — hit <strong class="text-text">Try demo</strong> on a card to see
+        Real systems, real depth. Hit <strong class="text-text">Try demo</strong> on a card to see
         it working.
       </p>
     </div>
@@ -115,7 +35,7 @@ const otherProjects: { name: string; href: string }[] = [
     <!-- Featured grid: kindle spans two columns at lg -->
     <div class="mt-2xl grid grid-cols-1 gap-lg md:grid-cols-2 lg:grid-cols-3">
       {featuredProjects.map((project, i) => (
-        <div class:list={['reveal', project.wide && 'md:col-span-2']} data-delay={String((i % 3) + 1)}>
+        <div class="reveal" data-delay={String((i % 3) + 1)}>
           <ProjectCard
             name={project.name}
             description={project.description}
@@ -128,41 +48,12 @@ const otherProjects: { name: string; href: string }[] = [
             impact={project.impact}
             role={project.role}
             demoId={project.demoId}
-            wide={project.wide}
-          >
-            {project.wide && (
-              <div slot="extra" class="flex h-full flex-col justify-center rounded-[var(--radius-control)] border border-border bg-base p-md font-mono text-[12px] leading-relaxed">
-                <pre class="whitespace-pre-wrap"><span class="text-accent">let</span> layer = <span class="text-yellow">Linear</span>::&lt;<span class="text-sky">s!</span>[<span class="text-peach">784</span>, <span class="text-peach">256</span>], Backend&gt;::new()?;
-<span class="text-accent">let</span> x = <span class="text-yellow">Tensor</span>::&lt;<span class="text-sky">s!</span>[<span class="text-peach">2</span>, <span class="text-peach">512</span>], Backend&gt;::zeros(())?;
-layer.forward(x)?;
-<span class="text-subtext">// 512 ≠ 784 — rustc rejects the
-// call before anything runs:</span>
-<span class="text-destructive">error[E0277]</span>: trait bound not
-satisfied — a <span class="text-text">compile-time</span> shape error</pre>
-              </div>
-            )}
-          </ProjectCard>
+          />
         </div>
       ))}
     </div>
 
-    <!-- More on GitHub -->
-    <div class="reveal mt-2xl">
-      <p class="mb-sm text-label font-semibold text-subtext">More on GitHub</p>
-      <div class="flex flex-wrap gap-sm">
-        {otherProjects.map((p) => (
-          <a
-            href={p.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            class="group inline-flex items-center gap-sm rounded-[var(--radius-control)] border border-border px-sm py-xs font-mono text-label font-semibold text-text transition-colors hover:border-accent/40 hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
-          >
-            {p.name}
-            <span class="text-subtext transition-colors group-hover:text-accent">↗</span>
-          </a>
-        ))}
-      </div>
-    </div>
+
   </div>
 </section>
 

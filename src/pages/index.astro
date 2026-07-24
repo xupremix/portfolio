@@ -6,11 +6,12 @@ import Projects from '../components/Projects.astro';
 import Skills from '../components/Skills.astro';
 import Experience from '../components/Experience.astro';
 import Contact from '../components/Contact.astro';
+import { Icon } from 'astro-icon/components';
 ---
 
 <Layout
-  title="Filippo Lollato — ML Engineer & Systems Developer"
-  description="Filippo Lollato — ML student at the University of Trento building compile-time safe ML in Rust, multi-agent AI systems, and deep learning pipelines that reach production."
+  title="Filippo Lollato | ML Engineer & Systems Developer"
+  description="Filippo Lollato, ML student at the University of Trento engineering AI systems and core infrastructure with precision and creativity."
 >
   <main>
     <Hero />
@@ -20,4 +21,14 @@ import Contact from '../components/Contact.astro';
     <Experience />
     <Contact />
   </main>
+
+  {import.meta.env.DEV && (
+    <a
+      href="/dev"
+      class="fixed bottom-lg left-lg z-50 flex items-center gap-xs rounded-full border border-accent bg-accent/10 px-md py-sm font-semibold text-accent shadow-lg backdrop-blur-md transition-transform hover:scale-105 focus:outline-none focus:ring-2 focus:ring-accent"
+    >
+      <Icon name="lucide:pen-tool" width={16} height={16} />
+      Dev Editor
+    </a>
+  )}
 </Layout>

@@ -50,61 +50,7 @@
   --radius-control: 8px;
 }
 
-/* ── Paper mode ──────────────────────────────────────────────
-   Alternative "natural" design, toggled from the nav and persisted in
-   localStorage (key: design-mode, values: ink | paper). Every component
-   reads colors from the tokens above, so re-mapping them restyles the
-   whole site; the handful of non-token effects are overridden below. */
-html[data-mode='paper'] {
-  /* Muted, low-glare paper: softer contrast than a white page */
-  --color-base: #efe9db;
-  --color-mantle: #e8e1cf;
-  --color-crust: #ded5c0;
-  --color-accent: #5b7747;
-  --color-destructive: #a04a37;
-  --color-text: #3b352a;
-  --color-subtext: #7a7260;
-  --color-border: #d3c8b1;
-  --color-blue: #44619b;
-  --color-green: #3f7a4f;
-  --color-yellow: #93700f;
-  --color-peach: #a85f2a;
-  --color-sky: #3d6f8e;
-  --color-teal: #2f7568;
-  --color-sapphire: #2f6d8c;
-  --color-maroon: #96463c;
-}
 
-/* Editorial voice: humanist serif display over the warm paper */
-html[data-mode='paper'] h1,
-html[data-mode='paper'] h2,
-html[data-mode='paper'] h3 {
-  font-family: 'Iowan Old Style', 'Palatino Linotype', Palatino, Georgia, serif;
-  letter-spacing: 0;
-}
-
-/* Gentle grain reads as paper texture on the light surface */
-html[data-mode='paper'] body::after {
-  opacity: 0.03;
-}
-
-/* Code islands stay dark in paper mode (Shiki blocks, demo output) —
-   deliberate editorial contrast, and rustc colors stay legible. */
-html[data-mode='paper'] .kindle-code,
-html[data-mode='paper'] .kindle-code pre {
-  --color-crust: #24243a;
-}
-
-/* No neon glow on paper — soft natural shadow instead */
-html[data-mode='paper'] .card-hover:hover {
-  box-shadow:
-    0 12px 32px rgb(78 110 56 / 0.12),
-    0 4px 14px rgb(46 42 32 / 0.10);
-}
-
-html[data-mode='paper'] ::selection {
-  background: rgb(78 110 56 / 0.25);
-}
 
 /* ── Base ────────────────────────────────────────────────── */
 html {

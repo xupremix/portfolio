@@ -1,0 +1,67 @@
+\NeedsTeXFormat{LaTeX2e}
+\ProvidesPackage{cv-style}[2026/07/18 Custom Minimalist Professional CV Style]
+
+% Packages
+\RequirePackage[utf8]{inputenc}
+\RequirePackage[T1]{fontenc}
+\RequirePackage{libertine} % Highly readable, professional serif font
+\RequirePackage[margin=0.75in]{geometry}
+\RequirePackage{titlesec}
+\RequirePackage{enumitem}
+\RequirePackage{hyperref}
+\RequirePackage{xcolor}
+
+% Colors
+\definecolor{primaryColor}{RGB}{0, 0, 0}
+\definecolor{accentColor}{RGB}{30, 100, 200} % A professional blue for links
+
+% Hyperlinks
+\hypersetup{
+    colorlinks=true,
+    linkcolor=primaryColor,
+    filecolor=primaryColor,
+    urlcolor=accentColor,
+}
+
+% Remove page numbers
+\pagestyle{empty}
+
+% Section formatting
+\titleformat{\section}{\Large\bfseries\scshape\color{primaryColor}}{}{0em}{}[\titlerule]
+\titlespacing*{\section}{0pt}{1.5ex plus 1ex minus .2ex}{1ex plus .2ex}
+
+% List formatting for maximum ATS compatibility
+\setlist[itemize]{leftmargin=*, noitemsep, topsep=2pt}
+
+% Header Macros
+\newcommand{\name}[1]{\begin{center}\Huge\bfseries #1\end{center}}
+\newcommand{\contact}[1]{\begin{center}\small #1\end{center}\vspace{1ex}}
+
+% CV Item Macros
+\newcommand{\cvexperience}[5]{
+    \noindent\textbf{#1} \hfill \textsl{#2}\\
+    \noindent\textsl{#3} \hfill \textsl{#4}\\
+    #5
+    \vspace{1ex}
+}
+
+\newcommand{\cveducation}[5]{
+    \noindent\textbf{#1} \hfill \textsl{#2}\\
+    \noindent\textsl{#3} \hfill \textsl{#4}\\
+    \ifx&#5&%
+    \else
+        #5
+    \fi
+    \vspace{1ex}
+}
+
+\newcommand{\cvproject}[4]{
+    \noindent\textbf{#1} \hfill \textsl{#2}\\
+    \noindent\textit{#3}\\
+    #4
+    \vspace{1ex}
+}
+
+\newcommand{\cvskill}[2]{
+    \noindent\textbf{#1}: #2\\[0.5ex]
+}

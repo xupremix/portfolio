@@ -2,6 +2,14 @@
 dist/
 # generated types
 .astro/
+.claude/
+.planning/
+.vscode/
+
+*.aux
+*.log
+*.out
+cv-latex/*.pdf
 
 # dependencies
 node_modules/

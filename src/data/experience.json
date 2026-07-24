@@ -1,0 +1,18 @@
+[
+  {
+    "role": "ML Student",
+    "org": "University of Trento",
+    "period": "2024 - present",
+    "description": "Master's level coursework and projects spanning deep learning, NLP, computer vision, reinforcement learning, and autonomous systems. Lead architect on the ASA Autobots multi-agent capstone.",
+    "tag": "Student · Developer",
+    "toneClass": "accent"
+  },
+  {
+    "role": "University Tutor",
+    "org": "University of Trento",
+    "period": "2024 - present",
+    "description": "Tutoring undergraduate students in algorithms, data structures, and foundational programming. Teaching to others accelerates my own mastery - and it builds the leadership muscle of making complex ideas accessible.",
+    "tag": "Teaching · Leadership",
+    "toneClass": "green"
+  }
+]

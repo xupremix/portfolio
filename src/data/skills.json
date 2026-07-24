@@ -1,0 +1,53 @@
+[
+  {
+    "heading": "Systems & Languages",
+    "icon": "lucide:cpu",
+    "items": [
+      "Rust",
+      "C++",
+      "Python"
+    ],
+    "primary": [
+      "Rust",
+      "C++",
+      "Python"
+    ]
+  },
+  {
+    "heading": "ML Stack",
+    "icon": "lucide:brain",
+    "items": [
+      "PyTorch",
+      "Jupyter",
+      "Ollama",
+      "HuggingFace"
+    ],
+    "primary": [
+      "PyTorch"
+    ]
+  },
+  {
+    "heading": "Deployment",
+    "icon": "lucide:server",
+    "items": [
+      "Docker",
+      "ONNX Runtime",
+      "Linux",
+      "Git"
+    ],
+    "primary": [
+      "Docker"
+    ]
+  },
+  {
+    "heading": "Frameworks & Tools",
+    "icon": "lucide:wrench",
+    "items": [
+      "Axum",
+      "Node.js",
+      "PDDL",
+      "PyQt6"
+    ],
+    "primary": []
+  }
+]

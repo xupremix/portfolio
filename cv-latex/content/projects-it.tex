@@ -1,0 +1,55 @@
+\section{Progetti}
+
+\cvproject
+  {kindle — Framework di Machine Learning}
+  {Rust}
+  {Framework backend-agnostic per reti neurali in Rust.}
+  {
+    \begin{itemize}
+      \item Framework progettato in Rust con l'obiettivo di garantire la validazione a tempo di compilazione di tutti gli invarianti dei tensori, mantenendo l'ergonomia e la flessibilità dei framework moderni.
+      \item Validazione dei tipi e delle dimensioni (shape) a tempo di compilazione con zero overhead a runtime.
+    \end{itemize}
+  }
+
+\cvproject
+  {evolcpp — Libreria di Neuroevoluzione}
+  {C++, CMake}
+  {Porting in C++ delle astrazioni principali di kindle.}
+  {
+    \begin{itemize}
+      \item Implementazione di complesse tecniche di template meta-programming per replicare la robustezza a tempo di compilazione del framework originale in Rust.
+    \end{itemize}
+  }
+
+\cvproject
+  {ASA Autobots — Sistema Multi-Agente}
+  {Node.js, PDDL, BDI, LLM}
+  {Sistema cooperativo che combina LLM e pianificazione simbolica.}
+  {
+    \begin{itemize}
+      \item Architettura basata sulla collaborazione in tempo reale tra esecutori BDI, un coordinatore LLM (Llama 3.3 70B) e un planner PDDL per compiti logistici.
+      \item Co-Lead di un team di due persone; raggiunta una test coverage di circa 91.5\% su un'architettura a 3 livelli.
+    \end{itemize}
+  }
+
+\cvproject
+  {signal\_image\_video — Multi-Object Tracking}
+  {Python, PyTorch, Kalman Filter}
+  {Sistema di tracciamento 3D con fusione camera-LiDAR.}
+  {
+    \begin{itemize}
+      \item Sviluppo di un sistema di tracciamento basato su un filtro di Kalman CTRV-EKF combinato con l'algoritmo Ungherese per la fase di assegnazione.
+      \item Addestramento e valutazione sul benchmark KITTI, con riduzione dell'RMSE rispetto alla baseline lineare.
+    \end{itemize}
+  }
+
+\cvproject
+  {NLU — Intent \& Slot Filling}
+  {Python, PyTorch, BERT}
+  {Natural Language Understanding sul dataset ATIS.}
+  {
+    \begin{itemize}
+      \item Creazione della pipeline di training partendo da zero, fine-tuning di BERT con due teste congiunte per intent classification e slot-filling.
+      \item Raggiunta un'accuratezza dell'intent pari a 0.9765 e un elevato F1 score per gli slot.
+    \end{itemize}
+  }

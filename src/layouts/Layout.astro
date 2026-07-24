@@ -9,6 +9,7 @@ import interRegularWoff2 from '@fontsource/inter/files/inter-latin-400-normal.wo
 import interSemiboldWoff2 from '@fontsource/inter/files/inter-latin-600-normal.woff2?url';
 import Nav from '../components/Nav.astro';
 import Footer from '../components/Footer.astro';
+import NetworkBackground from '../components/NetworkBackground.astro';
 
 interface Props {
   title: string;
@@ -18,7 +19,7 @@ interface Props {
 
 const {
   title,
-  description = "Filippo Lollato — ML student at the University of Trento. Systems ML, Rust, Python, robotics. Real projects, real depth.",
+  description = "Filippo Lollato, ML student at the University of Trento engineering AI systems and core infrastructure with precision and creativity.",
   ogImage = "/og.png",
 } = Astro.props;
 
@@ -41,13 +42,7 @@ const personJsonLd = JSON.stringify({
 <html lang="en">
   <head>
     <meta charset="utf-8" />
-    <!-- Restore the design mode (ink | paper) before first paint -->
-    <script is:inline>
-      (function () {
-        var mode = localStorage.getItem('design-mode');
-        if (mode === 'paper') document.documentElement.dataset.mode = 'paper';
-      })();
-    </script>
+    <!-- Primary SEO -->
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#1e1e2e" />
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -84,6 +79,7 @@ const personJsonLd = JSON.stringify({
     <script defer data-domain="filippolollato.dev" src="https://plausible.io/js/script.js"></script>
   </head>
   <body class="bg-base text-text font-sans">
+    <NetworkBackground />
     <Nav />
     <slot />
     <Footer />
@@ -105,6 +101,18 @@ const personJsonLd = JSON.stringify({
 
       // Dialog behavior (backdrop close, scroll lock/unlock) lives in
       // src/components/DemoDialog.astro — do not duplicate it here.
+
+      // ── Network Background Triggers ─────────────────────────
+      // Send mouse coordinates to the NetworkBackground canvas when hovering
+      // interactive elements to trigger the "forward pass" wave.
+      document.querySelectorAll('a, button, .interactive-trigger').forEach((el) => {
+        el.addEventListener('mouseenter', (e) => {
+          const ev = e as MouseEvent;
+          window.dispatchEvent(new CustomEvent('trigger-forward-pass', {
+            detail: { x: ev.clientX, y: ev.clientY }
+          }));
+        });
+      });
     </script>
   </body>
 </html>

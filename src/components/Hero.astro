@@ -4,11 +4,7 @@
 // parallax (disabled for reduced motion / touch).
 import { Icon } from 'astro-icon/components';
 
-const stats = [
-  { value: '81.5%', label: 'RMSE ↓ on KITTI', href: '#project-signal' },
-  { value: '0.9765', label: 'intent acc · ATIS', href: '#project-nlu' },
-  { value: '~91.5%', label: 'test cov · ASA', href: '#project-asa' },
-];
+
 ---
 
 <section
@@ -18,15 +14,15 @@ const stats = [
   <!-- Animated gradient blobs (two hues for depth) -->
   <div aria-hidden="true" id="hero-blobs" class="pointer-events-none absolute inset-0 overflow-hidden">
     <div
-      class="hero-blob absolute top-[15%] left-[10%] h-[700px] w-[700px] rounded-full"
+      class="hero-blob absolute top-[12%] left-[8%] h-[880px] w-[880px] rounded-full"
       data-parallax="8"
     ></div>
     <div
-      class="hero-blob-alt absolute right-[5%] bottom-[10%] h-[550px] w-[550px] rounded-full"
+      class="hero-blob-alt absolute right-[3%] bottom-[8%] h-[700px] w-[700px] rounded-full"
       data-parallax="-6"
     ></div>
     <div
-      class="hero-blob-blue absolute top-[40%] left-[45%] h-[600px] w-[600px] rounded-full"
+      class="hero-blob-blue absolute top-[35%] left-[40%] h-[750px] w-[750px] rounded-full"
       data-parallax="4"
     ></div>
   </div>
@@ -51,9 +47,7 @@ const stats = [
       class="hero-animate mt-md max-w-[38rem] text-[clamp(1.125rem,1rem+0.6vw,1.375rem)] leading-relaxed text-balance text-subtext"
       data-delay="3"
     >
-      I design systems from first principles —
-      <span class="font-semibold text-text">compile-time safe ML in Rust</span>, multi-agent AI, and
-      deep learning pipelines that reach production.
+      Engineering <span class="font-semibold text-text">AI systems</span> and core infrastructure with <span class="font-semibold text-text">precision and creativity</span>.
     </p>
 
     <div class="hero-animate mt-xl flex flex-col items-center gap-md sm:flex-row" data-delay="4">
@@ -64,15 +58,24 @@ const stats = [
         See my work
         <Icon name="lucide:arrow-down" width={14} height={14} aria-hidden="true" />
       </a>
-      <a
-        href="/cv.pdf"
-        target="_blank"
-        rel="noopener noreferrer"
-        class="inline-flex items-center gap-xs rounded-[var(--radius-control)] border border-border px-md py-sm text-label font-semibold text-text transition-colors hover:border-accent/40 hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
-      >
-        <Icon name="lucide:file-text" width={14} height={14} aria-hidden="true" />
-        Download CV
-      </a>
+      <div class="group relative">
+        <button
+          type="button"
+          class="inline-flex items-center gap-xs rounded-[var(--radius-control)] border border-border bg-mantle/40 px-md py-sm text-label font-semibold text-text transition-colors hover:border-accent/40 hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+        >
+          <Icon name="lucide:file-text" width={14} height={14} aria-hidden="true" />
+          Download CV
+          <Icon name="lucide:chevron-down" width={12} height={12} class="opacity-70 transition-transform group-hover:rotate-180" aria-hidden="true" />
+        </button>
+        <div class="absolute left-1/2 top-full z-50 pt-xs hidden w-max min-w-[12rem] -translate-x-1/2 group-hover:block focus-within:block">
+          <div class="flex flex-col rounded-[var(--radius-control)] border border-border bg-mantle p-xs shadow-lg">
+            <a href="/lollato_filippo_eu_cv_en.pdf" target="_blank" download="Filippo_Lollato_CV_EU_EN.pdf" class="rounded-[var(--radius-control)] px-sm py-xs text-center text-[13px] font-semibold text-text transition-colors hover:bg-accent/10 hover:text-accent focus-visible:bg-accent/10 focus-visible:text-accent focus-visible:outline-none">EU CV (English)</a>
+            <a href="/lollato_filippo_eu_cv_it.pdf" target="_blank" download="Filippo_Lollato_CV_EU_IT.pdf" class="rounded-[var(--radius-control)] px-sm py-xs text-center text-[13px] font-semibold text-text transition-colors hover:bg-accent/10 hover:text-accent focus-visible:bg-accent/10 focus-visible:text-accent focus-visible:outline-none">EU CV (Italian)</a>
+            <a href="/lollato_filippo_it_cv_en.pdf" target="_blank" download="Filippo_Lollato_CV_IT_EN.pdf" class="rounded-[var(--radius-control)] px-sm py-xs text-center text-[13px] font-semibold text-text transition-colors hover:bg-accent/10 hover:text-accent focus-visible:bg-accent/10 focus-visible:text-accent focus-visible:outline-none">IT CV (English)</a>
+            <a href="/lollato_filippo_it_cv_it.pdf" target="_blank" download="Filippo_Lollato_CV_IT_IT.pdf" class="rounded-[var(--radius-control)] px-sm py-xs text-center text-[13px] font-semibold text-text transition-colors hover:bg-accent/10 hover:text-accent focus-visible:bg-accent/10 focus-visible:text-accent focus-visible:outline-none">IT CV (Italian)</a>
+          </div>
+        </div>
+      </div>
       <a
         href="#contact"
         class="text-label font-semibold text-text transition-colors hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
@@ -81,18 +84,7 @@ const stats = [
       </a>
     </div>
 
-    <!-- Proof chips: every number is real and links to its project card -->
-    <div class="hero-animate mt-2xl flex flex-wrap items-center justify-center gap-sm" data-delay="5">
-      {stats.map((stat) => (
-        <a
-          href={stat.href}
-          class="group inline-flex items-center gap-sm rounded-full border border-border/70 bg-mantle/40 px-md py-xs transition-colors hover:border-accent/50 hover:bg-accent/5 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
-        >
-          <span class="font-mono text-[13px] font-semibold text-accent">{stat.value}</span>
-          <span class="text-[12px] text-subtext transition-colors group-hover:text-text">{stat.label}</span>
-        </a>
-      ))}
-    </div>
+
   </div>
 
   <a
@@ -122,7 +114,7 @@ const stats = [
   .hero-dots {
     background-image: radial-gradient(circle, rgb(205 214 244 / 0.07) 1px, transparent 1px);
     background-size: 30px 30px;
-    mask-image: radial-gradient(ellipse 70% 60% at 50% 42%, black, transparent);
+    mask-image: radial-gradient(ellipse 85% 75% at 50% 42%, black, transparent);
   }
   /* Paper mode: watercolor washes instead of neon glow, ink dots */
   :global(html[data-mode='paper']) .hero-blob {
