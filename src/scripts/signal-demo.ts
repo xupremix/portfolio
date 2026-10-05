@@ -22,53 +22,99 @@ const TRACK_TOKENS = ['sapphire', 'yellow', 'maroon'] as const;
 const BOX_W = 40;
 const BOX_H = 28;
 const LOOKBACK_MS = 250; // velocity/turn-rate estimation window
-const HORIZON_MS = 500; // how far ahead both models predict
+let horizonMs = 500; // dynamic horizon ahead
+let noiseEnabled = false;
+let trackSource: 'preset' | 'interactive' = 'preset';
 const WINDOW = 120; // RMSE running-window samples (~12 s at 10 Hz)
 const SAMPLE_EVERY_MS = 100;
 
 type Mode = 'linear' | 'ctrv';
 
 // ── Ground truth: closed periodic curves (unit-square coords) ──
-// Near-constant-turn trajectories, like vehicles cornering — the exact case
-// automotive tracking uses CTRV for, and the exact case CV extrapolation fails.
 function truePath(id: number, tMs: number): { x: number; y: number } {
   const t = tMs / 1000;
   if (id === 0) {
     return { x: 0.28 + 0.17 * Math.cos(t * 0.9), y: 0.35 + 0.2 * Math.sin(t * 0.9) };
   }
   if (id === 1) {
-    // Faster, opposite direction
     return { x: 0.68 + 0.13 * Math.cos(-t * 1.5 + 2), y: 0.4 + 0.15 * Math.sin(-t * 1.5 + 2) };
   }
-  // Wide slow sweep along the bottom
   return { x: 0.5 + 0.3 * Math.cos(t * 0.55 + 4), y: 0.75 + 0.13 * Math.sin(t * 0.55 + 4) };
 }
 
+// ── Interactive Steering state ──────────────────────────────
+let targetPointer = { x: 0.5, y: 0.5 };
+let userVehicle = { x: 0.5, y: 0.5, psi: 0, v: 0.2 };
+const userHistory: { t: number; x: number; y: number }[] = [];
+
+function updateUserVehicle(dtSec: number) {
+  const dx = targetPointer.x - userVehicle.x;
+  const dy = targetPointer.y - userVehicle.y;
+  const dist = Math.hypot(dx, dy);
+
+  if (dist > 0.03) {
+    const targetPsi = Math.atan2(dy, dx);
+    let dPsi = targetPsi - userVehicle.psi;
+    while (dPsi > Math.PI) dPsi -= 2 * Math.PI;
+    while (dPsi < -Math.PI) dPsi += 2 * Math.PI;
+
+    const maxTurnRate = 4.2;
+    const omega = Math.max(-maxTurnRate, Math.min(maxTurnRate, dPsi * 4.5));
+    userVehicle.psi += omega * dtSec;
+
+    const targetV = Math.min(0.38, Math.max(0.08, dist * 1.3));
+    userVehicle.v += (targetV - userVehicle.v) * Math.min(1, dtSec * 3);
+  } else {
+    userVehicle.v = Math.max(0.05, userVehicle.v * 0.95);
+  }
+
+  userVehicle.x += userVehicle.v * Math.cos(userVehicle.psi) * dtSec;
+  userVehicle.y += userVehicle.v * Math.sin(userVehicle.psi) * dtSec;
+  userVehicle.x = Math.max(0.06, Math.min(0.94, userVehicle.x));
+  userVehicle.y = Math.max(0.06, Math.min(0.94, userVehicle.y));
+
+  userHistory.push({ t: simMs, x: userVehicle.x, y: userVehicle.y });
+  if (userHistory.length > 250) userHistory.shift();
+}
+
+function userPathAt(tMs: number): { x: number; y: number } {
+  if (userHistory.length === 0) return { x: userVehicle.x, y: userVehicle.y };
+  if (tMs <= userHistory[0].t) return { x: userHistory[0].x, y: userHistory[0].y };
+  const last = userHistory[userHistory.length - 1];
+  if (tMs >= last.t) return { x: last.x, y: last.y };
+
+  for (let i = userHistory.length - 1; i >= 1; i--) {
+    if (userHistory[i].t >= tMs && userHistory[i - 1].t <= tMs) {
+      const p0 = userHistory[i - 1];
+      const p1 = userHistory[i];
+      const dt = p1.t - p0.t;
+      const f = dt > 0 ? (tMs - p0.t) / dt : 0;
+      return { x: p0.x + (p1.x - p0.x) * f, y: p0.y + (p1.y - p0.y) * f };
+    }
+  }
+  return { x: userVehicle.x, y: userVehicle.y };
+}
+
 // ── Predictors (real motion-model predict steps) ─────────────
-// Semantics: the box shown at time t is the prediction that was made at
-// (t − HORIZON) *for* time t — so the on-screen gap is genuine model error,
-// exactly what the RMSE measures.
 function predictFor(id: number, tMs: number, model: Mode) {
-  const base = Math.max(tMs - HORIZON_MS, 1);
+  const getPath = (t: number) => (trackSource === 'interactive' ? userPathAt(t) : truePath(id, t));
+  const base = Math.max(tMs - horizonMs, 1);
   const t0 = Math.max(base - LOOKBACK_MS, 1);
-  const p1 = truePath(id, base);
-  const p0 = truePath(id, t0);
+  const p1 = getPath(base);
+  const p0 = getPath(t0);
   const dt = Math.max(base - t0, 1);
 
   if (model === 'linear') {
-    // Constant-velocity extrapolation
     return {
-      x: p1.x + ((p1.x - p0.x) / dt) * HORIZON_MS,
-      y: p1.y + ((p1.y - p0.y) / dt) * HORIZON_MS,
+      x: p1.x + ((p1.x - p0.x) / dt) * horizonMs,
+      y: p1.y + ((p1.y - p0.y) / dt) * horizonMs,
     };
   }
 
-  // CTRV: estimate heading + turn rate from finite differences, then use the
-  // closed-form constant-turn-rate-and-velocity propagation.
-  const pPrev = truePath(id, Math.max(base - 50, 0));
-  const pPrev0 = truePath(id, Math.max(t0 - 50, 0));
+  const pPrev = getPath(Math.max(base - 50, 0));
+  const pPrev0 = getPath(Math.max(t0 - 50, 0));
   const dts = dt / 1000;
-  const k = HORIZON_MS / 1000;
+  const k = horizonMs / 1000;
   const psi1 = Math.atan2(p1.y - pPrev.y, p1.x - pPrev.x);
   const psi0 = Math.atan2(p0.y - pPrev0.y, p0.x - pPrev0.x);
   let dpsi = psi1 - psi0;
@@ -96,7 +142,6 @@ let lastTs = 0;
 let simMs = 0;
 let sinceSample = 0;
 
-// Running squared-error windows + RMSE history for the sparkline, per mode.
 const sqErr: Record<Mode, number[]> = { linear: [], ctrv: [] };
 const history: Record<Mode, number[]> = { linear: [], ctrv: [] };
 
@@ -108,18 +153,18 @@ function rmseOf(m: Mode): number | null {
   return Math.sqrt(w.reduce((a, b) => a + b, 0) / w.length);
 }
 
-/** Squared prediction error (in px at current canvas size) for one mode, all tracks. */
 function sampleError(m: Mode, w: number, h: number) {
   let sum = 0;
-  for (let id = 0; id < 3; id++) {
-    const a = truePath(id, simMs);
+  const count = trackSource === 'interactive' ? 1 : 3;
+  for (let id = 0; id < count; id++) {
+    const a = trackSource === 'interactive' ? userPathAt(simMs) : truePath(id, simMs);
     const p = predictFor(id, simMs, m);
     const dx = (a.x - p.x) * w;
     const dy = (a.y - p.y) * h;
     sum += dx * dx + dy * dy;
   }
   const win = sqErr[m];
-  win.push(sum / 3);
+  win.push(sum / count);
   if (win.length > WINDOW) win.shift();
 }
 
@@ -148,36 +193,70 @@ function drawScene() {
     ctx.stroke();
   }
 
-  for (let id = 0; id < 3; id++) {
-    const col = themeColor(TRACK_TOKENS[id]);
-    const a = truePath(id, simMs);
-    const p = predictFor(id, simMs, mode);
+  if (trackSource === 'interactive') {
+    // Draw target pointer cursor
+    const tx = targetPointer.x * w;
+    const ty = targetPointer.y * h;
+    ctx.save();
+    ctx.strokeStyle = themeColor('accent');
+    ctx.lineWidth = 1;
+    ctx.setLineDash([2, 2]);
+    ctx.beginPath();
+    ctx.arc(tx, ty, 8, 0, Math.PI * 2);
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.moveTo(tx - 12, ty);
+    ctx.lineTo(tx + 12, ty);
+    ctx.moveTo(tx, ty - 12);
+    ctx.lineTo(tx, ty + 12);
+    ctx.stroke();
+    ctx.restore();
+
+    // User vehicle
+    const col = themeColor('accent');
+    const a = userPathAt(simMs);
+    const p = predictFor(0, simMs, mode);
     const ax = a.x * w;
     const ay = a.y * h;
     const px = p.x * w;
     const py = p.y * h;
 
-    // Trail: last 3.5 s of truth, fading tail
-    ctx.save();
-    ctx.strokeStyle = col;
-    ctx.lineWidth = 1.5;
-    const steps = 28;
-    for (let i = 0; i < steps; i++) {
-      const q0 = truePath(id, Math.max(simMs - ((i + 1) * 3500) / steps, 0));
-      const q1 = truePath(id, Math.max(simMs - (i * 3500) / steps, 0));
-      ctx.globalAlpha = 0.35 * (1 - i / steps);
-      ctx.beginPath();
-      ctx.moveTo(q0.x * w, q0.y * h);
-      ctx.lineTo(q1.x * w, q1.y * h);
-      ctx.stroke();
+    // Trail
+    if (userHistory.length > 2) {
+      ctx.save();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 2;
+      for (let i = 1; i < userHistory.length; i++) {
+        const q0 = userHistory[i - 1];
+        const q1 = userHistory[i];
+        ctx.globalAlpha = 0.4 * (i / userHistory.length);
+        ctx.beginPath();
+        ctx.moveTo(q0.x * w, q0.y * h);
+        ctx.lineTo(q1.x * w, q1.y * h);
+        ctx.stroke();
+      }
+      ctx.restore();
     }
-    ctx.restore();
 
-    // Error line: truth → prediction
+    // LiDAR noise scatter
+    if (noiseEnabled) {
+      ctx.save();
+      ctx.fillStyle = themeColor('subtext');
+      for (let s = 0; s < 6; s++) {
+        const nx = ax + (Math.sin(simMs * 0.02 + s * 1.5) * 8);
+        const ny = ay + (Math.cos(simMs * 0.03 + s * 2.1) * 8);
+        ctx.beginPath();
+        ctx.arc(nx, ny, 1.5, 0, Math.PI * 2);
+        ctx.fill();
+      }
+      ctx.restore();
+    }
+
+    // Error line
     ctx.save();
     ctx.strokeStyle = themeColor('subtext');
-    ctx.globalAlpha = 0.6;
-    ctx.lineWidth = 1;
+    ctx.globalAlpha = 0.7;
+    ctx.lineWidth = 1.2;
     ctx.setLineDash([3, 3]);
     ctx.beginPath();
     ctx.moveTo(ax, ay);
@@ -185,28 +264,104 @@ function drawScene() {
     ctx.stroke();
     ctx.restore();
 
-    // Truth box (solid, entity hue) + ID label
+    // Truth box
     ctx.save();
     ctx.strokeStyle = col;
     ctx.lineWidth = 2;
-    ctx.fillStyle = col + '22';
+    ctx.fillStyle = col + '25';
     ctx.fillRect(ax - BOX_W / 2, ay - BOX_H / 2, BOX_W, BOX_H);
     ctx.strokeRect(ax - BOX_W / 2, ay - BOX_H / 2, BOX_W, BOX_H);
     ctx.fillStyle = col;
     ctx.font = 'bold 10px "JetBrains Mono", monospace';
     ctx.textAlign = 'left';
     ctx.textBaseline = 'bottom';
-    ctx.fillText(`ID${id + 1}`, ax - BOX_W / 2 + 2, ay - BOX_H / 2 - 2);
+    ctx.fillText('YOU', ax - BOX_W / 2 + 2, ay - BOX_H / 2 - 2);
     ctx.restore();
 
-    // Prediction box (dashed, SAME entity hue)
+    // Prediction box
     ctx.save();
     ctx.strokeStyle = col;
-    ctx.globalAlpha = 0.75;
+    ctx.globalAlpha = 0.85;
     ctx.lineWidth = 1.5;
     ctx.setLineDash([4, 3]);
     ctx.strokeRect(px - BOX_W / 2, py - BOX_H / 2, BOX_W, BOX_H);
     ctx.restore();
+  } else {
+    // Preset 3 tracks
+    for (let id = 0; id < 3; id++) {
+      const col = themeColor(TRACK_TOKENS[id]);
+      const a = truePath(id, simMs);
+      const p = predictFor(id, simMs, mode);
+      const ax = a.x * w;
+      const ay = a.y * h;
+      const px = p.x * w;
+      const py = p.y * h;
+
+      // Trail: last 3.5 s of truth, fading tail
+      ctx.save();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 1.5;
+      const steps = 28;
+      for (let i = 0; i < steps; i++) {
+        const q0 = truePath(id, Math.max(simMs - ((i + 1) * 3500) / steps, 0));
+        const q1 = truePath(id, Math.max(simMs - (i * 3500) / steps, 0));
+        ctx.globalAlpha = 0.35 * (1 - i / steps);
+        ctx.beginPath();
+        ctx.moveTo(q0.x * w, q0.y * h);
+        ctx.lineTo(q1.x * w, q1.y * h);
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // LiDAR noise scatter
+      if (noiseEnabled) {
+        ctx.save();
+        ctx.fillStyle = themeColor('subtext');
+        for (let s = 0; s < 5; s++) {
+          const nx = ax + Math.sin(simMs * 0.03 + s * 1.8 + id) * 7;
+          const ny = ay + Math.cos(simMs * 0.02 + s * 2.3 + id) * 7;
+          ctx.beginPath();
+          ctx.arc(nx, ny, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+        ctx.restore();
+      }
+
+      // Error line: truth → prediction
+      ctx.save();
+      ctx.strokeStyle = themeColor('subtext');
+      ctx.globalAlpha = 0.6;
+      ctx.lineWidth = 1;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath();
+      ctx.moveTo(ax, ay);
+      ctx.lineTo(px, py);
+      ctx.stroke();
+      ctx.restore();
+
+      // Truth box (solid, entity hue) + ID label
+      ctx.save();
+      ctx.strokeStyle = col;
+      ctx.lineWidth = 2;
+      ctx.fillStyle = col + '22';
+      ctx.fillRect(ax - BOX_W / 2, ay - BOX_H / 2, BOX_W, BOX_H);
+      ctx.strokeRect(ax - BOX_W / 2, ay - BOX_H / 2, BOX_W, BOX_H);
+      ctx.fillStyle = col;
+      ctx.font = 'bold 10px "JetBrains Mono", monospace';
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'bottom';
+      ctx.fillText(`ID${id + 1}`, ax - BOX_W / 2 + 2, ay - BOX_H / 2 - 2);
+      ctx.restore();
+
+      // Prediction box (dashed, SAME entity hue)
+      ctx.save();
+      ctx.strokeStyle = col;
+      ctx.globalAlpha = 0.75;
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 3]);
+      ctx.strokeRect(px - BOX_W / 2, py - BOX_H / 2, BOX_W, BOX_H);
+      ctx.restore();
+    }
   }
 }
 
@@ -215,7 +370,7 @@ function updatePanel() {
   const cur = rmseOf(mode);
   const other = rmseOf(mode === 'linear' ? 'ctrv' : 'linear');
   el('signal-rmse').textContent = cur === null ? '—' : cur.toFixed(1);
-  el('signal-mode-label').textContent = mode === 'linear' ? 'Linear KF' : 'CTRV-EKF';
+  el('signal-mode-label').textContent = `${mode === 'linear' ? 'Linear KF' : 'CTRV-EKF'} · ${horizonMs} ms horizon`;
 
   const badge = el('signal-delta');
   if (cur !== null && other !== null && other > 0.001) {
@@ -239,7 +394,6 @@ function drawSparkline() {
   const data = history[mode];
   if (data.length < 2) return;
 
-  // Shared y-scale across BOTH modes so toggling is comparable.
   const all = [...history.linear, ...history.ctrv];
   const max = Math.max(...all, 1);
   const pad = 3;
@@ -270,12 +424,13 @@ function frame(now: number) {
   simMs += dt;
   sinceSample += dt;
 
-  // Warm-up guard: until the sim is HORIZON+LOOKBACK old, predictFor clamps
-  // its base time and both models produce meaningless error — don't sample it.
-  if (scene && simMs > HORIZON_MS + LOOKBACK_MS + 150 && sinceSample >= SAMPLE_EVERY_MS) {
+  if (trackSource === 'interactive') {
+    updateUserVehicle(dt / 1000);
+  }
+
+  if (scene && simMs > horizonMs + LOOKBACK_MS + 150 && sinceSample >= SAMPLE_EVERY_MS) {
     sinceSample = 0;
     const { w, h } = scene.size();
-    // Both models sampled every tick so the comparison is always live.
     sampleError('linear', w, h);
     sampleError('ctrv', w, h);
     for (const m of ['linear', 'ctrv'] as Mode[]) {
@@ -327,6 +482,23 @@ function setMode(next: Mode) {
   if (!running) drawScene();
 }
 
+function setTrackSource(src: 'preset' | 'interactive') {
+  trackSource = src;
+  const isPreset = src === 'preset';
+  el('signal-source-preset')?.classList.toggle('bg-accent/15', isPreset);
+  el('signal-source-preset')?.classList.toggle('text-accent', isPreset);
+  el('signal-source-preset')?.classList.toggle('text-subtext', !isPreset);
+  el('signal-source-interactive')?.classList.toggle('bg-accent/15', !isPreset);
+  el('signal-source-interactive')?.classList.toggle('text-accent', !isPreset);
+  el('signal-source-interactive')?.classList.toggle('text-subtext', isPreset);
+  el('signal-canvas-hint')?.classList.toggle('hidden', isPreset);
+  sqErr.linear = [];
+  sqErr.ctrv = [];
+  history.linear = [];
+  history.ctrv = [];
+  if (!running) drawScene();
+}
+
 export function initSignalDemo() {
   const dialog = document.getElementById('signal-demo');
   if (!dialog) return;
@@ -335,6 +507,21 @@ export function initSignalDemo() {
     if (!scene) {
       scene = setupCanvas(el('signal-canvas') as HTMLCanvasElement, 480 / 340, 540);
       spark = setupCanvas(el('signal-spark') as HTMLCanvasElement, 260 / 44, 260);
+
+      const canvas = el('signal-canvas') as HTMLCanvasElement;
+      const updatePointer = (e: PointerEvent) => {
+        const rect = canvas.getBoundingClientRect();
+        const x = Math.max(0.08, Math.min(0.92, (e.clientX - rect.left) / rect.width));
+        const y = Math.max(0.08, Math.min(0.92, (e.clientY - rect.top) / rect.height));
+        targetPointer = { x, y };
+      };
+      canvas.addEventListener('pointermove', updatePointer);
+      canvas.addEventListener('pointerdown', (e) => {
+        updatePointer(e);
+        if (trackSource !== 'interactive') {
+          setTrackSource('interactive');
+        }
+      });
     }
     if (motionSafe()) {
       start();
@@ -348,5 +535,21 @@ export function initSignalDemo() {
   el('signal-play-pause').addEventListener('click', () => (running ? pause() : start()));
   document.querySelectorAll<HTMLButtonElement>('.signal-mode-btn').forEach((btn) => {
     btn.addEventListener('click', () => setMode(btn.dataset.mode as Mode));
+  });
+
+  el('signal-source-preset')?.addEventListener('click', () => setTrackSource('preset'));
+  el('signal-source-interactive')?.addEventListener('click', () => setTrackSource('interactive'));
+
+  const horizonSlider = document.getElementById('signal-horizon-slider') as HTMLInputElement;
+  const horizonVal = document.getElementById('signal-horizon-val');
+  horizonSlider?.addEventListener('input', () => {
+    horizonMs = Number(horizonSlider.value);
+    if (horizonVal) horizonVal.textContent = `${horizonMs} ms`;
+    updatePanel();
+  });
+
+  const noiseCheckbox = document.getElementById('signal-sensor-noise') as HTMLInputElement;
+  noiseCheckbox?.addEventListener('change', () => {
+    noiseEnabled = noiseCheckbox.checked;
   });
 }

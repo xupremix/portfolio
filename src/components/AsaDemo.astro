@@ -19,9 +19,31 @@ const steps = [
   subtitle="BDI Physical Executor · LLM Cognitive Coordinator (llama-3.3-70b) · STRIPS PDDL — built with a teammate"
 >
   <div slot="main" class="flex min-h-0 flex-1 flex-col items-center justify-center gap-md p-md">
-    <div class="w-full max-w-[520px]">
-      <canvas id="asa-canvas" class="w-full rounded-[var(--radius-control)] border border-border"></canvas>
+    <!-- Interactive Placement Tools -->
+    <div class="flex flex-wrap items-center justify-center gap-xs">
+      <span class="font-mono text-[11px] text-subtext mr-1">click grid to place:</span>
+      <div role="tablist" class="flex overflow-hidden rounded-[var(--radius-control)] border border-border">
+        <button
+          type="button"
+          id="asa-tool-parcel"
+          class="asa-tool-btn cursor-pointer bg-accent/15 px-md py-1 font-mono text-[12px] font-bold text-accent transition-colors"
+        >
+          📦 Parcel
+        </button>
+        <button
+          type="button"
+          id="asa-tool-delivery"
+          class="asa-tool-btn cursor-pointer border-l border-border px-md py-1 font-mono text-[12px] font-bold text-subtext transition-colors"
+        >
+          🎯 Goal
+        </button>
+      </div>
     </div>
+
+    <div class="w-full max-w-[520px] relative">
+      <canvas id="asa-canvas" class="w-full rounded-[var(--radius-control)] border border-border cursor-pointer"></canvas>
+    </div>
+
     <div class="flex flex-wrap items-center justify-center gap-sm">
       <button
         id="asa-play-pause"
@@ -42,8 +64,7 @@ const steps = [
       </button>
     </div>
     <p class="text-center text-[11px] text-subtext">
-      Illustrative animation of the real pipeline — the live system runs against the Deliveroo
-      simulator with a real LLM in the loop.
+      Click any tile on the 8×7 grid to relocate the parcel or delivery target. The STRIPS planner re-solves the route instantly.
     </p>
   </div>
 
@@ -62,6 +83,15 @@ const steps = [
       <div
         id="asa-action-log"
         class="mt-sm min-h-[40px] rounded-[var(--radius-control)] bg-base p-sm font-mono text-[11px] leading-relaxed text-text"
+      ></div>
+    </div>
+
+    <!-- Live PDDL Action Plan -->
+    <div>
+      <div class="demo-kicker mb-xs">generated PDDL actions</div>
+      <div
+        id="asa-pddl-plan-list"
+        class="max-h-[140px] overflow-y-auto rounded-[var(--radius-control)] border border-border bg-base p-xs font-mono text-[10.5px] leading-snug text-subtext flex flex-col gap-0.5"
       ></div>
     </div>
 

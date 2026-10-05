@@ -27,11 +27,15 @@ interface Cell {
 }
 
 // Fixed scene: agent home, parcels (spawn tiles), delivery zones.
+// Dynamic scene: agent home, parcels (spawn tiles), delivery zones.
 const HOME: Cell = { c: 4, r: 4 };
-const PARCEL: Cell = { c: 1, r: 1 };
+let parcelCell: Cell = { c: 1, r: 1 };
 const PARCEL_2: Cell = { c: 5, r: 1 };
-const DELIVERY: Cell = { c: 6, r: 4 };
+let deliveryCell: Cell = { c: 6, r: 4 };
 const DELIVERY_2: Cell = { c: 1, r: 5 };
+
+let hoveredCell: Cell | null = null;
+let activeTool: 'parcel' | 'delivery' = 'parcel';
 
 /** Manhattan route between two cells: horizontal leg, then vertical leg. */
 function manhattanPath(from: Cell, to: Cell): Cell[] {
@@ -59,11 +63,6 @@ function pddlActions(path: Cell[]): string[] {
   return out;
 }
 
-const TO_PARCEL = manhattanPath(HOME, PARCEL);
-const TO_DELIVERY = manhattanPath(PARCEL, DELIVERY);
-const TO_HOME = manhattanPath(DELIVERY, HOME);
-const PLAN_LINES = pddlActions(TO_PARCEL);
-
 interface Phase {
   step: number; // index into the sidebar stepper
   log: string;
@@ -79,33 +78,30 @@ const PHASES: Phase[] = [
   {
     step: 0,
     log: 'PddlServiceBridge: solving STRIPS problem…',
-    bubble: ['STRIPS plan:', ...PLAN_LINES.slice(0, 3), `… ${PLAN_LINES.length} actions total`],
+    bubble: ['STRIPS plan:'],
     durationMs: 2600,
     holdMs: 700,
-    previewPath: TO_PARCEL,
   },
   {
     step: 1,
     log: 'LLM Cognitive Coordinator: task assignment',
-    bubble: ['llama-3.3-70b:', 'assign parcel t_1_1 → ag', 'contract accepted'],
+    bubble: ['llama-3.3-70b:'],
     durationMs: 2000,
     holdMs: 700,
   },
   {
     step: 2,
     log: 'BDI Physical Executor: intention GO_PICKUP',
-    bubble: ['beliefs:', 'carrying = false', 'target = t_1_1', 'intention = GO_PICKUP'],
+    bubble: ['beliefs:'],
     durationMs: 3200,
     holdMs: 500,
-    agentPath: TO_PARCEL,
   },
   {
     step: 3,
     log: 'BDI Physical Executor: intention GO_DELIVER',
-    bubble: ['beliefs:', 'carrying = true', 'target = t_6_4', 'intention = GO_DELIVER'],
+    bubble: ['beliefs:'],
     durationMs: 3600,
     holdMs: 500,
-    agentPath: TO_DELIVERY,
     carrying: true,
   },
   {
@@ -114,9 +110,49 @@ const PHASES: Phase[] = [
     bubble: ['event: delivered ✓', 'intention = IDLE'],
     durationMs: 2600,
     holdMs: 1100,
-    agentPath: TO_HOME,
   },
 ];
+
+function rebuildPlan() {
+  const toParcel = manhattanPath(HOME, parcelCell);
+  const toDelivery = manhattanPath(parcelCell, deliveryCell);
+  const toHome = manhattanPath(deliveryCell, HOME);
+  const planLines = pddlActions(toParcel);
+  const deliveryPlanLines = pddlActions(toDelivery);
+
+  PHASES[0].previewPath = toParcel;
+  PHASES[0].bubble = ['STRIPS plan:', ...planLines.slice(0, 3), `… ${planLines.length} actions total`];
+  PHASES[0].durationMs = Math.max(1800, toParcel.length * 300);
+
+  PHASES[1].bubble = ['llama-3.3-70b:', `assign parcel t_${parcelCell.c}_${parcelCell.r} → ag`, 'contract accepted'];
+
+  PHASES[2].bubble = ['beliefs:', 'carrying = false', `target = t_${parcelCell.c}_${parcelCell.r}`, 'intention = GO_PICKUP'];
+  PHASES[2].agentPath = toParcel;
+  PHASES[2].durationMs = Math.max(2000, toParcel.length * 400);
+
+  PHASES[3].bubble = ['beliefs:', 'carrying = true', `target = t_${deliveryCell.c}_${deliveryCell.r}`, 'intention = GO_DELIVER'];
+  PHASES[3].agentPath = toDelivery;
+  PHASES[3].durationMs = Math.max(2000, toDelivery.length * 400);
+
+  PHASES[4].agentPath = toHome;
+  PHASES[4].durationMs = Math.max(1800, toHome.length * 300);
+
+  const planList = document.getElementById('asa-pddl-plan-list');
+  if (planList) {
+    const allActions = [
+      ...planLines,
+      `(pickup ag t_${parcelCell.c}_${parcelCell.r})`,
+      ...deliveryPlanLines,
+      `(deliver ag t_${deliveryCell.c}_${deliveryCell.r})`
+    ];
+    planList.innerHTML = allActions
+      .map((a, idx) => `<div class="truncate"><span class="text-subtext">${String(idx + 1).padStart(2, '0')}.</span> <span class="text-text">${a}</span></div>`)
+      .join('');
+  }
+}
+
+// Initial plan construction
+rebuildPlan();
 
 // ── State ────────────────────────────────────────────────────
 let sized: SizedCanvas | null = null;
@@ -185,16 +221,29 @@ function draw() {
     ctx.textBaseline = 'middle';
     ctx.fillText(glyph, x, y);
   };
+
+  // Hover indicator
+  if (hoveredCell) {
+    const { cell, ox, oy } = cellGeom(w, h);
+    ctx.save();
+    ctx.strokeStyle = themeColor('accent');
+    ctx.lineWidth = 2;
+    ctx.strokeRect(ox + hoveredCell.c * cell, oy + hoveredCell.r * cell, cell, cell);
+    ctx.globalAlpha = 0.45;
+    emoji(activeTool === 'parcel' ? '📦' : '🎯', hoveredCell, cell * 0.42);
+    ctx.restore();
+  }
+
   // The tracked parcel disappears from its tile once picked up.
-  if (phaseIdx < 3) emoji('📦', PARCEL, cell * 0.42);
+  if (phaseIdx < 3) emoji('📦', parcelCell, cell * 0.42);
   emoji('📦', PARCEL_2, cell * 0.42);
-  emoji('🎯', DELIVERY, cell * 0.42);
+  emoji('🎯', deliveryCell, cell * 0.42);
   emoji('🎯', DELIVERY_2, cell * 0.42);
 
   // Delivery celebration ring (end of the deliver phase / start of return)
   if (phaseIdx === 4) {
     const ring = Math.min(elapsed / 900, 1);
-    const { x, y } = center(DELIVERY);
+    const { x, y } = center(deliveryCell);
     ctx.save();
     ctx.globalAlpha = (1 - ring) * 0.8;
     ctx.strokeStyle = themeColor('green');
@@ -354,19 +403,81 @@ export function initAsaDemo() {
   const dialog = document.getElementById('asa-demo');
   if (!dialog) return;
 
+  function setTool(tool: 'parcel' | 'delivery') {
+    activeTool = tool;
+    const isParcel = tool === 'parcel';
+    el('asa-tool-parcel')?.classList.toggle('bg-accent/15', isParcel);
+    el('asa-tool-parcel')?.classList.toggle('text-accent', isParcel);
+    el('asa-tool-parcel')?.classList.toggle('text-subtext', !isParcel);
+    el('asa-tool-delivery')?.classList.toggle('bg-accent/15', !isParcel);
+    el('asa-tool-delivery')?.classList.toggle('text-accent', !isParcel);
+    el('asa-tool-delivery')?.classList.toggle('text-subtext', isParcel);
+    if (!running) draw();
+  }
+
+  el('asa-tool-parcel')?.addEventListener('click', () => setTool('parcel'));
+  el('asa-tool-delivery')?.addEventListener('click', () => setTool('delivery'));
+
   dialog.addEventListener('demo-open', () => {
-    if (!sized) sized = setupCanvas(el('asa-canvas') as HTMLCanvasElement, 460 / 380, 520);
+    if (!sized) {
+      sized = setupCanvas(el('asa-canvas') as HTMLCanvasElement, 460 / 380, 520);
+
+      const canvas = el('asa-canvas') as HTMLCanvasElement;
+      canvas.addEventListener('pointermove', (e) => {
+        if (!sized) return;
+        const rect = canvas.getBoundingClientRect();
+        const px = ((e.clientX - rect.left) / rect.width) * sized.size().w;
+        const py = ((e.clientY - rect.top) / rect.height) * sized.size().h;
+        const { cell, ox, oy } = cellGeom(sized.size().w, sized.size().h);
+        const c = Math.floor((px - ox) / cell);
+        const r = Math.floor((py - oy) / cell);
+        if (c >= 0 && c < COLS && r >= 0 && r < ROWS) {
+          hoveredCell = { c, r };
+        } else {
+          hoveredCell = null;
+        }
+        if (!running) draw();
+      });
+
+      canvas.addEventListener('pointerleave', () => {
+        hoveredCell = null;
+        if (!running) draw();
+      });
+
+      canvas.addEventListener('pointerdown', (e) => {
+        if (!sized) return;
+        const rect = canvas.getBoundingClientRect();
+        const px = ((e.clientX - rect.left) / rect.width) * sized.size().w;
+        const py = ((e.clientY - rect.top) / rect.height) * sized.size().h;
+        const { cell, ox, oy } = cellGeom(sized.size().w, sized.size().h);
+        const c = Math.floor((px - ox) / cell);
+        const r = Math.floor((py - oy) / cell);
+        if (c >= 0 && c < COLS && r >= 0 && r < ROWS) {
+          // Cannot place on HOME agent tile
+          if (c === HOME.c && r === HOME.r) return;
+          if (activeTool === 'parcel') {
+            parcelCell = { c, r };
+          } else {
+            deliveryCell = { c, r };
+          }
+          rebuildPlan();
+          restart();
+        }
+      });
+    }
+
+    rebuildPlan();
     phaseIdx = 0;
     elapsed = 0;
     updateStepper();
     if (motionSafe()) {
       start();
     } else {
-      // Reduced motion: open paused on the first frame; Play is opt-in.
       pause();
       draw();
     }
   });
+
   dialog.addEventListener('close', pause);
 
   el('asa-play-pause').addEventListener('click', () => (running ? pause() : start()));

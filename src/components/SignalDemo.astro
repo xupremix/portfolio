@@ -11,41 +11,87 @@ import { Icon } from 'astro-icon/components';
   subtitle="Constant-velocity Kalman vs CTRV-EKF prediction, simulated live in your browser"
 >
   <div slot="main" class="flex min-h-0 flex-1 flex-col items-center justify-center gap-md p-md">
-    <!-- Predictor toggle -->
-    <div role="tablist" class="flex overflow-hidden rounded-[var(--radius-control)] border border-border">
-      <button
-        type="button"
-        role="tab"
-        data-mode="linear"
-        aria-selected="true"
-        class="signal-mode-btn cursor-pointer bg-accent/15 px-lg py-xs font-mono text-[12px] font-bold text-accent transition-colors"
-      >
-        Linear KF
-      </button>
-      <button
-        type="button"
-        role="tab"
-        data-mode="ctrv"
-        aria-selected="false"
-        class="signal-mode-btn cursor-pointer border-l border-border px-lg py-xs font-mono text-[12px] font-bold text-subtext transition-colors"
-      >
-        CTRV-EKF
-      </button>
+    <!-- Filter Predictor toggle & Scene Mode -->
+    <div class="flex flex-wrap items-center justify-center gap-sm">
+      <div role="tablist" class="flex overflow-hidden rounded-[var(--radius-control)] border border-border">
+        <button
+          type="button"
+          role="tab"
+          data-mode="linear"
+          aria-selected="true"
+          class="signal-mode-btn cursor-pointer bg-accent/15 px-md py-xs font-mono text-[12px] font-bold text-accent transition-colors"
+        >
+          Linear KF
+        </button>
+        <button
+          type="button"
+          role="tab"
+          data-mode="ctrv"
+          aria-selected="false"
+          class="signal-mode-btn cursor-pointer border-l border-border px-md py-xs font-mono text-[12px] font-bold text-subtext transition-colors"
+        >
+          CTRV-EKF
+        </button>
+      </div>
+
+      <!-- Mode: Preset tracks vs Interactive steering -->
+      <div role="tablist" class="flex overflow-hidden rounded-[var(--radius-control)] border border-border">
+        <button
+          type="button"
+          id="signal-source-preset"
+          class="signal-source-btn cursor-pointer bg-accent/15 px-md py-xs font-mono text-[12px] font-bold text-accent transition-colors"
+        >
+          Preset Tracks
+        </button>
+        <button
+          type="button"
+          id="signal-source-interactive"
+          class="signal-source-btn cursor-pointer border-l border-border px-md py-xs font-mono text-[12px] font-bold text-subtext transition-colors"
+        >
+          🎯 Interactive Steer
+        </button>
+      </div>
     </div>
 
-    <div class="w-full max-w-[540px]">
-      <canvas id="signal-canvas" class="w-full rounded-[var(--radius-control)] border border-border"></canvas>
+    <!-- Canvas -->
+    <div class="w-full max-w-[540px] relative">
+      <canvas id="signal-canvas" class="w-full rounded-[var(--radius-control)] border border-border cursor-crosshair"></canvas>
+      <div id="signal-canvas-hint" class="pointer-events-none absolute bottom-2 left-2 right-2 text-center text-[10.5px] font-mono text-subtext bg-crust/80 backdrop-blur-xs py-0.5 rounded hidden">
+        Drag or hover mouse to steer vehicle · watch prediction lag
+      </div>
     </div>
 
-    <button
-      id="signal-play-pause"
-      type="button"
-      class="inline-flex cursor-pointer items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-xs text-[13px] font-bold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
-    >
-      <span id="signal-icon-pause"><Icon name="lucide:pause" width={13} height={13} aria-hidden="true" /></span>
-      <span id="signal-icon-play" class="hidden"><Icon name="lucide:play" width={13} height={13} aria-hidden="true" /></span>
-      <span id="signal-play-label">Pause</span>
-    </button>
+    <!-- Parameter sliders and options -->
+    <div class="flex flex-wrap items-center justify-between gap-md w-full max-w-[540px] px-xs text-[11px] font-mono text-subtext">
+      <div class="flex items-center gap-xs">
+        <label for="signal-horizon-slider" class="text-text">Horizon:</label>
+        <input
+          type="range"
+          id="signal-horizon-slider"
+          min="100"
+          max="1000"
+          step="50"
+          value="500"
+          class="w-24 accent-accent cursor-pointer"
+        />
+        <span id="signal-horizon-val" class="font-bold text-accent min-w-[50px]">500 ms</span>
+      </div>
+
+      <label class="flex items-center gap-1 cursor-pointer">
+        <input type="checkbox" id="signal-sensor-noise" class="accent-accent" />
+        <span class="text-text">LiDAR Noise</span>
+      </label>
+
+      <button
+        id="signal-play-pause"
+        type="button"
+        class="inline-flex cursor-pointer items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-1 text-[12px] font-bold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      >
+        <span id="signal-icon-pause"><Icon name="lucide:pause" width={12} height={12} aria-hidden="true" /></span>
+        <span id="signal-icon-play" class="hidden"><Icon name="lucide:play" width={12} height={12} aria-hidden="true" /></span>
+        <span id="signal-play-label">Pause</span>
+      </button>
+    </div>
   </div>
 
   <div slot="aside">
