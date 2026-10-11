@@ -1,6 +1,6 @@
-// signal_image_video demo — multi-object tracking simulation.
+// signal_image_video demo: multi-object tracking simulation.
 //
-// Honesty rules (these fixed real bugs — do not regress):
+// Honesty rules (these fixed real bugs: do not regress):
 // - The displayed RMSE is COMPUTED every frame from the on-screen gap between
 //   truth and prediction (running window). It is never a canned constant.
 //   The real KITTI result (81.5% reduction) appears only as labeled static
@@ -9,7 +9,7 @@
 //     Linear KF  = constant-velocity extrapolation (real CV predict step).
 //     CTRV-EKF   = constant-turn-rate-and-velocity propagation (real CTRV
 //                  predict step). Its small error comes from real model
-//                  mismatch with the trajectories — no injected noise.
+//                  mismatch with the trajectories: no injected noise.
 // - Trajectories are closed periodic curves (no modulo wrap → no teleports).
 // - Delta-time animation (never frame-count); one rAF loop; pause-safe.
 //
@@ -369,7 +369,7 @@ function drawScene() {
 function updatePanel() {
   const cur = rmseOf(mode);
   const other = rmseOf(mode === 'linear' ? 'ctrv' : 'linear');
-  el('signal-rmse').textContent = cur === null ? '—' : cur.toFixed(1);
+  el('signal-rmse').textContent = cur === null ? '--' : cur.toFixed(1);
   el('signal-mode-label').textContent = `${mode === 'linear' ? 'Linear KF' : 'CTRV-EKF'} · ${horizonMs} ms horizon`;
 
   const badge = el('signal-delta');

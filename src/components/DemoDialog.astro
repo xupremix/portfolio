@@ -47,7 +47,7 @@ const { id, title, subtitle } = Astro.props;
 </dialog>
 
 <script>
-  // Shared behavior for all demo dialogs — Astro dedupes this script.
+  // Shared behavior for all demo dialogs: Astro dedupes this script.
   document.querySelectorAll<HTMLButtonElement>('[data-dialog-close]').forEach((btn) => {
     btn.addEventListener('click', () => {
       btn.closest('dialog')?.close();

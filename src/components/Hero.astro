@@ -1,18 +1,15 @@
 ---
-// Hero: gradient name, quiet subheadline, verifiable stats strip (each metric
-// links to the project card that backs it), ambient blobs with gentle pointer
-// parallax (disabled for reduced motion / touch).
+// Hero: above-the-fold statement, ambient background, call-to-action pair,
+// scroll cue, and prominent Master's thesis / internship notice.
 import { Icon } from 'astro-icon/components';
-
-
 ---
 
 <section
   id="hero"
-  class="relative flex min-h-[calc(100svh-64px)] flex-col items-center justify-center overflow-hidden px-lg text-center md:px-xl"
+  class="relative flex min-h-[92vh] flex-col items-center justify-center overflow-hidden px-lg py-3xl text-center md:px-xl"
 >
-  <!-- Animated gradient blobs (two hues for depth) -->
-  <div aria-hidden="true" id="hero-blobs" class="pointer-events-none absolute inset-0 overflow-hidden">
+  <!-- Ambient floating blobs (two accent, one blue; paper-mode overrides in style) -->
+  <div aria-hidden="true" class="pointer-events-none absolute inset-0 overflow-hidden">
     <div
       class="hero-blob absolute top-[12%] left-[8%] h-[880px] w-[880px] rounded-full"
       data-parallax="8"
@@ -31,31 +28,45 @@ import { Icon } from 'astro-icon/components';
   <div aria-hidden="true" class="hero-dots pointer-events-none absolute inset-0"></div>
 
   <!-- Content -->
-  <div class="relative flex max-w-[52rem] flex-col items-center">
-    <p
-      class="hero-animate font-mono text-label font-semibold tracking-widest text-accent uppercase"
+  <div class="relative flex max-w-[56rem] flex-col items-center">
+    <!-- Master's Thesis / Internship Banner -->
+    <a
+      href="#contact"
+      class="hero-animate group mb-md inline-flex items-center gap-xs rounded-full border border-accent/40 bg-accent/10 px-md py-xs text-[13px] font-medium text-accent transition-all hover:bg-accent/20 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       data-delay="1"
     >
-      CS Graduate · AI Master's Student · UniTrento
+      <span class="relative flex h-2 w-2">
+        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/60"></span>
+        <span class="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
+      </span>
+      <span>Actively seeking Master's Thesis / Internship: AI Systems &amp; Model Optimization</span>
+      <Icon name="lucide:arrow-right" width={12} height={12} class="transition-transform group-hover:translate-x-0.5" />
+    </a>
+
+    <p
+      class="hero-animate font-mono text-label font-semibold tracking-widest text-subtext uppercase"
+      data-delay="2"
+    >
+      AI Systems Master's Student · CS Graduate · UniTrento
     </p>
 
-    <h1 class="hero-animate gradient-text mt-sm text-display font-semibold" data-delay="2">
+    <h1 class="hero-animate gradient-text mt-sm text-display font-semibold" data-delay="3">
       Filippo Lollato
     </h1>
 
     <p
-      class="hero-animate mt-md max-w-[38rem] text-[clamp(1.125rem,1rem+0.6vw,1.375rem)] leading-relaxed text-balance text-subtext"
-      data-delay="3"
+      class="hero-animate mt-md max-w-[44rem] text-[clamp(1.125rem,1rem+0.6vw,1.375rem)] leading-relaxed text-balance text-subtext"
+      data-delay="4"
     >
-      Engineering <span class="font-semibold text-text">AI systems</span> and core infrastructure with <span class="font-semibold text-text">precision and creativity</span>.
+      Engineering <span class="font-semibold text-text">intelligent AI systems</span>, model optimization pipelines, and <span class="font-semibold text-text">production service integrations</span>.
     </p>
 
-    <div class="hero-animate mt-xl flex flex-col items-center gap-md sm:flex-row" data-delay="4">
+    <div class="hero-animate mt-xl flex flex-col items-center gap-md sm:flex-row" data-delay="5">
       <a
         href="#projects"
         class="inline-flex items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-sm text-label font-semibold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
-        See my work
+        Explore Featured Projects
         <Icon name="lucide:arrow-down" width={14} height={14} aria-hidden="true" />
       </a>
       <div class="group relative">
@@ -80,11 +91,9 @@ import { Icon } from 'astro-icon/components';
         href="#contact"
         class="text-label font-semibold text-text transition-colors hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
-        Get in touch →
+        Thesis / Internship Inquiry →
       </a>
     </div>
-
-
   </div>
 
   <a
@@ -116,7 +125,6 @@ import { Icon } from 'astro-icon/components';
     background-size: 30px 30px;
     mask-image: radial-gradient(ellipse 85% 75% at 50% 42%, black, transparent);
   }
-  /* Paper mode: watercolor washes instead of neon glow, ink dots */
   :global(html[data-mode='paper']) .hero-blob {
     background: radial-gradient(circle, rgb(78 110 56 / 0.10) 0%, transparent 65%);
   }
@@ -147,8 +155,6 @@ import { Icon } from 'astro-icon/components';
 </style>
 
 <script>
-  // Gentle pointer parallax on the blobs. Skipped entirely for reduced-motion
-  // preferences and coarse (touch) pointers.
   const fine = window.matchMedia('(pointer: fine)').matches;
   const motionOk = !window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
@@ -175,7 +181,6 @@ import { Icon } from 'astro-icon/components';
       curY += (targetY - curY) * 0.06;
       blobs.forEach((blob) => {
         const depth = Number(blob.dataset.parallax);
-        // translate is separate from the keyframe transform, so wrap in a var
         blob.style.translate = `${curX * depth * 4}px ${curY * depth * 4}px`;
       });
       const settled = Math.abs(targetX - curX) < 0.001 && Math.abs(targetY - curY) < 0.001;

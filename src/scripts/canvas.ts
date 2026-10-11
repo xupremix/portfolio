@@ -2,7 +2,7 @@
 
 export interface SizedCanvas {
   ctx: CanvasRenderingContext2D;
-  /** Current CSS-pixel size — read every frame; tracks container resizes. */
+  /** Current CSS-pixel size: read every frame; tracks container resizes. */
   size: () => { w: number; h: number };
 }
 

@@ -1,4 +1,4 @@
-// ASA Autobots demo — animated walkthrough of the real system's pipeline.
+// ASA Autobots demo: animated walkthrough of the real system's pipeline.
 //
 // Honesty notes (keep true if you edit):
 // - This is an ILLUSTRATIVE animation, labeled as such in the dialog. It does
@@ -8,7 +8,7 @@
 //   `(move-left ag t_4_4 t_3_4)` come from the actual asa-autobots repo
 //   (domain `deliveroo-crates`, tiles named t_<col>_<row>).
 //
-// Animation correctness rules (these fixed real bugs — do not regress):
+// Animation correctness rules (these fixed real bugs: do not regress):
 // - Time-based: phase progress advances by rAF delta-time (ms), never by
 //   frame count, so speed is identical at 60 Hz and 144 Hz.
 // - One rAF loop. Pause cancels it; resume restarts it. The inter-phase hold
@@ -69,7 +69,7 @@ interface Phase {
   bubble: string[];
   durationMs: number;
   holdMs: number;
-  previewPath?: Cell[]; // dashed route, drawn in — agent stays put
+  previewPath?: Cell[]; // dashed route, drawn in: agent stays put
   agentPath?: Cell[]; // agent walks this route
   carrying?: boolean;
 }
@@ -106,7 +106,7 @@ const PHASES: Phase[] = [
   },
   {
     step: 4,
-    log: 'parcel delivered — returning to idle',
+    log: 'parcel delivered: returning to idle',
     bubble: ['event: delivered ✓', 'intention = IDLE'],
     durationMs: 2600,
     holdMs: 1100,
@@ -213,13 +213,40 @@ function draw() {
     ctx.restore();
   }
 
-  // Parcels and delivery zones
-  const emoji = (glyph: string, p: Cell, size: number) => {
+  // Parcels and delivery zones (crisp canvas vector graphics, no emoji fonts)
+  const drawItem = (type: 'parcel' | 'delivery', p: Cell, size: number) => {
     const { x, y } = center(p);
-    ctx.font = `${size}px sans-serif`;
-    ctx.textAlign = 'center';
-    ctx.textBaseline = 'middle';
-    ctx.fillText(glyph, x, y);
+    ctx.save();
+    if (type === 'parcel') {
+      const bSize = size * 0.9;
+      ctx.fillStyle = themeColor('peach');
+      ctx.strokeStyle = themeColor('text');
+      ctx.lineWidth = 1.5;
+      ctx.fillRect(x - bSize / 2, y - bSize / 2, bSize, bSize);
+      ctx.strokeRect(x - bSize / 2, y - bSize / 2, bSize, bSize);
+      ctx.beginPath();
+      ctx.moveTo(x - bSize / 2, y);
+      ctx.lineTo(x + bSize / 2, y);
+      ctx.moveTo(x, y - bSize / 2);
+      ctx.lineTo(x, y + bSize / 2);
+      ctx.strokeStyle = themeColor('base');
+      ctx.lineWidth = 1;
+      ctx.stroke();
+    } else {
+      ctx.fillStyle = themeColor('accent');
+      ctx.beginPath();
+      ctx.arc(x, y, size * 0.45, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = themeColor('base');
+      ctx.beginPath();
+      ctx.arc(x, y, size * 0.28, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.fillStyle = themeColor('accent');
+      ctx.beginPath();
+      ctx.arc(x, y, size * 0.12, 0, Math.PI * 2);
+      ctx.fill();
+    }
+    ctx.restore();
   };
 
   // Hover indicator
@@ -230,15 +257,15 @@ function draw() {
     ctx.lineWidth = 2;
     ctx.strokeRect(ox + hoveredCell.c * cell, oy + hoveredCell.r * cell, cell, cell);
     ctx.globalAlpha = 0.45;
-    emoji(activeTool === 'parcel' ? '📦' : '🎯', hoveredCell, cell * 0.42);
+    drawItem(activeTool === 'parcel' ? 'parcel' : 'delivery', hoveredCell, cell * 0.42);
     ctx.restore();
   }
 
   // The tracked parcel disappears from its tile once picked up.
-  if (phaseIdx < 3) emoji('📦', parcelCell, cell * 0.42);
-  emoji('📦', PARCEL_2, cell * 0.42);
-  emoji('🎯', deliveryCell, cell * 0.42);
-  emoji('🎯', DELIVERY_2, cell * 0.42);
+  if (phaseIdx < 3) drawItem('parcel', parcelCell, cell * 0.42);
+  drawItem('parcel', PARCEL_2, cell * 0.42);
+  drawItem('delivery', deliveryCell, cell * 0.42);
+  drawItem('delivery', DELIVERY_2, cell * 0.42);
 
   // Delivery celebration ring (end of the deliver phase / start of return)
   if (phaseIdx === 4) {
@@ -294,8 +321,16 @@ function draw() {
   ctx.fill();
 
   if (phase.carrying) {
-    ctx.font = `${Math.round(cell * 0.3)}px sans-serif`;
-    ctx.fillText('📦', ap.x + s * 0.55, ap.y - s * 0.55);
+    const bSize = cell * 0.26;
+    const px = ap.x + s * 0.55;
+    const py = ap.y - s * 0.55;
+    ctx.save();
+    ctx.fillStyle = themeColor('peach');
+    ctx.strokeStyle = themeColor('text');
+    ctx.lineWidth = 1;
+    ctx.fillRect(px - bSize / 2, py - bSize / 2, bSize, bSize);
+    ctx.strokeRect(px - bSize / 2, py - bSize / 2, bSize, bSize);
+    ctx.restore();
   }
 
   // Speech bubble, sized to its text (fades in, persists through the hold)

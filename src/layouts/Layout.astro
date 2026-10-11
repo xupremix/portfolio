@@ -19,7 +19,7 @@ interface Props {
 
 const {
   title,
-  description = "Filippo Lollato, ML student at the University of Trento engineering AI systems and core infrastructure with precision and creativity.",
+  description = "Filippo Lollato, AI Systems Graduate Student & Researcher at the University of Trento engineering intelligent AI systems, model optimization pipelines, and production service integrations.",
   ogImage = "/og.png",
 } = Astro.props;
 
@@ -32,7 +32,7 @@ const personJsonLd = JSON.stringify({
   name: "Filippo Lollato",
   url: siteUrl.href,
   email: "mailto:filippo@lollato.dev",
-  jobTitle: "ML Student & Systems Developer",
+  jobTitle: "AI Systems Engineer & Researcher",
   affiliation: { "@type": "CollegeOrUniversity", name: "University of Trento" },
   sameAs: ["https://github.com/xupremix"],
   knowsAbout: ["Machine Learning", "Rust", "Multi-agent systems", "Computer Vision", "NLP"],
@@ -100,7 +100,7 @@ const personJsonLd = JSON.stringify({
       document.querySelectorAll('.reveal').forEach((el) => revealObserver.observe(el));
 
       // Dialog behavior (backdrop close, scroll lock/unlock) lives in
-      // src/components/DemoDialog.astro — do not duplicate it here.
+      // src/components/DemoDialog.astro: do not duplicate it here.
 
       // ── Network Background Triggers ─────────────────────────
       // Send mouse coordinates to the NetworkBackground canvas when hovering

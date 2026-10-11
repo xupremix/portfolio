@@ -1,25 +1,24 @@
 ---
-// Three working-principles pillars. Metric fragments are wrapped in mono
-// accent spans via set:html (static, author-controlled strings only).
+// Three working-principles pillars tailored for model optimization, AI service integration, and thesis collaboration.
 import { Icon } from 'astro-icon/components';
 
 const metric = (s: string) => `<span class="font-mono font-semibold text-accent">${s}</span>`;
 
 const pillars = [
   {
-    icon: 'lucide:layers',
-    heading: 'Strong Foundations',
-    body: `I prioritize a deep understanding of the systems I build. For example, incin checks ML tensor invariants at compile time, and the ASA agent coordinates live deliveries.`,
+    icon: 'lucide:brain',
+    heading: 'Model Optimization & Fine-Tuning',
+    body: `Adapting neural models to specialized domains and operational constraints through parameter-efficient fine-tuning (LoRA, QLoRA), distillation, multi-task learning, and low-bit quantization (NVFP4, GGUF, AWQ) to optimize model capability for real-world tasks.`,
   },
   {
-    icon: 'lucide:users',
-    heading: 'Team Collaboration',
-    body: `I am an effective team player. The ASA Autobots project was built jointly with a teammate, achieving ${metric('~91.5%')} test coverage through shared design decisions.`,
+    icon: 'lucide:bot',
+    heading: 'AI Systems & Service Integration',
+    body: `Bridging machine learning models with robust software backends. In <strong class="text-text">ASA Autobots</strong>, I integrated local 70B LLMs, autonomous BDI agents, and PDDL planners into an event-driven delivery pipeline with structured tool-calling, resilient recovery, and ${metric('~91.5%')} test coverage.`,
   },
   {
-    icon: 'lucide:zap',
-    heading: 'Results-Oriented',
-    body: `I focus on practical outcomes. My projects aim for tangible improvements, such as reducing RMSE in object tracking and achieving ${metric('0.9765')} intent accuracy in NLU tasks.`,
+    icon: 'lucide:graduation-cap',
+    heading: "Target: Master's Thesis in AI Systems",
+    body: `Actively seeking a 6-month industry Master's Thesis / Internship at an ambitious AI lab or company, focusing on integrating optimized models into scalable backend services, multi-agent workflows, and user-facing platforms.`,
   },
 ];
 ---

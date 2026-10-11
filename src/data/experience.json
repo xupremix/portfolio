@@ -1,18 +1,18 @@
 [
   {
-    "role": "ML Student",
+    "role": "Graduate AI Researcher & Master's Student",
     "org": "University of Trento",
     "period": "2024 - present",
-    "description": "Master's level coursework and projects spanning deep learning, NLP, computer vision, reinforcement learning, and autonomous systems. Lead architect on the ASA Autobots multi-agent capstone.",
-    "tag": "Student · Developer",
+    "description": "Pursuing M.Sc. in Artificial Intelligence Systems focusing on model optimization (fine-tuning, LoRA/QLoRA, distillation, quantization), multi-agent coordination, and integrating AI models into production software systems and services. Lead systems architect on the ASA Autobots multi-agent capstone. Actively seeking a Master's Thesis / Internship at an AI company.",
+    "tag": "AI Systems \u00b7 Model Optimization",
     "toneClass": "accent"
   },
   {
-    "role": "University Tutor",
+    "role": "Teaching Assistant / Academic Tutor in Algorithms",
     "org": "University of Trento",
     "period": "2024 - present",
-    "description": "Tutoring undergraduate students in algorithms, data structures, and foundational programming. Teaching to others accelerates my own mastery - and it builds the leadership muscle of making complex ideas accessible.",
-    "tag": "Teaching · Leadership",
+    "description": "Selected via competitive academic department bando to teach 50+ undergraduate computer science students in Advanced Algorithms, Data Structures, and systems programming in C/C++. Translating complex computational complexity proofs into practical, memory-efficient implementations.",
+    "tag": "Teaching \u00b7 Leadership",
     "toneClass": "green"
   }
 ]

@@ -1,5 +1,5 @@
 ---
-// signal_image_video demo — live tracking simulation with honestly computed
+// signal_image_video demo: live tracking simulation with honestly computed
 // RMSE. All logic in src/scripts/signal-demo.ts.
 import DemoDialog from './DemoDialog.astro';
 import { Icon } from 'astro-icon/components';
@@ -7,7 +7,7 @@ import { Icon } from 'astro-icon/components';
 
 <DemoDialog
   id="signal-demo"
-  title="signal_image_video — multi-object tracking"
+  title="signal_image_video: Multi-Object Tracking"
   subtitle="Constant-velocity Kalman vs CTRV-EKF prediction, simulated live in your browser"
 >
   <div slot="main" class="flex min-h-0 flex-1 flex-col items-center justify-center gap-md p-md">
@@ -48,7 +48,7 @@ import { Icon } from 'astro-icon/components';
           id="signal-source-interactive"
           class="signal-source-btn cursor-pointer border-l border-border px-md py-xs font-mono text-[12px] font-bold text-subtext transition-colors"
         >
-          🎯 Interactive Steer
+          <Icon name="lucide:crosshair" class="inline mr-1" width={13} height={13} /> Interactive Steer
         </button>
       </div>
     </div>
@@ -97,9 +97,9 @@ import { Icon } from 'astro-icon/components';
   <div slot="aside">
     <!-- Live metric: computed from the on-screen gap, never canned -->
     <div>
-      <div class="demo-kicker mb-sm">RMSE — this simulation</div>
+      <div class="demo-kicker mb-sm">RMSE (This Simulation)</div>
       <div class="flex items-baseline gap-sm">
-        <span id="signal-rmse" class="font-mono text-[32px] leading-none font-semibold text-text">—</span>
+        <span id="signal-rmse" class="font-mono text-[32px] leading-none font-semibold text-text">--</span>
         <span class="font-mono text-[12px] text-subtext">px</span>
       </div>
       <div class="mt-xs font-mono text-[11px] text-subtext">
@@ -135,11 +135,11 @@ import { Icon } from 'astro-icon/components';
       <p>
         Both predictors run the genuine motion-model math: constant-velocity extrapolation
         drifts on curves; CTRV propagation follows them. The RMSE above is computed live
-        from the on-screen gap — toggle predictors and watch it respond.
+        from the on-screen gap. Toggle predictors and watch it respond.
       </p>
       <div class="border-l-2 border-green pl-sm">
         <strong class="text-green">On KITTI:</strong> the full pipeline (CTRV-EKF +
-        Hungarian assignment, camera–LiDAR fusion) cut RMSE by
+        Hungarian assignment, camera/LiDAR fusion) cut RMSE by
         <span class="font-mono">81.5%</span> vs the linear baseline.
       </div>
     </div>

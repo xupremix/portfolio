@@ -1,7 +1,7 @@
 ---
-// NLU demo — real ATIS test sentences with their GOLD annotations.
+// NLU demo: real ATIS test sentences with their GOLD annotations.
 //
-// Honesty rules (these fixed real bugs — do not regress):
+// Honesty rules (these fixed real bugs: do not regress):
 // - Every utterance + BIO tag sequence below is copied verbatim from the ATIS
 //   test set used in the project (dataset/ATIS/test.json). Nothing is invented.
 // - There is NO free-text input and NO fake "inference": the old demo returned
@@ -91,7 +91,7 @@ const examples = ROWS.map((row) => ({ ...row, spans: bioToSpans(row.utterance, r
 
 <DemoDialog
   id="nlu-demo"
-  title="NLU — intent classification & slot filling"
+  title="NLU: Intent Classification & Slot Filling"
   subtitle="Joint BERT fine-tune on ATIS · interactive query tokenizer and slot extraction playground"
 >
   <div slot="main" class="flex min-h-0 flex-1 flex-col gap-lg overflow-y-auto p-md md:p-lg">
@@ -217,7 +217,7 @@ const examples = ROWS.map((row) => ({ ...row, spans: bioToSpans(row.utterance, r
         </div>
       </div>
       <p class="mt-sm text-[11px] leading-relaxed text-subtext">
-        bert-base-cased, lr 5e-5 — numbers from the project report, not estimates.
+        bert-base-cased, lr 5e-5 (numbers from project report, not estimates).
       </p>
     </div>
 

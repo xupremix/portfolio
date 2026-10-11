@@ -1,5 +1,5 @@
 ---
-// incin demo — three real-API scenarios, fully rendered at BUILD time:
+// incin demo: three real-API scenarios, fully rendered at BUILD time:
 // code via Astro's Shiki <Code> (no editor, no CodeMirror chunk) and compiler
 // output straight from src/generated/incin-outputs.json, which is produced by
 // `npm run capture:incin` against the actual crate (~/Projects/incin, develop branch).
@@ -26,7 +26,7 @@ const scenarios: Scenario[] = [
     dot: 'bg-destructive',
     code: shapeCode,
     explanation:
-      'A Linear<s![784, 256]> layer receives a batch shaped s![2, 512]. Shapes live in the type system, so rustc rejects the forward call during type checking — the bug is caught at design time, not hours into a training run.',
+      'A Linear<s![784, 256]> layer receives a batch shaped s![2, 512]. Shapes live in the type system, so rustc rejects the forward call during type checking - the bug is caught at design time, not hours into a training run.',
   },
   {
     key: '02-dtype-mismatch',
@@ -60,7 +60,7 @@ function lineClass(line: string): string {
 
 <DemoDialog
   id="incin-demo"
-  title="incin — compile-time ML safety"
+  title="incin: Compile-Time ML Safety"
   subtitle="Real incin API · compiler output captured from the actual crate"
 >
   <div slot="main" class="flex min-h-0 flex-1 flex-col">
@@ -112,7 +112,7 @@ function lineClass(line: string): string {
                   <span class={lineClass(line)}>{line + '\n'}</span>
                 ))}</pre>
               ) : (
-                <pre class="rounded-[var(--radius-control)] bg-crust p-sm font-mono text-[11.5px] leading-relaxed whitespace-pre-wrap text-subtext">Output not captured yet — run `npm run capture:incin` and commit src/generated/incin-outputs.json.</pre>
+                <pre class="rounded-[var(--radius-control)] bg-crust p-sm font-mono text-[11.5px] leading-relaxed whitespace-pre-wrap text-subtext">Output not captured yet: run `npm run capture:incin` and commit src/generated/incin-outputs.json.</pre>
               )}
               {outputs[s.key] && (
                 <p class:list={['mt-xs font-mono text-[11px]', outputs[s.key]!.success ? 'text-green' : 'text-destructive']}>

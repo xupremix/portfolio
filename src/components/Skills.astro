@@ -31,11 +31,11 @@ const tone: Record<string, { text: string; bg: string; border: string; lBorder: 
         )}
       </div>
       <p class="mt-sm text-body text-subtext">
-        The tools I reach for when building systems that actually run.
+        Production runtimes, inference engines, systems languages, and architectures I leverage to build and serve AI systems at scale.
       </p>
     </div>
 
-    <div class="mt-2xl grid grid-cols-1 gap-lg sm:grid-cols-2 lg:grid-cols-4">
+    <div class="mt-2xl grid grid-cols-1 gap-lg sm:grid-cols-2 lg:grid-cols-3">
       {skillGroups.map((group, i) => {
         const currentTone = tone[group.color || 'accent'] || tone['accent'];
         return (

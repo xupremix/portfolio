@@ -1,53 +1,106 @@
 [
   {
-    "heading": "Systems & Languages",
+    "heading": "Model Optimization & Tuning",
+    "icon": "lucide:brain",
+    "items": [
+      "Fine-Tuning (LoRA / QLoRA)",
+      "Model Distillation",
+      "Quantization (NVFP4/GGUF/AWQ/FP8)",
+      "Alignment (DPO, RLHF)",
+      "Multi-Task Learning",
+      "Model Pruning",
+      "HuggingFace Ecosystem"
+    ],
+    "primary": [
+      "Fine-Tuning (LoRA / QLoRA)",
+      "Model Distillation",
+      "Quantization (NVFP4/GGUF/AWQ/FP8)"
+    ],
+    "color": "accent"
+  },
+  {
+    "heading": "AI Systems & Service Integration",
+    "icon": "lucide:bot",
+    "items": [
+      "Multi-Agent Systems (BDI, PDDL)",
+      "Tool Use & Function Calling",
+      "LLM Orchestration",
+      "Streaming APIs (SSE, WebSockets)",
+      "Model Serving (vLLM, Ollama, ONNX)",
+      "RAG & Context Management"
+    ],
+    "primary": [
+      "Multi-Agent Systems (BDI, PDDL)",
+      "Tool Use & Function Calling",
+      "LLM Orchestration"
+    ],
+    "color": "blue"
+  },
+  {
+    "heading": "Systems & High Assurance",
     "icon": "lucide:cpu",
     "items": [
       "Rust",
-      "C++",
-      "Python"
+      "C++ (C++20)",
+      "CUDA C/C++",
+      "CMake",
+      "Cargo",
+      "Linux",
+      "Compile-Time Safety & SIMD"
     ],
     "primary": [
       "Rust",
-      "C++",
-      "Python"
-    ]
+      "C++ (C++20)",
+      "CUDA C/C++"
+    ],
+    "color": "peach"
   },
   {
-    "heading": "ML Stack",
-    "icon": "lucide:brain",
+    "heading": "Deep Learning & Perception",
+    "icon": "lucide:layers",
     "items": [
       "PyTorch",
-      "Jupyter",
-      "Ollama",
-      "HuggingFace"
+      "Transformers (BERT)",
+      "Diffusion Models",
+      "3D LiDAR-Camera Sensor Fusion",
+      "Kalman Filtering (CTRV-EKF)",
+      "KITTI Benchmark"
     ],
     "primary": [
-      "PyTorch"
-    ]
+      "PyTorch",
+      "Transformers (BERT)",
+      "3D LiDAR-Camera Sensor Fusion"
+    ],
+    "color": "maroon"
   },
   {
-    "heading": "Deployment",
+    "heading": "Backend & Infrastructure",
     "icon": "lucide:server",
     "items": [
       "Docker",
-      "ONNX Runtime",
-      "Linux",
-      "Git"
-    ],
-    "primary": [
-      "Docker"
-    ]
-  },
-  {
-    "heading": "Frameworks & Tools",
-    "icon": "lucide:wrench",
-    "items": [
+      "Linux / Debian",
+      "REST APIs",
       "Axum",
       "Node.js",
-      "PDDL",
-      "PyQt6"
+      "Git & CI/CD"
     ],
-    "primary": []
+    "primary": [
+      "Docker",
+      "REST APIs",
+      "Axum"
+    ],
+    "color": "yellow"
+  },
+  {
+    "heading": "Languages & Certifications",
+    "icon": "lucide:award",
+    "items": [
+      "English (C1 Certified - Cambridge Grade A, 182)",
+      "Italian (Native)"
+    ],
+    "primary": [
+      "English (C1 Certified - Cambridge Grade A, 182)"
+    ],
+    "color": "green"
   }
 ]
