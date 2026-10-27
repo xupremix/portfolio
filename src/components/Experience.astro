@@ -60,31 +60,56 @@ const tone: Record<string, { dot: string; pill: string }> = {
                   </span>
                 </div>
               </div>
-              <span class="shrink-0 font-mono text-label font-semibold text-subtext">{item.period}</span>
+              <div class="flex flex-wrap items-center gap-sm self-start sm:self-center">
+                <span class="font-mono text-label font-semibold text-subtext">{item.period}</span>
+                {item.documents && item.documents.length > 0 && (
+                  <details class="certificate-menu group relative">
+                    <summary class="flex list-none cursor-pointer items-center gap-xs rounded-full border border-blue/30 bg-blue/5 px-sm py-xs text-xs font-semibold text-text transition-colors hover:border-blue/60 hover:bg-blue/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/60">
+                      <Icon name="lucide:download" width={13} height={13} aria-hidden="true" />
+                      <span>Laurea</span>
+                      <span class="font-mono text-[10px] text-blue">EN / IT</span>
+                      <Icon name="lucide:chevron-down" width={12} height={12} aria-hidden="true" />
+                    </summary>
+                    <div class="absolute right-0 top-full z-30 mt-xs flex min-w-36 flex-col gap-0.5 rounded-xl border border-border bg-crust p-xs shadow-xl">
+                      {item.documents.map((document) => {
+                        const language = document.label.replaceAll('[', '').replaceAll(']', '');
+                        return (
+                          <a
+                            href={document.href}
+                            download={document.filename}
+                            aria-label={document.title}
+                            title={document.title}
+                            class="flex items-center gap-sm rounded-lg px-sm py-xs text-xs font-medium text-subtext transition-colors hover:bg-blue/10 hover:text-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/60"
+                          >
+                            <Icon name="lucide:download" width={13} height={13} aria-hidden="true" />
+                            <span>{language === 'EN' ? 'English' : 'Italiano'}</span>
+                            <span class="ml-auto font-mono text-[10px] text-blue">{language}</span>
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </details>
+                )}
+              </div>
             </div>
             <p class="max-w-[52rem] text-body text-text">{item.description}</p>
-            {item.documents && item.documents.length > 0 && (
-              <div class="flex flex-wrap gap-xs" role="group" aria-label={`Documents for ${item.role}`}>
-                {item.documents.map((document) => (
-                  <a
-                    href={document.href}
-                    download={document.filename}
-                    aria-label={document.title}
-                    title={document.title}
-                    class="inline-flex items-center gap-xs rounded-full border border-blue/35 bg-blue/5 px-sm py-xs text-xs font-semibold text-text transition-colors hover:border-blue/70 hover:bg-blue/10 hover:text-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/60"
-                  >
-                    <Icon name="lucide:download" width={13} height={13} aria-hidden="true" />
-                    <span>Download certificate</span>
-                    <span class="rounded-full bg-blue/10 px-xs py-0.5 font-mono text-[10px] text-blue">
-                      {document.label.replaceAll('[', '').replaceAll(']', '')}
-                    </span>
-                  </a>
-                ))}
-              </div>
-            )}
           </div>
         </div>
       ))}
     </div>
   </div>
 </section>
+
+<script>
+  document.querySelectorAll<HTMLDetailsElement>('.certificate-menu').forEach((menu) => {
+    menu.querySelectorAll('a').forEach((link) => {
+      link.addEventListener('click', () => { menu.open = false; });
+    });
+  });
+
+  document.addEventListener('click', (event) => {
+    document.querySelectorAll<HTMLDetailsElement>('.certificate-menu[open]').forEach((menu) => {
+      if (!menu.contains(event.target as Node)) menu.open = false;
+    });
+  });
+</script>
