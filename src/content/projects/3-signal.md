@@ -1,10 +1,10 @@
 ---
-name: 'signal_image_video'
-description: 'Multi-object tracking system combining a CTRV-EKF Kalman filter with a Hungarian algorithm assignment step for 3D camera-LiDAR fusion, trained and evaluated on the KITTI benchmark.'
-tech: ['Python', 'Kalman Filter', 'LiDAR', 'KITTI', 'NumPy']
-href: 'https://github.com/xupremix/signal_image_video'
+name: 'MOT Benchmark'
+description: 'Empirical benchmark of multi-object tracking algorithms, comparing classical tracking-by-detection baselines such as SORT, OC-SORT, and ByteTrack against MARLMOT, a multi-agent PPO tracker with domain-adversarial alignment.'
+tech: ['Python', 'PyTorch', 'MOT', 'PPO', 'MARLMOT']
+href: 'https://github.com/xupremix/mot-benchmark'
 anchor: 'project-signal'
-impact: 'Reduced RMSE over linear tracking baseline'
+impact: 'Comparing classical trackers with a multi-agent PPO approach'
 role: 'Solo Project'
 index: 3
 ---
