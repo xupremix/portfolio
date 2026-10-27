@@ -1,55 +1,53 @@
-\section{Featured Projects}
+\section{Selected Projects}
 
 \cvproject
-  {incin: Type-Safe Deep Learning Engine}
-  {Rust, CUDA, Const Generics}
-  {High-assurance machine learning framework enforcing tensor invariants at compile time.}
+  {incin: Compile-Time Safety for Machine Learning Code}
+  {Rust, Machine Learning}
+  {A machine-learning framework I created as my BSc thesis project.}
   {
     \begin{itemize}
-      \item Architected a high-performance deep learning engine in Rust utilizing affine type-level invariants and const generics to guarantee tensor shape and rank compatibility at compile time with zero runtime overhead.
-      \item Engineered automatic differentiation graph execution, Conv2d operators with CUDA gradient parity verification, optimizer checkpointing, and modular data transformations.
+      \item Explore compile-time checks for tensor shapes and invariants to make model code structurally safer and easier to reason about.
+      \item The longer-term goal is to help AI research agents produce valid machine-learning code through clear architectural rules and compiler feedback.
     \end{itemize}
   }
 
 \cvproject
-  {ASA Autobots: Hybrid LLM \& Symbolic Multi-Agent System}
-  {Node.js, PDDL, BDI, Local LLM Integration}
-  {Real-time cooperative multi-agent logistics platform integrating LLM reasoning with symbolic planning.}
+  {ASA Autobots: Multi-Agent Delivery System}
+  {Node.js, BDI, PDDL, LLM Integration}
+  {Team project combining agent coordination, language models, and symbolic planning.}
   {
     \begin{itemize}
-      \item Engineered a distributed multi-agent system integrating BDI autonomous agents, local LLM reasoning (Llama 3.3 70B), and PDDL symbolic planners into real-time delivery logistics.
-      \item Implemented structured JSON-RPC / tool-calling protocols, resilient error handling, and robust state synchronization with \textasciitilde{}91.5\% integration test coverage across a 3-layer architecture.
+      \item Co-led a two-person team building a delivery workflow with BDI agents, an LLM coordinator, and a PDDL planner.
+      \item Worked on the system architecture and integration of agent components and service interfaces.
     \end{itemize}
   }
 
 \cvproject
-  {signal\_image\_video: 3D Multi-Object Tracking via Sensor Fusion}
-  {Python, PyTorch, LiDAR, EKF, KITTI}
-  {Multi-modal camera-LiDAR fusion tracking system evaluated on the KITTI benchmark.}
+  {MOT Benchmark}
+  {Python, PyTorch, Multi-Object Tracking, PPO}
+  {Empirical comparison of classical tracking-by-detection methods and a multi-agent PPO approach.}
   {
     \begin{itemize}
-      \item Designed a 3D LiDAR-camera multi-modal sensor fusion pipeline combining Constant Turn Rate \& Velocity Extended Kalman Filtering (CTRV-EKF) with Hungarian bipartite assignment.
-      \item Evaluated on the autonomous driving KITTI benchmark, achieving superior trajectory tracking stability and measurable RMSE reduction over linear baselines.
+      \item Benchmark SORT, OC-SORT, ByteTrack, and MARLMOT on multi-object tracking tasks.
     \end{itemize}
   }
 
 \cvproject
-  {NLU: Joint Intent Classification \& Slot Filling}
-  {Python, PyTorch, Transformers, BERT}
-  {End-to-end natural language understanding pipeline evaluated on the ATIS benchmark.}
+  {NLU: Intent Classification and Slot Filling}
+  {Python, PyTorch, BERT, Hugging Face, ATIS}
+  {Natural language understanding project using a joint intent and slot-filling model.}
   {
     \begin{itemize}
-      \item Built an end-to-end multi-task NLU pipeline fine-tuning transformer architectures (BERT) with joint intent classification and sequence labeling heads from scratch.
-      \item Attained 0.9765 intent classification accuracy and state-of-the-art slot-filling F1 score on the ATIS benchmark.
+      \item Built the training pipeline and evaluated the model on ATIS, achieving 0.9765 intent classification accuracy.
     \end{itemize}
   }
 
 \cvproject
-  {evolcpp: Systems Neuroevolution Engine}
-  {C++20, Template Metaprogramming, CMake}
-  {Modern C++ implementation of compile-time verified neural abstractions.}
+  {evolcpp}
+  {C++20, Templates, CMake}
+  {In-progress C++ port of core abstractions from incin.}
   {
     \begin{itemize}
-      \item Implemented core tensor abstractions using advanced C++20 template metaprogramming to replicate compile-time shape verification and tensor safety without dynamic memory overhead.
+      \item Implement compile-time tensor shape checks using C++ templates.
     \end{itemize}
   }

@@ -1,55 +1,53 @@
 \section{Progetti Selezionati}
 
 \cvproject
-  {incin: Framework di Deep Learning Type-Safe}
-  {Rust, CUDA, Const Generics}
-  {Framework backend-agnostic per reti neurali con verifica a tempo di compilazione.}
+  {incin: Sicurezza del codice ML a tempo di compilazione}
+  {Rust, Machine Learning}
+  {Framework di machine learning sviluppato come progetto di tesi triennale.}
   {
     \begin{itemize}
-      \item Progettazione di un motore deep learning ad alte prestazioni in Rust con tipi affini e const generics per garantire compatibilità di shape e rango a tempo di compilazione con zero overhead a runtime.
-      \item Implementazione di grafo di differenziazione automatica, operatori Conv2d con verifica di parità dei gradienti CUDA, checkpointing e trasformazioni modulari.
+      \item Esplora controlli a tempo di compilazione per shape e invarianti dei tensori, con l'obiettivo di rendere il codice dei modelli più sicuro e comprensibile.
+      \item L'obiettivo a lungo termine è aiutare agenti AI per la ricerca a produrre codice ML valido attraverso regole architetturali chiare e feedback del compilatore.
     \end{itemize}
   }
 
 \cvproject
-  {ASA Autobots: Sistema Multi-Agente Ibrido (LLM + Simbolico)}
-  {Node.js, PDDL, BDI, Integrazione LLM Locale}
-  {Piattaforma cooperativa per compiti logistici che integra ragionamento LLM e pianificazione simbolica.}
+  {ASA Autobots: Sistema di Consegne Multi-Agente}
+  {Node.js, BDI, PDDL, Integrazione LLM}
+  {Progetto di gruppo che combina coordinamento tra agenti, modelli linguistici e pianificazione simbolica.}
   {
     \begin{itemize}
-      \item Architettura basata sulla collaborazione real-time tra agenti autonomi BDI, integrazione di LLM locali (Llama 3.3 70B) e pianificatore simbolico PDDL per compiti logistici.
-      \item Integrazione di chiamate strutturate JSON-RPC / tool use, gestione resiliente degli errori e test coverage del \textasciitilde{}91.5\% su un'architettura a 3 livelli.
+      \item Ho co-guidato un gruppo di due persone nello sviluppo di un flusso di consegne con agenti BDI, un coordinatore LLM e un pianificatore PDDL.
+      \item Mi sono occupato dell'architettura del sistema e dell'integrazione dei componenti ad agenti e delle interfacce di servizio.
     \end{itemize}
   }
 
 \cvproject
-  {signal\_image\_video: Tracciamento 3D Multi-Oggetto con Sensor Fusion}
-  {Python, PyTorch, LiDAR, EKF, KITTI}
-  {Sistema di tracciamento 3D con fusione camera-LiDAR valutato sul benchmark KITTI.}
+  {MOT Benchmark}
+  {Python, PyTorch, Multi-Object Tracking, PPO}
+  {Confronto empirico tra metodi classici di tracking-by-detection e un approccio multi-agente basato su PPO.}
   {
     \begin{itemize}
-      \item Sviluppo di una pipeline di fusione sensoriale 3D LiDAR-camera combinando filtro di Kalman CTRV-EKF e algoritmo Ungherese per l'assegnazione bi-partita.
-      \item Valutazione sul benchmark di guida autonoma KITTI con netta riduzione dell'RMSE rispetto alla baseline lineare.
+      \item Benchmark di SORT, OC-SORT, ByteTrack e MARLMOT in attività di tracciamento multi-oggetto.
     \end{itemize}
   }
 
 \cvproject
-  {NLU: Intent Classification \& Slot Filling Congiunto}
-  {Python, PyTorch, Transformers, BERT}
-  {Pipeline end-to-end di Natural Language Understanding sul dataset ATIS.}
+  {NLU: Classificazione degli Intent e Slot Filling}
+  {Python, PyTorch, BERT, Hugging Face, ATIS}
+  {Progetto di comprensione del linguaggio naturale con un modello congiunto per intent e slot filling.}
   {
     \begin{itemize}
-      \item Pipeline di training costruita da zero, fine-tuning di modelli transformer (BERT) con teste congiunte di intent classification e sequence labeling.
-      \item Raggiunta un'accuratezza dell'intent pari a 0.9765 ed elevato F1 score per il rilevamento degli slot.
+      \item Sviluppo della pipeline di training e valutazione su ATIS; accuratezza di 0,9765 nella classificazione degli intent.
     \end{itemize}
   }
 
 \cvproject
-  {evolcpp: Motore di Neuroevoluzione in C++20}
-  {C++20, Template Metaprogramming, CMake}
-  {Porting ad alte prestazioni delle astrazioni neurali con type safety a tempo di compilazione.}
+  {evolcpp}
+  {C++20, Templates, CMake}
+  {Porting in corso in C++ delle astrazioni principali di incin.}
   {
     \begin{itemize}
-      \item Implementazione delle astrazioni tensoriali con template metaprogramming in C++20 per garantire shape safety a tempo di compilazione senza overhead di memoria dinamica.
+      \item Implementazione di controlli di shape dei tensori a tempo di compilazione tramite template C++.
     \end{itemize}
   }
