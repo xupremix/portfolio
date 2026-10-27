@@ -32,20 +32,7 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
   class="project-card card-hover group relative flex h-full scroll-mt-24 flex-col overflow-hidden rounded-[var(--radius-card)] border p-md"
 >
   <div aria-hidden="true" class="project-card-light pointer-events-none absolute inset-0"></div>
-  <svg aria-hidden="true" viewBox="0 0 320 200" preserveAspectRatio="none" class="project-card-network pointer-events-none absolute right-0 top-0 h-3/5 w-3/5">
-    <g class="network-lines">
-      <path d="M118 8 164 38 211 12 256 43 304 18 M73 45 118 8 164 38 164 84 211 12 256 43 256 91 304 18 M27 82 73 45 118 84 164 38 211 74 256 43 304 78 M27 82 73 121 118 84 164 131 211 74 256 121 304 78 M73 121 118 166 164 131 211 170 256 121 304 157 M118 166 164 198 211 170 256 198" />
-      <path d="M73 45 73 121 M118 8 118 84 118 166 M164 38 164 131 164 198 M211 12 211 74 211 170 M256 43 256 121 256 198" />
-    </g>
-    <g class="network-nodes">
-      <circle cx="27" cy="82" r="2.2" /><circle cx="73" cy="45" r="2" /><circle cx="73" cy="121" r="1.8" />
-      <circle cx="118" cy="8" r="2.2" /><circle cx="118" cy="84" r="2.8" /><circle cx="118" cy="166" r="1.8" />
-      <circle cx="164" cy="38" r="2" /><circle cx="164" cy="131" r="2.6" /><circle cx="164" cy="198" r="1.8" />
-      <circle cx="211" cy="12" r="1.8" /><circle cx="211" cy="74" r="2.8" /><circle cx="211" cy="170" r="2" />
-      <circle cx="256" cy="43" r="2.2" /><circle cx="256" cy="121" r="1.8" /><circle cx="256" cy="198" r="2.2" />
-      <circle cx="304" cy="18" r="1.8" /><circle cx="304" cy="78" r="2.4" /><circle cx="304" cy="157" r="1.8" />
-    </g>
-  </svg>
+  <canvas aria-hidden="true" class="project-network-canvas pointer-events-none absolute right-0 top-0 h-3/5 w-3/5"></canvas>
   <div aria-hidden="true" class="project-card-stripe pointer-events-none absolute inset-x-0 top-0 h-1"></div>
 
   <div class:list={['relative z-10 flex h-full flex-col gap-md', wide && 'lg:grid lg:grid-cols-[1fr_minmax(0,340px)] lg:gap-lg']}>
@@ -119,23 +106,10 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
     transition: opacity 250ms ease;
   }
 
-  .project-card-network {
-    opacity: 0.1;
+  .project-network-canvas {
+    opacity: 0.13;
     mask-image: linear-gradient(135deg, transparent 0%, #000 35%, #000 76%, transparent 100%);
-    transform: translate3d(var(--network-shift-x, 0px), var(--network-shift-y, 0px), 0);
-    transition: opacity 250ms ease, transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
-  }
-
-  .network-lines {
-    fill: none;
-    stroke: var(--project-accent);
-    stroke-width: 0.7;
-    stroke-opacity: 0.65;
-  }
-
-  .network-nodes {
-    fill: var(--project-accent);
-    fill-opacity: 0.9;
+    transition: opacity 250ms ease;
   }
 
   .project-card-stripe {
@@ -173,38 +147,164 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
   .project-link:focus-visible { --tw-ring-color: var(--project-accent); }
 
   .project-card:hover { border-color: color-mix(in srgb, var(--project-accent) 30%, var(--color-border)); }
-  .project-card:hover .project-card-network { opacity: 0.15; }
+  .project-card:hover .project-network-canvas { opacity: 0.2; }
   .project-card:hover .project-card-light { opacity: 1; }
 
   @media (prefers-reduced-motion: reduce) {
-    .project-card-network,
+    .project-network-canvas,
     .project-card-light { transition: none; }
   }
 </style>
 
 <script>
+  type NetworkNode = { col: number; row: number; phase: number };
+  type NetworkCard = {
+    canvas: HTMLCanvasElement;
+    context: CanvasRenderingContext2D;
+    card: HTMLElement;
+    nodes: NetworkNode[];
+    columns: number;
+    rows: number;
+    width: number;
+    height: number;
+    dpr: number;
+    pointer: { x: number; y: number } | null;
+    color: string;
+  };
+
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  const networkCards: NetworkCard[] = [];
 
-  if (!reduceMotion) {
-    document.querySelectorAll<HTMLElement>('.project-card').forEach((card) => {
-      card.addEventListener('pointermove', (event) => {
-        if (event.pointerType === 'touch') return;
-        const bounds = card.getBoundingClientRect();
-        const x = (event.clientX - bounds.left) / bounds.width;
-        const y = (event.clientY - bounds.top) / bounds.height;
+  document.querySelectorAll<HTMLCanvasElement>('.project-network-canvas').forEach((canvas) => {
+    const card = canvas.closest<HTMLElement>('.project-card');
+    const context = canvas.getContext('2d');
+    if (!card || !context) return;
 
-        card.style.setProperty('--pointer-x', `${x * 100}%`);
-        card.style.setProperty('--pointer-y', `${y * 100}%`);
-        card.style.setProperty('--network-shift-x', `${(x - 0.5) * 4}px`);
-        card.style.setProperty('--network-shift-y', `${(y - 0.5) * 4}px`);
-      });
+    const columns = 7;
+    const rows = 5;
+    const nodes: NetworkNode[] = [];
+    for (let row = 0; row < rows; row++) {
+      for (let col = 0; col < columns; col++) {
+        nodes.push({ col, row, phase: Math.sin(col * 12.9898 + row * 78.233) * Math.PI });
+      }
+    }
 
-      card.addEventListener('pointerleave', () => {
-        card.style.removeProperty('--pointer-x');
-        card.style.removeProperty('--pointer-y');
-        card.style.removeProperty('--network-shift-x');
-        card.style.removeProperty('--network-shift-y');
-      });
+    const network: NetworkCard = {
+      canvas,
+      context,
+      card,
+      nodes,
+      columns,
+      rows,
+      width: 0,
+      height: 0,
+      dpr: Math.min(window.devicePixelRatio || 1, 2),
+      pointer: null,
+      color: getComputedStyle(card).getPropertyValue('--project-accent').trim(),
+    };
+    networkCards.push(network);
+
+    const resize = () => {
+      const bounds = canvas.getBoundingClientRect();
+      network.width = bounds.width;
+      network.height = bounds.height;
+      canvas.width = Math.round(bounds.width * network.dpr);
+      canvas.height = Math.round(bounds.height * network.dpr);
+      context.setTransform(network.dpr, 0, 0, network.dpr, 0, 0);
+    };
+
+    new ResizeObserver(resize).observe(canvas);
+    resize();
+
+    card.addEventListener('pointermove', (event) => {
+      if (event.pointerType === 'touch') return;
+      const bounds = card.getBoundingClientRect();
+      const x = (event.clientX - bounds.left) / bounds.width;
+      const y = (event.clientY - bounds.top) / bounds.height;
+      card.style.setProperty('--pointer-x', `${x * 100}%`);
+      card.style.setProperty('--pointer-y', `${y * 100}%`);
+
+      const canvasBounds = canvas.getBoundingClientRect();
+      network.pointer = { x: event.clientX - canvasBounds.left, y: event.clientY - canvasBounds.top };
+      if (reduceMotion) drawNetworks(performance.now());
     });
-  }
+
+    card.addEventListener('pointerleave', () => {
+      card.style.removeProperty('--pointer-x');
+      card.style.removeProperty('--pointer-y');
+      network.pointer = null;
+      if (reduceMotion) drawNetworks(performance.now());
+    });
+  });
+
+  const drawNetworks = (time: number) => {
+    const seconds = time / 1000;
+
+    networkCards.forEach((network) => {
+      const { context, width, height, columns, rows, pointer, color } = network;
+      if (!width || !height) return;
+      context.clearRect(0, 0, width, height);
+
+      const positions = network.nodes.map(({ col, row, phase }) => {
+        const baseX = (col / (columns - 1)) * width;
+        const baseY = (row / (rows - 1)) * height;
+        let x = baseX + Math.sin(seconds * 0.32 + phase) * 1.25;
+        let y = baseY + Math.cos(seconds * 0.27 + phase * 0.8) * 1.25;
+
+        if (pointer) {
+          const dx = x - pointer.x;
+          const dy = y - pointer.y;
+          const distance = Math.hypot(dx, dy);
+          if (distance < 66 && distance > 0) {
+            const shift = (1 - distance / 66) * 2.5;
+            x += (dx / distance) * shift;
+            y += (dy / distance) * shift;
+          }
+        }
+        return { x, y };
+      });
+
+      context.beginPath();
+      for (let row = 0; row < rows; row++) {
+        for (let col = 0; col < columns; col++) {
+          const index = row * columns + col;
+          const point = positions[index];
+          if (col < columns - 1) {
+            const right = positions[index + 1];
+            context.moveTo(point.x, point.y);
+            context.lineTo(right.x, right.y);
+          }
+          if (row < rows - 1) {
+            const below = positions[index + columns];
+            context.moveTo(point.x, point.y);
+            context.lineTo(below.x, below.y);
+          }
+          if (row < rows - 1 && col < columns - 1 && (row + col) % 2 === 0) {
+            const diagonal = positions[index + columns + 1];
+            context.moveTo(point.x, point.y);
+            context.lineTo(diagonal.x, diagonal.y);
+          }
+        }
+      }
+      context.strokeStyle = color;
+      context.globalAlpha = 0.38;
+      context.lineWidth = 0.65;
+      context.stroke();
+
+      positions.forEach(({ x, y }) => {
+        const distance = pointer ? Math.hypot(x - pointer.x, y - pointer.y) : Infinity;
+        context.beginPath();
+        context.arc(x, y, distance < 66 ? 1.45 : 1, 0, Math.PI * 2);
+        context.fillStyle = color;
+        context.globalAlpha = distance < 66 ? 0.8 : 0.52;
+        context.fill();
+      });
+
+      context.globalAlpha = 1;
+    });
+
+    if (!reduceMotion) window.requestAnimationFrame(drawNetworks);
+  };
+
+  drawNetworks(0);
 </script>
