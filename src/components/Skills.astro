@@ -1,7 +1,6 @@
 ---
 // Skill groups. Primary skills use the Badge `primary` variant; the
 // `progress` variant is reserved for in-progress project markers.
-import Badge from './Badge.astro';
 import { Icon } from 'astro-icon/components';
 
 import skillGroupsData from '../data/skills.json';
@@ -52,9 +51,9 @@ const tone: Record<string, { text: string; bg: string; border: string; lBorder: 
           <div class="flex flex-wrap gap-xs">
             {group.items.map((item) => (
               group.primary?.includes(item) ? (
-                <span class:list={["rounded-full border px-sm py-xs text-label font-medium shadow-sm", currentTone.border, currentTone.bg, currentTone.text]} data-i18n={item.startsWith('English (C1') ? 'skills.english' : item === 'Italian (Native)' ? 'skills.italian' : undefined}>{item}</span>
+                <span class:list={["rounded-full border px-sm py-xs text-label font-medium shadow-sm", currentTone.border, currentTone.bg, currentTone.text]}>{item}</span>
               ) : (
-                <span class="rounded-full border border-border bg-base px-sm py-xs text-label font-medium text-text shadow-sm" data-i18n={item.startsWith('English (C1') ? 'skills.english' : item === 'Italian (Native)' ? 'skills.italian' : undefined}>{item}</span>
+                <span class="rounded-full border border-border bg-base px-sm py-xs text-label font-medium text-text shadow-sm">{item}</span>
               )
             ))}
           </div>

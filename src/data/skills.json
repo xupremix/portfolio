@@ -90,17 +90,5 @@
       "Axum"
     ],
     "color": "yellow"
-  },
-  {
-    "heading": "Languages & Certifications",
-    "icon": "lucide:award",
-    "items": [
-      "English (C1 Certified - Cambridge Grade A, 182)",
-      "Italian (Native)"
-    ],
-    "primary": [
-      "English (C1 Certified - Cambridge Grade A, 182)"
-    ],
-    "color": "green"
   }
 ]
