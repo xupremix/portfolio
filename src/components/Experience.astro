@@ -1,5 +1,6 @@
 ---
 // Experience: timeline rail with tokened tag colors (no inline hex).
+import { Icon } from 'astro-icon/components';
 import experienceData from '../data/experience.json';
 
 const experience: {
@@ -69,9 +70,14 @@ const tone: Record<string, { dot: string; pill: string }> = {
                     href={document.href}
                     download={document.filename}
                     aria-label={document.title}
-                    class="rounded-full border border-border bg-mantle px-sm py-xs text-xs font-semibold text-subtext transition-colors hover:border-accent hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60"
+                    title={document.title}
+                    class="inline-flex items-center gap-xs rounded-full border border-blue/35 bg-blue/5 px-sm py-xs text-xs font-semibold text-text transition-colors hover:border-blue/70 hover:bg-blue/10 hover:text-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/60"
                   >
-                    {document.label}
+                    <Icon name="lucide:download" width={13} height={13} aria-hidden="true" />
+                    <span>Download certificate</span>
+                    <span class="rounded-full bg-blue/10 px-xs py-0.5 font-mono text-[10px] text-blue">
+                      {document.label.replaceAll('[', '').replaceAll(']', '')}
+                    </span>
                   </a>
                 ))}
               </div>
