@@ -1,45 +1,83 @@
----
-// Three working-principles pillars tailored for model optimization, AI service integration, and thesis collaboration.
+// Short introduction to current focus, project experience, and engineering approach.
 import { Icon } from 'astro-icon/components';
-
-const metric = (s: string) => `<span class="font-mono font-semibold text-accent">${s}</span>`;
 
 const pillars = [
   {
     icon: 'lucide:brain',
-    headingKey: 'about.model.title',
+    number: '01',
+    title: 'Model optimization',
+    titleKey: 'about.model.title',
+    body: 'My MSc focuses on fine-tuning, distillation, and quantization for practical constraints.',
     bodyKey: 'about.model.body',
-    heading: 'Model Optimization & Fine-Tuning',
-    body: `Adapting neural models to specialized domains and operational constraints through parameter-efficient fine-tuning (LoRA, QLoRA), distillation, multi-task learning, and low-bit quantization (NVFP4, GGUF, AWQ) to optimize model capability for real-world tasks.`,
+    tone: 'about-tone-violet',
   },
   {
-    icon: 'lucide:bot',
-    headingKey: 'about.systems.title',
+    icon: 'lucide:workflow',
+    number: '02',
+    title: 'AI system design',
+    titleKey: 'about.systems.title',
+    body: 'I led the architecture for ASA Autobots, bringing together an LLM coordinator, BDI agents, and PDDL planning.',
     bodyKey: 'about.systems.body',
-    heading: 'AI Systems & Service Integration',
-    body: `Bridging machine learning models with robust software backends. In <strong class="text-text">ASA Autobots</strong>, I integrated local 70B LLMs, autonomous BDI agents, and PDDL planners into an event-driven delivery pipeline with structured tool-calling, resilient recovery, and ${metric('~91.5%')} test coverage.`,
+    tone: 'about-tone-blue',
   },
   {
-    icon: 'lucide:graduation-cap',
-    headingKey: 'about.thesis.title',
-    bodyKey: 'about.thesis.body',
-    heading: "Target: Master's Thesis in AI Systems",
-    body: `Actively seeking a 6-month industry Master's Thesis / Internship at an ambitious AI lab or company, focusing on integrating optimized models into scalable backend services, multi-agent workflows, and user-facing platforms.`,
+    icon: 'lucide:blocks',
+    number: '03',
+    title: 'Software engineering',
+    titleKey: 'about.engineering.title',
+    body: 'I enjoy building the dependable backends and service integrations that make AI useful.',
+    bodyKey: 'about.engineering.body',
+    tone: 'about-tone-green',
   },
 ];
 ---
 
-<section aria-labelledby="about-heading" class="border-y border-border/40 bg-mantle/30 px-lg py-2xl md:px-xl">
-  <h2 id="about-heading" class="sr-only" data-i18n="about.aria">How I work</h2>
-  <div class="mx-auto grid max-w-[72rem] grid-cols-1 gap-lg md:grid-cols-3">
-    {pillars.map((pillar, i) => (
-      <div class="reveal group grid grid-cols-[40px_1fr] gap-x-sm gap-y-sm" data-delay={String(i + 1)}>
-        <div class="flex h-10 w-10 items-center justify-center rounded-[var(--radius-control)] bg-accent/10 text-accent transition-colors duration-200 group-hover:bg-accent group-hover:text-base">
-          <Icon name={pillar.icon} width={20} height={20} aria-hidden="true" />
-        </div>
-        <h3 class="self-center text-label font-semibold text-text" data-i18n={pillar.headingKey}>{pillar.heading}</h3>
-        <p class="col-start-2 text-body text-subtext" data-i18n-html={pillar.bodyKey}><Fragment set:html={pillar.body} /></p>
-      </div>
-    ))}
+<section aria-labelledby="about-heading" class="border-y border-border/40 bg-mantle/25 px-lg py-3xl md:px-xl">
+  <div class="mx-auto max-w-[72rem]">
+    <div class="reveal mb-xl">
+      <p class="section-eyebrow" data-i18n="about.eyebrow">approach</p>
+      <h2 id="about-heading" class="gradient-text mt-sm inline-block text-display font-semibold" data-i18n="about.title">
+        From models to working systems
+      </h2>
+    </div>
+
+    <div class="grid grid-cols-1 gap-md md:grid-cols-3">
+      {pillars.map((pillar, i) => (
+        <article class="about-card reveal relative flex flex-col gap-md overflow-hidden rounded-[var(--radius-card)] border border-border/70 bg-mantle/75 p-lg" data-delay={String(i + 1)}>
+          <div class="flex items-center justify-between">
+            <span class:list={['about-icon flex h-10 w-10 items-center justify-center rounded-[var(--radius-control)]', pillar.tone]}>
+              <Icon name={pillar.icon} width={19} height={19} aria-hidden="true" />
+            </span>
+            <span class="font-mono text-xs text-subtext/60">{pillar.number}</span>
+          </div>
+          <div>
+            <h3 class="text-title font-semibold text-text" data-i18n={pillar.titleKey}>{pillar.title}</h3>
+            <p class="mt-sm text-body leading-relaxed text-subtext" data-i18n={pillar.bodyKey}>{pillar.body}</p>
+          </div>
+        </article>
+      ))}
+    </div>
   </div>
 </section>
+
+<style>
+  .about-card {
+    background-image: linear-gradient(145deg, rgb(203 166 247 / 0.035), transparent 55%);
+    transition: border-color 220ms ease, background-color 220ms ease, transform 220ms ease;
+  }
+
+  .about-card:hover {
+    transform: translateY(-2px);
+    border-color: color-mix(in srgb, var(--color-accent) 32%, var(--color-border));
+    background-color: color-mix(in srgb, var(--color-mantle) 88%, var(--color-accent));
+  }
+
+  .about-tone-violet { background: rgb(203 166 247 / 0.1); color: #d8b4fe; }
+  .about-tone-blue { background: rgb(137 180 250 / 0.1); color: #a9d8f5; }
+  .about-tone-green { background: rgb(166 227 161 / 0.1); color: #a7e8cf; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .about-card { transition: none; }
+    .about-card:hover { transform: none; }
+  }
+</style>
