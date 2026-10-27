@@ -173,6 +173,8 @@ body::after {
   background-clip: text;
   -webkit-text-fill-color: transparent;
   color: transparent;
+  line-height: 1.12;
+  padding-bottom: 0.04em;
 }
 
 /* ── Demo Dialog ─────────────────────────────────────────── */
