@@ -31,6 +31,7 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
   style={`--project-accent: ${projectAccent}`}
   class="project-card card-hover group relative flex h-full scroll-mt-24 flex-col overflow-hidden rounded-[var(--radius-card)] border p-md"
 >
+  <div aria-hidden="true" class="project-card-light pointer-events-none absolute inset-0"></div>
   <svg aria-hidden="true" viewBox="0 0 320 200" preserveAspectRatio="none" class="project-card-network pointer-events-none absolute right-0 top-0 h-3/5 w-3/5">
     <g class="network-lines">
       <path d="M118 8 164 38 211 12 256 43 304 18 M73 45 118 8 164 38 164 84 211 12 256 43 256 91 304 18 M27 82 73 45 118 84 164 38 211 74 256 43 304 78 M27 82 73 121 118 84 164 131 211 74 256 121 304 78 M73 121 118 166 164 131 211 170 256 121 304 157 M118 166 164 198 211 170 256 198" />
@@ -70,8 +71,8 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
 
       <!-- Impact callout -->
       {impact && (
-        <div class="rounded-r-sm border-l-2 border-accent bg-accent/5 py-xs pl-sm">
-          <p class="font-mono text-[12px] font-semibold text-accent">{impact}</p>
+        <div class="project-impact rounded-r-sm border-l-2 py-xs pl-sm">
+          <p class="font-mono text-[12px] font-semibold">{impact}</p>
         </div>
       )}
 
@@ -106,16 +107,23 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
 
 <style>
   .project-card {
-    border-color: color-mix(in srgb, var(--project-accent) 18%, var(--color-border));
+    border-color: color-mix(in srgb, var(--project-accent) 15%, var(--color-border));
     background:
-      radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--project-accent) 7%, transparent), transparent 48%),
-      linear-gradient(145deg, color-mix(in srgb, var(--project-accent) 2%, var(--color-mantle)), var(--color-mantle) 68%);
+      radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--project-accent) 4%, transparent), transparent 48%),
+      var(--color-mantle);
+  }
+
+  .project-card-light {
+    background: radial-gradient(130px circle at var(--pointer-x, 100%) var(--pointer-y, 0%), color-mix(in srgb, var(--project-accent) 7%, transparent), transparent 100%);
+    opacity: 0.7;
+    transition: opacity 250ms ease;
   }
 
   .project-card-network {
-    opacity: 0.12;
+    opacity: 0.1;
     mask-image: linear-gradient(135deg, transparent 0%, #000 35%, #000 76%, transparent 100%);
-    transition: opacity 250ms ease;
+    transform: translate3d(var(--network-shift-x, 0px), var(--network-shift-y, 0px), 0);
+    transition: opacity 250ms ease, transform 450ms cubic-bezier(0.2, 0.7, 0.2, 1);
   }
 
   .network-lines {
@@ -132,7 +140,7 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
 
   .project-card-stripe {
     background: linear-gradient(90deg, var(--project-accent), color-mix(in srgb, var(--project-accent) 20%, transparent) 75%, transparent);
-    opacity: 0.42;
+    opacity: 0.24;
   }
 
   .project-number {
@@ -143,12 +151,18 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
   .project-role,
   .project-tech-tag,
   .project-link {
-    border: 1px solid color-mix(in srgb, var(--project-accent) 34%, transparent);
-    background: color-mix(in srgb, var(--project-accent) 9%, var(--color-mantle));
+    border: 1px solid color-mix(in srgb, var(--project-accent) 22%, transparent);
+    background: color-mix(in srgb, var(--project-accent) 5%, var(--color-mantle));
   }
 
   .project-role,
-  .project-tech-tag { color: color-mix(in srgb, var(--project-accent) 70%, var(--color-text)); }
+  .project-tech-tag { color: color-mix(in srgb, var(--project-accent) 42%, var(--color-text)); }
+
+  .project-impact {
+    border-color: color-mix(in srgb, var(--project-accent) 55%, transparent);
+    background: color-mix(in srgb, var(--project-accent) 4%, transparent);
+    color: color-mix(in srgb, var(--project-accent) 48%, var(--color-text));
+  }
 
   .project-link:hover {
     border-color: color-mix(in srgb, var(--project-accent) 65%, transparent);
@@ -158,10 +172,39 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
 
   .project-link:focus-visible { --tw-ring-color: var(--project-accent); }
 
-  .project-card:hover { border-color: color-mix(in srgb, var(--project-accent) 66%, var(--color-border)); }
-  .project-card:hover .project-card-network { opacity: 0.17; }
+  .project-card:hover { border-color: color-mix(in srgb, var(--project-accent) 30%, var(--color-border)); }
+  .project-card:hover .project-card-network { opacity: 0.15; }
+  .project-card:hover .project-card-light { opacity: 1; }
 
   @media (prefers-reduced-motion: reduce) {
-    .project-card-network { transition: none; }
+    .project-card-network,
+    .project-card-light { transition: none; }
   }
 </style>
+
+<script>
+  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+  if (!reduceMotion) {
+    document.querySelectorAll<HTMLElement>('.project-card').forEach((card) => {
+      card.addEventListener('pointermove', (event) => {
+        if (event.pointerType === 'touch') return;
+        const bounds = card.getBoundingClientRect();
+        const x = (event.clientX - bounds.left) / bounds.width;
+        const y = (event.clientY - bounds.top) / bounds.height;
+
+        card.style.setProperty('--pointer-x', `${x * 100}%`);
+        card.style.setProperty('--pointer-y', `${y * 100}%`);
+        card.style.setProperty('--network-shift-x', `${(x - 0.5) * 4}px`);
+        card.style.setProperty('--network-shift-y', `${(y - 0.5) * 4}px`);
+      });
+
+      card.addEventListener('pointerleave', () => {
+        card.style.removeProperty('--pointer-x');
+        card.style.removeProperty('--pointer-y');
+        card.style.removeProperty('--network-shift-x');
+        card.style.removeProperty('--network-shift-y');
+      });
+    });
+  }
+</script>
