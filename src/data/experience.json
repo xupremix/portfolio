@@ -21,7 +21,21 @@
     "period": "2022–23 to 2024–25",
     "description": "Completed a Bachelor's degree in Computer Science. Thesis: Kindle, a machine-learning framework for compile-time invariant and dimensionality safety.",
     "tag": "Education",
-    "toneClass": "blue"
+    "toneClass": "blue",
+    "documents": [
+      {
+        "label": "[EN]",
+        "href": "/documents/Laurea_EN.pdf",
+        "filename": "Laurea_EN.pdf",
+        "title": "Download BSc degree certificate in English"
+      },
+      {
+        "label": "[IT]",
+        "href": "/documents/Laurea_IT.pdf",
+        "filename": "Laurea_IT.pdf",
+        "title": "Scarica il certificato di laurea triennale in italiano"
+      }
+    ]
   },
   {
     "role": "High School Diploma",
