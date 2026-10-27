@@ -2,7 +2,7 @@
   {
     "role": "MSc Student in Artificial Intelligence Systems",
     "org": "University of Trento",
-    "period": "2024/25 - present",
+    "period": "2024–25 to present",
     "description": "MSc student at the University of Trento, focusing on model optimization (fine-tuning, LoRA/QLoRA, distillation, quantization), multi-agent coordination, and integrating AI models into software systems. Lead systems architect on the ASA Autobots multi-agent capstone project.",
     "tag": "AI Systems \u00b7 Model Optimization",
     "toneClass": "accent"
@@ -10,7 +10,7 @@
   {
     "role": "Teaching Assistant / Academic Tutor",
     "org": "University of Trento",
-    "period": "2023/24 - present",
+    "period": "2023–24 to present",
     "description": "Tutoring undergraduate students in Rust, Advanced Programming, and Compilers since 2023, beginning in the third year of my BSc in Computer Science.",
     "tag": "Teaching \u00b7 Leadership",
     "toneClass": "green"
@@ -18,7 +18,7 @@
   {
     "role": "BSc in Computer Science",
     "org": "University of Trento",
-    "period": "2021/22 - 2023/24",
+    "period": "2021–22 to 2023–24",
     "description": "Completed a Bachelor's degree in Computer Science. Thesis: Kindle, a machine-learning framework for compile-time invariant and dimensionality safety.",
     "tag": "Education",
     "toneClass": "blue"
@@ -26,7 +26,7 @@
   {
     "role": "High School Diploma",
     "org": "ITIS Bassano del Grappa",
-    "period": "2016/17 - 2020/21",
+    "period": "2016–17 to 2020–21",
     "description": "Completed technical secondary education before beginning my BSc in Computer Science.",
     "tag": "Education",
     "toneClass": "peach"
