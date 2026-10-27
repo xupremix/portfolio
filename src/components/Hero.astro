@@ -29,25 +29,11 @@ import { Icon } from 'astro-icon/components';
 
   <!-- Content -->
   <div class="relative flex max-w-[56rem] flex-col items-center">
-    <!-- Master's Thesis / Internship Banner -->
-    <a
-      href="#contact"
-      class="hero-animate group mb-md inline-flex items-center gap-xs rounded-full border border-accent/40 bg-accent/10 px-md py-xs text-[13px] font-medium text-accent transition-all hover:bg-accent/20 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
-      data-delay="1"
-    >
-      <span class="relative flex h-2 w-2">
-        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/60"></span>
-        <span class="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
-      </span>
-      <span>Actively seeking Master's Thesis / Internship: AI Systems &amp; Model Optimization</span>
-      <Icon name="lucide:arrow-right" width={12} height={12} class="transition-transform group-hover:translate-x-0.5" />
-    </a>
-
     <p
       class="hero-animate font-mono text-label font-semibold tracking-widest text-subtext uppercase"
       data-delay="2"
     >
-      AI Systems Master's Student · CS Graduate · UniTrento
+      AI Systems Master's Student · CS Graduate · Trento, Italy
     </p>
 
     <h1 class="hero-animate gradient-text mt-sm text-display font-semibold" data-delay="3">
@@ -87,13 +73,20 @@ import { Icon } from 'astro-icon/components';
           </div>
         </div>
       </div>
-      <a
-        href="#contact"
-        class="text-label font-semibold text-text transition-colors hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
-      >
-        Thesis / Internship Inquiry →
-      </a>
     </div>
+
+    <a
+      href="#contact"
+      class="hero-animate group mt-lg inline-flex items-center gap-xs rounded-full border border-accent/40 bg-accent/10 px-md py-xs text-[13px] font-medium text-accent transition-all hover:bg-accent/20 hover:scale-[1.02] focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
+      data-delay="6"
+    >
+      <span class="relative flex h-2 w-2">
+        <span class="absolute inline-flex h-full w-full animate-ping rounded-full bg-accent/60 motion-reduce:animate-none"></span>
+        <span class="relative inline-flex h-2 w-2 rounded-full bg-accent"></span>
+      </span>
+      <span>Open to part-time AI roles &amp; Master's thesis internships</span>
+      <Icon name="lucide:arrow-right" width={12} height={12} class="transition-transform group-hover:translate-x-0.5" aria-hidden="true" />
+    </a>
   </div>
 
   <a
