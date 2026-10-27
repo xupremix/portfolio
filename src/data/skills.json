@@ -21,11 +21,6 @@
       "Streaming APIs (SSE, WebSockets)",
       "RAG & Context Management"
     ],
-    "primary": [
-      "Multi-Agent Systems (BDI, PDDL)",
-      "Tool Use & Function Calling",
-      "LLM Orchestration"
-    ],
     "color": "blue"
   },
   {
@@ -40,11 +35,6 @@
       "Linux",
       "Compile-Time Safety & SIMD"
     ],
-    "primary": [
-      "Rust",
-      "C++ (C++20)",
-      "CUDA C/C++"
-    ],
     "color": "peach"
   },
   {
@@ -56,10 +46,6 @@
       "Diffusion Models",
       "Kalman Filtering (CTRV-EKF)",
       "KITTI Benchmark"
-    ],
-    "primary": [
-      "PyTorch",
-      "Transformers (BERT)"
     ],
     "color": "maroon"
   },
@@ -75,11 +61,6 @@
       "Git & CI/CD",
       "Model Serving (vLLM, Ollama, ONNX)",
       "Quantization (NVFP4/GGUF/AWQ/FP8)"
-    ],
-    "primary": [
-      "Docker",
-      "REST APIs",
-      "Axum"
     ],
     "color": "yellow"
   }

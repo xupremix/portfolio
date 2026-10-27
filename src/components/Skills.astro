@@ -5,7 +5,7 @@ import { Icon } from 'astro-icon/components';
 
 import skillGroupsData from '../data/skills.json';
 
-const skillGroups: { heading: string; icon: string; items: string[]; primary?: string[]; color?: string }[] = skillGroupsData;
+const skillGroups: { heading: string; icon: string; items: string[]; color?: string }[] = skillGroupsData;
 
 const tone: Record<string, { text: string; bg: string; border: string; lBorder: string }> = {
   accent: { text: 'text-accent', bg: 'bg-accent/10', border: 'border-accent/40', lBorder: 'border-l-accent/50' },
@@ -50,11 +50,7 @@ const tone: Record<string, { text: string; bg: string; border: string; lBorder: 
           </div>
           <div class="flex flex-wrap gap-xs">
             {group.items.map((item) => (
-              group.primary?.includes(item) ? (
-                <span class:list={["rounded-full border px-sm py-xs text-label font-medium shadow-sm", currentTone.border, currentTone.bg, currentTone.text]}>{item}</span>
-              ) : (
-                <span class="rounded-full border border-border bg-base px-sm py-xs text-label font-medium text-text shadow-sm">{item}</span>
-              )
+              <span class="rounded-full border border-border bg-base px-sm py-xs text-label font-medium text-text shadow-sm">{item}</span>
             ))}
           </div>
         </div>
