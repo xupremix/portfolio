@@ -52,7 +52,7 @@ export const translations: Record<string, Record<Language, string>> = {
   'skills.eyebrow': { en: 'skills', it: 'competenze' },
   'skills.title': { en: 'Skills', it: 'Competenze' },
   'skills.description': { en: 'Tools and concepts I have used in coursework and projects, and continue to develop through hands-on work.', it: 'Strumenti e concetti che ho utilizzato in corsi e progetti e che continuo a sviluppare con attività pratiche.' },
-  'skills.group.0': { en: 'ML Methods & Tooling', it: 'Metodi e strumenti ML' },
+  'skills.group.0': { en: 'ML Architectures & Methods', it: 'Architetture e metodi ML' },
   'skills.group.1': { en: 'AI Systems & Service Integration', it: 'Sistemi AI e integrazione di servizi' },
   'skills.group.2': { en: 'Systems & High Assurance', it: 'Sistemi e affidabilità' },
   'skills.group.3': { en: 'Deep Learning & Perception', it: 'Deep learning e percezione' },

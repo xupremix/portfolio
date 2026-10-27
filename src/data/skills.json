@@ -1,12 +1,13 @@
 [
   {
-    "heading": "ML Methods & Tooling",
+    "heading": "ML Architectures & Methods",
     "icon": "lucide:brain",
     "items": [
-      "Alignment (DPO, RLHF)",
-      "Multi-Task Learning",
-      "Model Pruning",
-      "HuggingFace Ecosystem"
+      "Attention Layers",
+      "Linear & Sliding-Window Attention",
+      "Modern Transformer Architectures",
+      "Hugging Face Ecosystem",
+      "Reinforcement Learning (PPO)"
     ],
     "color": "accent"
   },
