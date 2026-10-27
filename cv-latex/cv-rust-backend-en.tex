@@ -1,0 +1,56 @@
+\documentclass[10pt,a4paper]{article}
+\usepackage{cv-style}
+\geometry{margin=0.62in}
+\hypersetup{
+  pdftitle={Rust Backend CV - Filippo Lollato},
+  pdfauthor={Filippo Lollato}
+}
+
+\begin{document}
+
+\name{Filippo Lollato}
+\contact{\href{mailto:contact@lollato.dev}{contact@lollato.dev} \enskip\textbullet\enskip Trento, Italy \enskip\textbullet\enskip \href{https://github.com/xupremix}{GitHub: xupremix} \enskip\textbullet\enskip \href{https://lollato.dev}{Portfolio}}
+
+\section{Profile}
+Computer Science graduate and Artificial Intelligence Systems MSc student with hands-on Rust experience creating Incin, an open-source machine-learning framework. I focus on typed APIs, compile-time validation, backend abstractions, readable diagnostics, and correctness checks. Seeking part-time Rust, backend, or infrastructure work alongside my studies.
+
+\section{Rust Systems Project}
+\noindent\textbf{Incin --- Rust Machine-Learning Framework} \hfill \textsl{Independent project / BSc thesis}\\
+\noindent\href{https://github.com/xupremix/incin}{github.com/xupremix/incin}
+\begin{itemize}
+  \item Designed a typed tensor API that represents shape, data type, device, and gradient state in Rust's type system, catching invalid combinations at compile time.
+  \item Structured the project as a multi-crate Cargo workspace, separating core tensor APIs, backend executors, procedural macros, diagnostics, data utilities, and developer tools.
+  \item Built a CPU execution path and developer tools including \texttt{cargo incin} and \texttt{incin-lsp}; diagnostics translate complex type errors into readable tensor shapes.
+  \item Validate operations with generated conformance vectors and differentiable operations with finite-difference gradient checks; use typed errors for unsupported runtime capabilities.
+\end{itemize}
+
+\section{Experience}
+\noindent\textbf{Teaching Assistant / Academic Tutor} \hfill \textsl{2024--25 to Present}\\
+\noindent University of Trento \hfill Trento, Italy
+\begin{itemize}
+  \item Tutor undergraduate students in Rust, Advanced Programming, and Compilers; started during the third year of my BSc.
+  \item Explain programming concepts, help students reason through compiler feedback, and support debugging and implementation work.
+\end{itemize}
+
+\section{Additional Project}
+\noindent\textbf{ASA Autobots --- Multi-Agent Delivery System} \hfill \textsl{Node.js, BDI, PDDL, LLM}\\
+\begin{itemize}
+  \item Co-led a two-person team; contributed to system architecture and integration of BDI agents, an LLM coordinator, a PDDL planner, and service interfaces.
+\end{itemize}
+
+\section{Education}
+\noindent\textbf{M.Sc. in Artificial Intelligence Systems} \hfill \textsl{2025--26 to Present}\\
+\noindent University of Trento \hfill Trento, Italy
+
+\vspace{0.5ex}
+\noindent\textbf{B.Sc. in Computer Science} \hfill \textsl{2022--23 to 2024--25}\\
+\noindent University of Trento \hfill Trento, Italy \\
+\noindent Thesis project: Incin (originally titled Kindle), a Rust machine-learning framework.
+
+\section{Technical Skills}
+\noindent\textbf{Rust and Systems:} Rust, Cargo workspaces, type-level programming, C++20, Linux, CMake\\
+\textbf{Architecture and Reliability:} typed APIs, backend abstractions, compile-time validation, structured errors, conformance testing, gradient checks\\
+\textbf{Backend and Infrastructure:} REST APIs, Axum, Node.js, Docker, Git, CI/CD\\
+\textbf{Languages:} Italian (native), English (Cambridge English B2 First, Grade A; CEFR C1)
+
+\end{document}
