@@ -27,7 +27,7 @@ export const translations: Record<string, Record<Language, string>> = {
   'about.model.body': { en: "I'm interested in integrating AI into existing workflows, connecting models and tools to practical tasks.", it: 'Mi interessa integrare l’AI nei flussi di lavoro esistenti, collegando modelli e strumenti a compiti pratici.' },
   'about.systems.title': { en: 'AI agents', it: 'Agenti AI' },
   'about.systems.body': { en: 'I explored agent coordination and planning in ASA Autobots, combining an LLM coordinator, BDI agents, and PDDL.', it: 'In ASA Autobots ho esplorato coordinamento e pianificazione multi-agente, combinando un coordinatore LLM, agenti BDI e PDDL.' },
-  'about.engineering.title': { en: 'Reliable ML architecture', it: 'Architetture ML affidabili' },
+  'about.engineering.title': { en: 'AI infrastructure & reliability', it: 'Infrastruttura AI e affidabilità' },
   'about.engineering.body': { en: 'I care about formal guarantees and stable architecture. I created incin to check tensor shapes at compile time, with the longer-term goal of helping research agents generate correct ML code.', it: 'Mi interessano le garanzie formali e le architetture stabili. Ho creato incin per verificare le dimensioni dei tensori in compilazione, con l’obiettivo a lungo termine di aiutare gli agenti di ricerca a generare codice ML corretto.' },
   'projects.eyebrow': { en: 'work', it: 'progetti' },
   'projects.title': { en: 'Projects', it: 'Progetti' },
