@@ -3,10 +3,10 @@
 import { Icon } from 'astro-icon/components';
 
 const quickLinks = [
-  { href: '/#projects', label: 'Projects' },
-  { href: '/#skills', label: 'Skills' },
-  { href: '/#experience', label: 'Experience' },
-  { href: '/#contact', label: 'Contact' },
+  { href: '/#projects', label: 'Projects', key: 'nav.projects' },
+  { href: '/#skills', label: 'Skills', key: 'nav.skills' },
+  { href: '/#experience', label: 'Experience', key: 'nav.experience' },
+  { href: '/#contact', label: 'Contact', key: 'nav.contact' },
 ];
 ---
 
@@ -16,13 +16,13 @@ const quickLinks = [
       <p class="text-label text-subtext">© {new Date().getFullYear()} Filippo Lollato</p>
     </div>
 
-    <nav aria-label="Footer" class="flex flex-wrap items-center justify-center gap-md">
+    <nav aria-label="Footer" data-i18n-aria="footer.aria" class="flex flex-wrap items-center justify-center gap-md">
       {quickLinks.map((link) => (
         <a
           href={link.href}
           class="text-label text-subtext transition-colors hover:text-accent focus-visible:text-accent focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
         >
-          {link.label}
+          <span data-i18n={link.key}>{link.label}</span>
         </a>
       ))}
     </nav>

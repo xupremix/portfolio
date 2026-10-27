@@ -6,9 +6,9 @@ import { Icon } from 'astro-icon/components';
 
 // Absolute /# anchors so the nav also works from /404 and any future page.
 const links = [
-  { href: '/#projects', label: 'Projects' },
-  { href: '/#skills', label: 'Skills' },
-  { href: '/#experience', label: 'Experience' },
+  { href: '/#projects', label: 'Projects', key: 'nav.projects' },
+  { href: '/#skills', label: 'Skills', key: 'nav.skills' },
+  { href: '/#experience', label: 'Experience', key: 'nav.experience' },
 ];
 
 const linkClass =
@@ -27,17 +27,24 @@ const linkClass =
       filippo-lollato
     </a>
 
-    <nav class="hidden items-center gap-lg md:flex" aria-label="Site sections">
-      {links.map((link) => <a href={link.href} class={linkClass}>{link.label}</a>)}
+    <nav class="hidden items-center gap-lg md:flex" aria-label="Site sections" data-i18n-aria="nav.aria">
+      {links.map((link) => <a href={link.href} class={linkClass} data-i18n={link.key}>{link.label}</a>)}
       <a
         href="/#contact"
         class="nav-link rounded-[var(--radius-control)] bg-accent px-md py-xs text-label font-semibold text-base focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
-        Contact
+        <span data-i18n="nav.contact">Contact</span>
       </a>
     </nav>
 
-    <!-- Mobile: mode toggle removed -->
+    <button
+      id="language-toggle"
+      type="button"
+      aria-label="Switch language to Italian"
+      title="Switch language to Italian"
+      aria-pressed="false"
+      class="ml-auto mr-sm inline-flex h-9 min-w-10 items-center justify-center rounded-full border border-border px-sm font-mono text-xs font-semibold text-text transition-colors hover:border-accent/50 hover:text-accent focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-accent/60 md:ml-md md:mr-0"
+    >IT</button>
 
     <input type="checkbox" id="nav-toggle" class="peer sr-only" />
     <label
@@ -48,7 +55,7 @@ const linkClass =
       class="flex h-11 w-11 items-center justify-center peer-checked:hidden focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none md:hidden"
     >
       <Icon name="lucide:menu" width={24} height={24} />
-      <span class="sr-only">Open menu</span>
+      <span class="sr-only" data-i18n="nav.openMenu">Open menu</span>
     </label>
     <label
       for="nav-toggle"
@@ -58,19 +65,20 @@ const linkClass =
       class="hidden h-11 w-11 items-center justify-center peer-checked:flex focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none md:hidden"
     >
       <Icon name="lucide:x" width={24} height={24} />
-      <span class="sr-only">Close menu</span>
+      <span class="sr-only" data-i18n="nav.closeMenu">Close menu</span>
     </label>
 
     <nav
       class="absolute inset-x-0 top-full hidden flex-col gap-md border-b border-border bg-mantle p-lg peer-checked:flex md:hidden"
       aria-label="Site sections"
+      data-i18n-aria="nav.aria"
     >
-      {links.map((link) => <a href={link.href} class={linkClass}>{link.label}</a>)}
+      {links.map((link) => <a href={link.href} class={linkClass} data-i18n={link.key}>{link.label}</a>)}
       <a
         href="/#contact"
         class="nav-link rounded-[var(--radius-control)] bg-accent px-md py-xs text-center text-label font-semibold text-base focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
       >
-        Contact
+        <span data-i18n="nav.contact">Contact</span>
       </a>
     </nav>
   </div>

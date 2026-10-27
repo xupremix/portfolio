@@ -15,12 +15,16 @@ interface Props {
   title: string;
   description?: string;
   ogImage?: string;
+  titleKey?: string;
+  descriptionKey?: string;
 }
 
 const {
   title,
-  description = "Filippo Lollato, AI Systems Graduate Student & Researcher at the University of Trento engineering intelligent AI systems, model optimization pipelines, and production service integrations.",
+  description = "Filippo Lollato, MSc student in Artificial Intelligence Systems at the University of Trento, engineering intelligent AI systems and production service integrations.",
   ogImage = "/og.png",
+  titleKey,
+  descriptionKey,
 } = Astro.props;
 
 const siteUrl = Astro.site ?? new URL("https://filippolollato.dev");
@@ -32,7 +36,7 @@ const personJsonLd = JSON.stringify({
   name: "Filippo Lollato",
   url: siteUrl.href,
   email: "mailto:contact@lollato.dev",
-  jobTitle: "AI Systems Engineer & Researcher",
+  jobTitle: "MSc Student in Artificial Intelligence Systems",
   affiliation: { "@type": "CollegeOrUniversity", name: "University of Trento" },
   sameAs: ["https://github.com/xupremix"],
   knowsAbout: ["Machine Learning", "Rust", "Multi-agent systems", "Computer Vision", "NLP"],
@@ -54,23 +58,23 @@ const personJsonLd = JSON.stringify({
     <link rel="preload" as="font" type="font/woff2" href={interSemiboldWoff2} crossorigin />
 
     <!-- Primary SEO -->
-    <title>{title}</title>
-    <meta name="description" content={description} />
+    <title data-i18n={titleKey}>{title}</title>
+    <meta name="description" content={description} data-i18n-content={descriptionKey} />
     <meta name="author" content="Filippo Lollato" />
 
     <!-- Open Graph -->
     <meta property="og:type" content="website" />
     <meta property="og:url" content={canonicalUrl} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
+    <meta property="og:title" content={title} data-i18n-content={titleKey} />
+    <meta property="og:description" content={description} data-i18n-content={descriptionKey} />
     <meta property="og:image" content={new URL(ogImage, siteUrl).href} />
     <meta property="og:locale" content="en_US" />
     <meta property="og:site_name" content="Filippo Lollato" />
 
     <!-- Twitter Card -->
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
+    <meta name="twitter:title" content={title} data-i18n-content={titleKey} />
+    <meta name="twitter:description" content={description} data-i18n-content={descriptionKey} />
     <meta name="twitter:image" content={new URL(ogImage, siteUrl).href} />
 
     <script type="application/ld+json" set:html={personJsonLd} />
@@ -85,6 +89,59 @@ const personJsonLd = JSON.stringify({
     <Footer />
 
     <script>
+      import { translations, type Language } from '../i18n';
+
+      const languageToggle = document.querySelector<HTMLButtonElement>('#language-toggle');
+
+      function setLanguage(language: Language) {
+        document.documentElement.lang = language;
+        localStorage.setItem('portfolio-language', language);
+        document.querySelector<HTMLMetaElement>('meta[property="og:locale"]')?.setAttribute('content', language === 'en' ? 'en_US' : 'it_IT');
+
+        document.querySelectorAll<HTMLElement>('[data-i18n]').forEach((element) => {
+          const key = element.dataset.i18n;
+          const translation = key ? translations[key]?.[language] : undefined;
+          if (translation !== undefined) element.textContent = translation;
+        });
+
+        document.querySelectorAll<HTMLElement>('[data-i18n-html]').forEach((element) => {
+          const key = element.dataset.i18nHtml;
+          const translation = key ? translations[key]?.[language] : undefined;
+          if (translation !== undefined) element.innerHTML = translation;
+        });
+
+        document.querySelectorAll<HTMLElement>('[data-i18n-aria]').forEach((element) => {
+          const key = element.dataset.i18nAria;
+          const translation = key ? translations[key]?.[language] : undefined;
+          if (translation !== undefined) element.setAttribute('aria-label', translation);
+        });
+
+        document.querySelectorAll<HTMLElement>('[data-i18n-title]').forEach((element) => {
+          const key = element.dataset.i18nTitle;
+          const translation = key ? translations[key]?.[language] : undefined;
+          if (translation !== undefined) element.title = translation;
+        });
+
+        document.querySelectorAll<HTMLMetaElement>('[data-i18n-content]').forEach((element) => {
+          const key = element.dataset.i18nContent;
+          const translation = key ? translations[key]?.[language] : undefined;
+          if (translation !== undefined) element.content = translation;
+        });
+
+        if (languageToggle) {
+          languageToggle.textContent = language === 'en' ? 'IT' : 'EN';
+          languageToggle.setAttribute('aria-label', language === 'en' ? 'Switch language to Italian' : 'Passa alla lingua inglese');
+          languageToggle.title = language === 'en' ? 'Switch language to Italian' : 'Passa alla lingua inglese';
+          languageToggle.setAttribute('aria-pressed', String(language === 'it'));
+        }
+      }
+
+      const savedLanguage = localStorage.getItem('portfolio-language') === 'it' ? 'it' : 'en';
+      setLanguage(savedLanguage);
+      languageToggle?.addEventListener('click', () => {
+        setLanguage(document.documentElement.lang === 'en' ? 'it' : 'en');
+      });
+
       // ── Scroll Reveal ──────────────────────────────────────
       const revealObserver = new IntersectionObserver(
         (entries) => {

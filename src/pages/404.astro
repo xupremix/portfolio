@@ -2,7 +2,7 @@
 import Layout from '../layouts/Layout.astro';
 ---
 
-<Layout title="Page Not Found | Filippo Lollato">
+<Layout title="Page Not Found | Filippo Lollato" titleKey="error.metaTitle" descriptionKey="error.metaDescription">
   <main class="relative flex min-h-[calc(100svh-64px)] flex-col items-center justify-center gap-md overflow-hidden px-lg text-center">
     <p
       aria-hidden="true"
@@ -10,16 +10,16 @@ import Layout from '../layouts/Layout.astro';
     >
       404
     </p>
-    <p class="section-eyebrow relative">route not found</p>
-    <h1 class="relative text-display font-semibold text-text">This page never compiled.</h1>
-    <p class="relative max-w-[28rem] text-body text-subtext">
+    <p class="section-eyebrow relative" data-i18n="error.eyebrow">route not found</p>
+    <h1 class="relative text-display font-semibold text-text" data-i18n="error.title">This page never compiled.</h1>
+    <p class="relative max-w-[28rem] text-body text-subtext" data-i18n="error.description">
       The route you asked for does not exist, a case the type system cannot catch.
     </p>
     <a
       href="/"
       class="relative mt-sm inline-flex items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-sm text-label font-semibold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
     >
-      ← Back to the homepage
+      <span data-i18n="error.home">← Back to the homepage</span>
     </a>
   </main>
 </Layout>

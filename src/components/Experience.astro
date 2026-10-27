@@ -12,6 +12,7 @@ const experience: {
   toneClass: string; // dot + tag pill tone, from theme tokens
   documents?: { label: string; href: string; filename: string; title: string }[];
 }[] = experienceData;
+const timelineKeys = ['msc', 'tutor', 'bsc', 'highschool'];
 
 const tone: Record<string, { dot: string; pill: string }> = {
   accent: { dot: 'bg-accent', pill: 'border-accent/40 bg-accent/10 text-accent' },
@@ -26,11 +27,11 @@ const tone: Record<string, { dot: string; pill: string }> = {
 <section id="experience" class="px-lg py-3xl md:px-xl">
   <div class="mx-auto max-w-[72rem]">
     <div class="reveal">
-      <p class="section-eyebrow">experience &amp; education</p>
+      <p class="section-eyebrow" data-i18n="experience.eyebrow">experience &amp; education</p>
       <div class="flex items-center gap-md mt-sm">
-        <h2 class="gradient-text inline-block text-display font-semibold">Experience &amp; Education</h2>
+        <h2 class="gradient-text inline-block text-display font-semibold" data-i18n="experience.title">Experience &amp; Education</h2>
       </div>
-      <p class="mt-sm text-body text-subtext">Where I study, teach, and build.</p>
+      <p class="mt-sm text-body text-subtext" data-i18n="experience.description">Where I study, teach, and build.</p>
     </div>
 
     <!-- Timeline: vertical rail with a tone dot per entry -->
@@ -47,26 +48,26 @@ const tone: Record<string, { dot: string; pill: string }> = {
           <div class="flex flex-col gap-sm rounded-[var(--radius-card)] p-sm transition-colors hover:bg-mantle/60">
             <div class="flex flex-col gap-xs sm:flex-row sm:items-center sm:justify-between">
               <div class="flex flex-col gap-xs">
-                <h3 class="text-title font-semibold text-text">{item.role}</h3>
+                <h3 class="text-title font-semibold text-text" data-i18n={`experience.role.${timelineKeys[i]}`}>{item.role}</h3>
                 <div class="flex flex-wrap items-center gap-sm">
-                  <p class="text-label font-semibold text-accent">{item.org}</p>
+                  <p class="text-label font-semibold text-accent" data-i18n={`experience.org.${i === 3 ? 'highschool' : 'university'}`}>{item.org}</p>
                   <span
                     class:list={[
                       'rounded-full border px-sm py-xs text-label font-semibold',
                       tone[item.toneClass].pill,
                     ]}
                   >
-                    {item.tag}
+                    <span data-i18n={`experience.tag.${i === 0 ? 'msc' : i === 1 ? 'tutor' : 'education'}`}>{item.tag}</span>
                   </span>
                 </div>
               </div>
               <div class="flex flex-wrap items-center gap-sm self-start sm:self-center">
-                <span class="font-mono text-label font-semibold text-subtext">{item.period}</span>
+                <span class="font-mono text-label font-semibold text-subtext" data-i18n={`experience.period.${timelineKeys[i]}`}>{item.period}</span>
                 {item.documents && item.documents.length > 0 && (
                   <details class="certificate-menu group relative">
                     <summary class="flex list-none cursor-pointer items-center gap-xs rounded-full border border-blue/30 bg-blue/5 px-sm py-xs text-xs font-semibold text-text transition-colors hover:border-blue/60 hover:bg-blue/10 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/60">
                       <Icon name="lucide:download" width={13} height={13} aria-hidden="true" />
-                      <span>Laurea</span>
+                      <span data-i18n="experience.degreeMenu">Degree documents</span>
                       <span class="font-mono text-[10px] text-blue">EN / IT</span>
                       <Icon name="lucide:chevron-down" width={12} height={12} aria-hidden="true" />
                     </summary>
@@ -82,7 +83,7 @@ const tone: Record<string, { dot: string; pill: string }> = {
                             class="flex items-center gap-sm rounded-lg px-sm py-xs text-xs font-medium text-subtext transition-colors hover:bg-blue/10 hover:text-blue focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-blue/60"
                           >
                             <Icon name="lucide:download" width={13} height={13} aria-hidden="true" />
-                            <span>{language === 'EN' ? 'English' : 'Italiano'}</span>
+                            <span data-i18n={language === 'EN' ? 'experience.english' : 'experience.italian'}>{language === 'EN' ? 'English' : 'Italian'}</span>
                             <span class="ml-auto font-mono text-[10px] text-blue">{language}</span>
                           </a>
                         );
@@ -92,7 +93,7 @@ const tone: Record<string, { dot: string; pill: string }> = {
                 )}
               </div>
             </div>
-            <p class="max-w-[52rem] text-body text-text">{item.description}</p>
+            <p class="max-w-[52rem] text-body text-text" data-i18n={`experience.description.${timelineKeys[i]}`}>{item.description}</p>
           </div>
         </div>
       ))}

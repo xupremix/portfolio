@@ -7,16 +7,22 @@ const metric = (s: string) => `<span class="font-mono font-semibold text-accent"
 const pillars = [
   {
     icon: 'lucide:brain',
+    headingKey: 'about.model.title',
+    bodyKey: 'about.model.body',
     heading: 'Model Optimization & Fine-Tuning',
     body: `Adapting neural models to specialized domains and operational constraints through parameter-efficient fine-tuning (LoRA, QLoRA), distillation, multi-task learning, and low-bit quantization (NVFP4, GGUF, AWQ) to optimize model capability for real-world tasks.`,
   },
   {
     icon: 'lucide:bot',
+    headingKey: 'about.systems.title',
+    bodyKey: 'about.systems.body',
     heading: 'AI Systems & Service Integration',
     body: `Bridging machine learning models with robust software backends. In <strong class="text-text">ASA Autobots</strong>, I integrated local 70B LLMs, autonomous BDI agents, and PDDL planners into an event-driven delivery pipeline with structured tool-calling, resilient recovery, and ${metric('~91.5%')} test coverage.`,
   },
   {
     icon: 'lucide:graduation-cap',
+    headingKey: 'about.thesis.title',
+    bodyKey: 'about.thesis.body',
     heading: "Target: Master's Thesis in AI Systems",
     body: `Actively seeking a 6-month industry Master's Thesis / Internship at an ambitious AI lab or company, focusing on integrating optimized models into scalable backend services, multi-agent workflows, and user-facing platforms.`,
   },
@@ -24,15 +30,15 @@ const pillars = [
 ---
 
 <section aria-labelledby="about-heading" class="border-y border-border/40 bg-mantle/30 px-lg py-2xl md:px-xl">
-  <h2 id="about-heading" class="sr-only">How I work</h2>
+  <h2 id="about-heading" class="sr-only" data-i18n="about.aria">How I work</h2>
   <div class="mx-auto grid max-w-[72rem] grid-cols-1 gap-lg md:grid-cols-3">
     {pillars.map((pillar, i) => (
       <div class="reveal group grid grid-cols-[40px_1fr] gap-x-sm gap-y-sm" data-delay={String(i + 1)}>
         <div class="flex h-10 w-10 items-center justify-center rounded-[var(--radius-control)] bg-accent/10 text-accent transition-colors duration-200 group-hover:bg-accent group-hover:text-base">
           <Icon name={pillar.icon} width={20} height={20} aria-hidden="true" />
         </div>
-        <h3 class="self-center text-label font-semibold text-text">{pillar.heading}</h3>
-        <p class="col-start-2 text-body text-subtext"><Fragment set:html={pillar.body} /></p>
+        <h3 class="self-center text-label font-semibold text-text" data-i18n={pillar.headingKey}>{pillar.heading}</h3>
+        <p class="col-start-2 text-body text-subtext" data-i18n-html={pillar.bodyKey}><Fragment set:html={pillar.body} /></p>
       </div>
     ))}
   </div>

@@ -6,17 +6,18 @@ import { getCollection } from 'astro:content';
 
 const allProjects = await getCollection('projects');
 const featuredProjects = allProjects.sort((a, b) => (a.data.index || 99) - (b.data.index || 99)).map(p => p.data);
+const projectTranslationKeys = ['incin', 'evolcpp', 'mot', 'asa', 'nlu'];
 ---
 
 <section id="projects" class="px-lg py-3xl md:px-xl">
   <div class="mx-auto max-w-[72rem]">
     <!-- Heading -->
     <div class="reveal">
-      <p class="section-eyebrow">work</p>
+      <p class="section-eyebrow" data-i18n="projects.eyebrow">work</p>
       <div class="flex items-center gap-md mt-sm">
-        <h2 class="gradient-text inline-block text-display font-semibold">Projects</h2>
+        <h2 class="gradient-text inline-block text-display font-semibold" data-i18n="projects.title">Projects</h2>
       </div>
-      <p class="mt-sm text-body text-subtext">
+      <p class="mt-sm text-body text-subtext" data-i18n="projects.description">
         Selected projects in AI, systems programming, and software engineering.
       </p>
     </div>
@@ -36,6 +37,7 @@ const featuredProjects = allProjects.sort((a, b) => (a.data.index || 99) - (b.da
             teamCredit={project.teamCredit}
             impact={project.impact}
             role={project.role}
+            translationKey={projectTranslationKeys[i]}
           />
         </div>
       ))}
