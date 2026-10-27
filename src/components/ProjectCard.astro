@@ -31,7 +31,7 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
   style={`--project-accent: ${projectAccent}`}
   class="project-card card-hover group relative flex h-full scroll-mt-24 flex-col overflow-hidden rounded-[var(--radius-card)] border p-md"
 >
-  <svg aria-hidden="true" viewBox="0 0 320 200" preserveAspectRatio="none" class="project-card-network pointer-events-none absolute right-0 top-0 h-3/4 w-3/4">
+  <svg aria-hidden="true" viewBox="0 0 320 200" preserveAspectRatio="none" class="project-card-network pointer-events-none absolute right-0 top-0 h-3/5 w-3/5">
     <g class="network-lines">
       <path d="M118 8 164 38 211 12 256 43 304 18 M73 45 118 8 164 38 164 84 211 12 256 43 256 91 304 18 M27 82 73 45 118 84 164 38 211 74 256 43 304 78 M27 82 73 121 118 84 164 131 211 74 256 121 304 78 M73 121 118 166 164 131 211 170 256 121 304 157 M118 166 164 198 211 170 256 198" />
       <path d="M73 45 73 121 M118 8 118 84 118 166 M164 38 164 131 164 198 M211 12 211 74 211 170 M256 43 256 121 256 198" />
@@ -106,14 +106,14 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
 
 <style>
   .project-card {
-    border-color: color-mix(in srgb, var(--project-accent) 28%, var(--color-border));
+    border-color: color-mix(in srgb, var(--project-accent) 18%, var(--color-border));
     background:
-      radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--project-accent) 15%, transparent), transparent 48%),
-      linear-gradient(145deg, color-mix(in srgb, var(--project-accent) 5%, var(--color-mantle)), var(--color-mantle) 68%);
+      radial-gradient(ellipse at 100% 0%, color-mix(in srgb, var(--project-accent) 7%, transparent), transparent 48%),
+      linear-gradient(145deg, color-mix(in srgb, var(--project-accent) 2%, var(--color-mantle)), var(--color-mantle) 68%);
   }
 
   .project-card-network {
-    opacity: 0.27;
+    opacity: 0.12;
     mask-image: linear-gradient(135deg, transparent 0%, #000 35%, #000 76%, transparent 100%);
     transition: opacity 250ms ease;
   }
@@ -132,7 +132,7 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
 
   .project-card-stripe {
     background: linear-gradient(90deg, var(--project-accent), color-mix(in srgb, var(--project-accent) 20%, transparent) 75%, transparent);
-    opacity: 0.8;
+    opacity: 0.42;
   }
 
   .project-number {
@@ -159,7 +159,7 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
   .project-link:focus-visible { --tw-ring-color: var(--project-accent); }
 
   .project-card:hover { border-color: color-mix(in srgb, var(--project-accent) 66%, var(--color-border)); }
-  .project-card:hover .project-card-network { opacity: 0.4; }
+  .project-card:hover .project-card-network { opacity: 0.17; }
 
   @media (prefers-reduced-motion: reduce) {
     .project-card-network { transition: none; }
