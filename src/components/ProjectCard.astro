@@ -157,154 +157,195 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
 </style>
 
 <script>
-  type NetworkNode = { col: number; row: number; phase: number };
-  type NetworkCard = {
+  import * as THREE from 'three';
+
+  type ProjectNetwork = {
     canvas: HTMLCanvasElement;
-    context: CanvasRenderingContext2D;
     card: HTMLElement;
-    nodes: NetworkNode[];
-    columns: number;
-    rows: number;
-    width: number;
-    height: number;
-    dpr: number;
-    pointer: { x: number; y: number } | null;
-    color: string;
+    camera: THREE.PerspectiveCamera;
+    scene: THREE.Scene;
+    renderer: THREE.WebGLRenderer;
+    material: THREE.ShaderMaterial;
+    mouseX: number;
+    mouseY: number;
+    targetX: number;
+    targetY: number;
+    waveActive: boolean;
+    waveProgress: number;
   };
 
-  const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-  const networkCards: NetworkCard[] = [];
+  const networks: ProjectNetwork[] = [];
+  const gridSize = 7;
+  const spacing = 16;
+  const offset = (gridSize * spacing) / 2;
+  const windowHalfX = window.innerWidth / 2;
+  const windowHalfY = window.innerHeight / 2;
+  let scrollY = window.scrollY;
 
   document.querySelectorAll<HTMLCanvasElement>('.project-network-canvas').forEach((canvas) => {
     const card = canvas.closest<HTMLElement>('.project-card');
-    const context = canvas.getContext('2d');
-    if (!card || !context) return;
+    if (!card) return;
 
-    const columns = 7;
-    const rows = 5;
-    const nodes: NetworkNode[] = [];
-    for (let row = 0; row < rows; row++) {
-      for (let col = 0; col < columns; col++) {
-        nodes.push({ col, row, phase: Math.sin(col * 12.9898 + row * 78.233) * Math.PI });
-      }
-    }
+    const accent = new THREE.Color(getComputedStyle(card).getPropertyValue('--project-accent').trim());
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(60, 1, 0.1, 1000);
+    camera.position.z = 100;
 
-    const network: NetworkCard = {
-      canvas,
-      context,
-      card,
-      nodes,
-      columns,
-      rows,
-      width: 0,
-      height: 0,
-      dpr: Math.min(window.devicePixelRatio || 1, 2),
-      pointer: null,
-      color: getComputedStyle(card).getPropertyValue('--project-accent').trim(),
-    };
-    networkCards.push(network);
+    const renderer = new THREE.WebGLRenderer({ canvas, alpha: true, antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
     const resize = () => {
-      const bounds = canvas.getBoundingClientRect();
-      network.width = bounds.width;
-      network.height = bounds.height;
-      canvas.width = Math.round(bounds.width * network.dpr);
-      canvas.height = Math.round(bounds.height * network.dpr);
-      context.setTransform(network.dpr, 0, 0, network.dpr, 0, 0);
+      const { width, height } = canvas.getBoundingClientRect();
+      if (!width || !height) return;
+      camera.aspect = width / height;
+      camera.updateProjectionMatrix();
+      renderer.setSize(width, height, false);
     };
-
     new ResizeObserver(resize).observe(canvas);
     resize();
 
-    card.addEventListener('pointermove', (event) => {
-      if (event.pointerType === 'touch') return;
-      const bounds = card.getBoundingClientRect();
-      const x = (event.clientX - bounds.left) / bounds.width;
-      const y = (event.clientY - bounds.top) / bounds.height;
-      card.style.setProperty('--pointer-x', `${x * 100}%`);
-      card.style.setProperty('--pointer-y', `${y * 100}%`);
-
-      const canvasBounds = canvas.getBoundingClientRect();
-      network.pointer = { x: event.clientX - canvasBounds.left, y: event.clientY - canvasBounds.top };
-      if (reduceMotion) drawNetworks(performance.now());
-    });
-
-    card.addEventListener('pointerleave', () => {
-      card.style.removeProperty('--pointer-x');
-      card.style.removeProperty('--pointer-y');
-      network.pointer = null;
-      if (reduceMotion) drawNetworks(performance.now());
-    });
-  });
-
-  const drawNetworks = (time: number) => {
-    const seconds = time / 1000;
-
-    networkCards.forEach((network) => {
-      const { context, width, height, columns, rows, pointer, color } = network;
-      if (!width || !height) return;
-      context.clearRect(0, 0, width, height);
-
-      const positions = network.nodes.map(({ col, row, phase }) => {
-        const baseX = (col / (columns - 1)) * width;
-        const baseY = (row / (rows - 1)) * height;
-        let x = baseX + Math.sin(seconds * 0.32 + phase) * 1.25;
-        let y = baseY + Math.cos(seconds * 0.27 + phase * 0.8) * 1.25;
-
-        if (pointer) {
-          const dx = x - pointer.x;
-          const dy = y - pointer.y;
-          const distance = Math.hypot(dx, dy);
-          if (distance < 66 && distance > 0) {
-            const shift = (1 - distance / 66) * 2.5;
-            x += (dx / distance) * shift;
-            y += (dy / distance) * shift;
-          }
-        }
-        return { x, y };
-      });
-
-      context.beginPath();
-      for (let row = 0; row < rows; row++) {
-        for (let col = 0; col < columns; col++) {
-          const index = row * columns + col;
-          const point = positions[index];
-          if (col < columns - 1) {
-            const right = positions[index + 1];
-            context.moveTo(point.x, point.y);
-            context.lineTo(right.x, right.y);
-          }
-          if (row < rows - 1) {
-            const below = positions[index + columns];
-            context.moveTo(point.x, point.y);
-            context.lineTo(below.x, below.y);
-          }
-          if (row < rows - 1 && col < columns - 1 && (row + col) % 2 === 0) {
-            const diagonal = positions[index + columns + 1];
-            context.moveTo(point.x, point.y);
-            context.lineTo(diagonal.x, diagonal.y);
-          }
+    const particleCount = gridSize ** 3;
+    const geometry = new THREE.BufferGeometry();
+    const positions = new Float32Array(particleCount * 3);
+    const baseOpacities = new Float32Array(particleCount);
+    let particle = 0;
+    for (let x = 0; x < gridSize; x++) {
+      for (let y = 0; y < gridSize; y++) {
+        for (let z = 0; z < gridSize; z++) {
+          positions[particle * 3] = x * spacing - offset + (Math.random() * 1.5 - 0.75);
+          positions[particle * 3 + 1] = y * spacing - offset + (Math.random() * 1.5 - 0.75);
+          positions[particle * 3 + 2] = z * spacing - offset + (Math.random() * 1.5 - 0.75);
+          baseOpacities[particle] = Math.random() * 0.5 + 0.3;
+          particle++;
         }
       }
-      context.strokeStyle = color;
-      context.globalAlpha = 0.38;
-      context.lineWidth = 0.65;
-      context.stroke();
+    }
+    geometry.setAttribute('position', new THREE.BufferAttribute(positions, 3));
+    geometry.setAttribute('aOpacity', new THREE.BufferAttribute(baseOpacities, 1));
 
-      positions.forEach(({ x, y }) => {
-        const distance = pointer ? Math.hypot(x - pointer.x, y - pointer.y) : Infinity;
-        context.beginPath();
-        context.arc(x, y, distance < 66 ? 1.45 : 1, 0, Math.PI * 2);
-        context.fillStyle = color;
-        context.globalAlpha = distance < 66 ? 0.8 : 0.52;
-        context.fill();
-      });
-
-      context.globalAlpha = 1;
+    const material = new THREE.ShaderMaterial({
+      uniforms: {
+        uWaveCenter: { value: new THREE.Vector3() },
+        uWaveRadius: { value: 0 },
+        uColorBase: { value: new THREE.Color('#a6adc8') },
+        uColorActive: { value: accent },
+      },
+      vertexShader: `
+        uniform vec3 uWaveCenter;
+        uniform float uWaveRadius;
+        attribute float aOpacity;
+        varying float vOpacity;
+        varying float vActiveMix;
+        void main() {
+          float dist = distance(position, uWaveCenter);
+          float waveStrength = exp(-pow(dist - uWaveRadius, 2.0) / 150.0);
+          vActiveMix = waveStrength;
+          vOpacity = aOpacity + (waveStrength * 0.15);
+          vec4 mvPosition = modelViewMatrix * vec4(position, 1.0);
+          gl_PointSize = (1.5 + waveStrength) * (110.0 / -mvPosition.z);
+          gl_Position = projectionMatrix * mvPosition;
+        }
+      `,
+      fragmentShader: `
+        uniform vec3 uColorBase;
+        uniform vec3 uColorActive;
+        varying float vOpacity;
+        varying float vActiveMix;
+        void main() {
+          float dist = distance(gl_PointCoord, vec2(0.5));
+          if (dist > 0.5) discard;
+          float alpha = smoothstep(0.5, 0.3, dist) * vOpacity;
+          vec3 finalColor = mix(uColorBase, uColorActive, vActiveMix);
+          gl_FragColor = vec4(finalColor, alpha);
+        }
+      `,
+      transparent: true,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
     });
+    scene.add(new THREE.Points(geometry, material));
 
-    if (!reduceMotion) window.requestAnimationFrame(drawNetworks);
-  };
+    const lineIndices: number[] = [];
+    for (let x = 0; x < gridSize; x++) {
+      for (let y = 0; y < gridSize; y++) {
+        for (let z = 0; z < gridSize; z++) {
+          const index = (x * gridSize + y) * gridSize + z;
+          if (x + 1 < gridSize) lineIndices.push(index, index + gridSize * gridSize);
+          if (y + 1 < gridSize) lineIndices.push(index, index + gridSize);
+          if (z + 1 < gridSize) lineIndices.push(index, index + 1);
+        }
+      }
+    }
+    const lineGeometry = new THREE.BufferGeometry();
+    lineGeometry.setAttribute('position', geometry.getAttribute('position'));
+    lineGeometry.setIndex(lineIndices);
+    scene.add(new THREE.LineSegments(lineGeometry, new THREE.LineBasicMaterial({
+      color: 0x313244,
+      transparent: true,
+      opacity: 0.25,
+      depthWrite: false,
+      blending: THREE.AdditiveBlending,
+    })));
 
-  drawNetworks(0);
+    scene.rotation.x = 0.29;
+    scene.rotation.y = -0.385;
+    networks.push({ canvas, card, camera, scene, renderer, material, mouseX: 0, mouseY: 0, targetX: 0, targetY: 0, waveActive: false, waveProgress: 0 });
+  });
+
+  document.addEventListener('mousemove', (event) => {
+    for (const network of networks) {
+      network.mouseX = (event.clientX - windowHalfX) * 0.01;
+      network.mouseY = (event.clientY - windowHalfY) * 0.01;
+    }
+  });
+
+  window.addEventListener('scroll', () => { scrollY = window.scrollY; }, { passive: true });
+
+  window.addEventListener('trigger-forward-pass', ((event: CustomEvent<{ x: number; y: number }>) => {
+    for (const network of networks) {
+      const cardBounds = network.card.getBoundingClientRect();
+      if (
+        event.detail.x < cardBounds.left || event.detail.x > cardBounds.right ||
+        event.detail.y < cardBounds.top || event.detail.y > cardBounds.bottom
+      ) continue;
+
+      const bounds = network.canvas.getBoundingClientRect();
+      const x = Math.max(0, Math.min(1, (event.detail.x - bounds.left) / bounds.width));
+      const y = Math.max(0, Math.min(1, (event.detail.y - bounds.top) / bounds.height));
+      const point = new THREE.Vector3(x * 2 - 1, -(y * 2 - 1), 0.5).unproject(network.camera);
+      const direction = point.sub(network.camera.position).normalize();
+      const distance = -network.camera.position.z / direction.z;
+      network.material.uniforms.uWaveCenter.value.copy(network.camera.position.clone().add(direction.multiplyScalar(distance)));
+      network.waveActive = true;
+      network.waveProgress = 0;
+    }
+  }) as EventListener);
+
+  function animateNetworks() {
+    requestAnimationFrame(animateNetworks);
+    const maxScroll = Math.max(1, document.body.scrollHeight - window.innerHeight);
+    const scrollFraction = Math.max(0, Math.min(1, scrollY / maxScroll));
+    const targetZ = 100 - scrollFraction * 35;
+
+    for (const network of networks) {
+      network.targetX = network.mouseX;
+      network.targetY = network.mouseY;
+      network.camera.position.x += (network.targetX - network.camera.position.x) * 0.05;
+      network.camera.position.y += (-network.targetY - network.camera.position.y) * 0.05;
+      network.camera.position.z += (targetZ - network.camera.position.z) * 0.05;
+      network.camera.lookAt(0, 0, 0);
+
+      if (network.waveActive) {
+        network.waveProgress += 2;
+        network.material.uniforms.uWaveRadius.value = network.waveProgress;
+        if (network.waveProgress > 180) {
+          network.waveActive = false;
+          network.material.uniforms.uWaveRadius.value = 0;
+        }
+      }
+      network.renderer.render(network.scene, network.camera);
+    }
+  }
+
+  animateNetworks();
 </script>
