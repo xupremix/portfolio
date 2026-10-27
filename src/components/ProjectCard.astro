@@ -31,7 +31,20 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
   style={`--project-accent: ${projectAccent}`}
   class="project-card card-hover group relative flex h-full scroll-mt-24 flex-col overflow-hidden rounded-[var(--radius-card)] border p-md"
 >
-  <div aria-hidden="true" class="project-card-glow pointer-events-none absolute -right-10 -top-12 h-40 w-40 rounded-full"></div>
+  <svg aria-hidden="true" viewBox="0 0 320 200" preserveAspectRatio="none" class="project-card-network pointer-events-none absolute right-0 top-0 h-3/4 w-3/4">
+    <g class="network-lines">
+      <path d="M118 8 164 38 211 12 256 43 304 18 M73 45 118 8 164 38 164 84 211 12 256 43 256 91 304 18 M27 82 73 45 118 84 164 38 211 74 256 43 304 78 M27 82 73 121 118 84 164 131 211 74 256 121 304 78 M73 121 118 166 164 131 211 170 256 121 304 157 M118 166 164 198 211 170 256 198" />
+      <path d="M73 45 73 121 M118 8 118 84 118 166 M164 38 164 131 164 198 M211 12 211 74 211 170 M256 43 256 121 256 198" />
+    </g>
+    <g class="network-nodes">
+      <circle cx="27" cy="82" r="2.2" /><circle cx="73" cy="45" r="2" /><circle cx="73" cy="121" r="1.8" />
+      <circle cx="118" cy="8" r="2.2" /><circle cx="118" cy="84" r="2.8" /><circle cx="118" cy="166" r="1.8" />
+      <circle cx="164" cy="38" r="2" /><circle cx="164" cy="131" r="2.6" /><circle cx="164" cy="198" r="1.8" />
+      <circle cx="211" cy="12" r="1.8" /><circle cx="211" cy="74" r="2.8" /><circle cx="211" cy="170" r="2" />
+      <circle cx="256" cy="43" r="2.2" /><circle cx="256" cy="121" r="1.8" /><circle cx="256" cy="198" r="2.2" />
+      <circle cx="304" cy="18" r="1.8" /><circle cx="304" cy="78" r="2.4" /><circle cx="304" cy="157" r="1.8" />
+    </g>
+  </svg>
   <div aria-hidden="true" class="project-card-stripe pointer-events-none absolute inset-x-0 top-0 h-1"></div>
 
   <div class:list={['relative z-10 flex h-full flex-col gap-md', wide && 'lg:grid lg:grid-cols-[1fr_minmax(0,340px)] lg:gap-lg']}>
@@ -99,11 +112,22 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
       linear-gradient(145deg, color-mix(in srgb, var(--project-accent) 5%, var(--color-mantle)), var(--color-mantle) 68%);
   }
 
-  .project-card-glow {
-    background: radial-gradient(circle, color-mix(in srgb, var(--project-accent) 24%, transparent), transparent 70%);
-    filter: blur(5px);
-    opacity: 0.72;
-    transition: opacity 250ms ease, transform 350ms ease;
+  .project-card-network {
+    opacity: 0.27;
+    mask-image: linear-gradient(135deg, transparent 0%, #000 35%, #000 76%, transparent 100%);
+    transition: opacity 250ms ease;
+  }
+
+  .network-lines {
+    fill: none;
+    stroke: var(--project-accent);
+    stroke-width: 0.7;
+    stroke-opacity: 0.65;
+  }
+
+  .network-nodes {
+    fill: var(--project-accent);
+    fill-opacity: 0.9;
   }
 
   .project-card-stripe {
@@ -135,9 +159,9 @@ const projectAccent = pastelAccents[(index - 1) % pastelAccents.length];
   .project-link:focus-visible { --tw-ring-color: var(--project-accent); }
 
   .project-card:hover { border-color: color-mix(in srgb, var(--project-accent) 66%, var(--color-border)); }
-  .project-card:hover .project-card-glow { opacity: 1; transform: scale(1.15); }
+  .project-card:hover .project-card-network { opacity: 0.4; }
 
   @media (prefers-reduced-motion: reduce) {
-    .project-card-glow { transition: none; }
+    .project-card-network { transition: none; }
   }
 </style>
