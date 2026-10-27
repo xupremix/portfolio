@@ -16,11 +16,10 @@ interface Props {
   teamCredit?: string;
   impact?: string;
   role?: string;
-  demoId?: string;
   wide?: boolean;
 }
 
-const { name, description, tech, href, index, anchor, status, teamCredit, impact, role, demoId, wide = false } =
+const { name, description, tech, href, index, anchor, status, teamCredit, impact, role, wide = false } =
   Astro.props;
 ---
 
@@ -69,18 +68,8 @@ const { name, description, tech, href, index, anchor, status, teamCredit, impact
         ))}
       </div>
 
-      <!-- Footer: Try Demo is the primary action; GitHub is secondary -->
+      <!-- Project link -->
       <div class="mt-auto flex flex-wrap items-center gap-md pt-xs">
-        {demoId && (
-          <button
-            type="button"
-            data-demo-id={demoId}
-            class="demo-open-btn inline-flex cursor-pointer items-center gap-xs rounded-[var(--radius-control)] bg-accent px-md py-xs text-label font-semibold text-base transition-opacity hover:opacity-90 focus-visible:ring-2 focus-visible:ring-accent/60 focus-visible:outline-none"
-          >
-            <Icon name="lucide:play" width={13} height={13} aria-hidden="true" />
-            Try demo
-          </button>
-        )}
         <a
           href={href}
           target="_blank"
@@ -100,19 +89,3 @@ const { name, description, tech, href, index, anchor, status, teamCredit, impact
     )}
   </div>
 </article>
-
-<script>
-  document.querySelectorAll<HTMLButtonElement>('.demo-open-btn').forEach((btn) => {
-    btn.addEventListener('click', () => {
-      const id = btn.dataset.demoId;
-      if (!id) return;
-      const dialog = document.getElementById(id) as HTMLDialogElement | null;
-      if (!dialog) return;
-      dialog.showModal();
-      // Lock page scroll while a modal is open; DemoDialog unlocks on 'close'.
-      document.body.style.overflow = 'hidden';
-      // Fire a custom event so demos can lazy-init
-      dialog.dispatchEvent(new CustomEvent('demo-open'));
-    });
-  });
-</script>

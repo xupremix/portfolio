@@ -13,7 +13,6 @@ const projectsCollection = defineCollection({
     teamCredit: z.string().optional(),
     impact: z.string().optional(),
     role: z.string().optional(),
-    demoId: z.string().optional(),
     wide: z.boolean().optional(),
     index: z.number().optional()
   })

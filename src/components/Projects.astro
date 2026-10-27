@@ -2,10 +2,6 @@
 // Projects section. incin is the flagship (wide card + code snippet pane);
 // anchors (project-*) are deep-link targets for the hero stats strip.
 import ProjectCard from './ProjectCard.astro';
-import IncinDemo from './IncinDemo.astro';
-import AsaDemo from './AsaDemo.astro';
-import SignalDemo from './SignalDemo.astro';
-import NluDemo from './NluDemo.astro';
 import { getCollection } from 'astro:content';
 
 const allProjects = await getCollection('projects');
@@ -21,8 +17,7 @@ const featuredProjects = allProjects.sort((a, b) => (a.data.index || 99) - (b.da
         <h2 class="gradient-text inline-block text-display font-semibold">Projects</h2>
       </div>
       <p class="mt-sm text-body text-subtext">
-        Real systems, real depth. Hit <strong class="text-text">Try demo</strong> on a card to see
-        it working.
+        Selected projects in AI, systems programming, and software engineering.
       </p>
     </div>
 
@@ -41,7 +36,6 @@ const featuredProjects = allProjects.sort((a, b) => (a.data.index || 99) - (b.da
             teamCredit={project.teamCredit}
             impact={project.impact}
             role={project.role}
-            demoId={project.demoId}
           />
         </div>
       ))}
@@ -50,9 +44,3 @@ const featuredProjects = allProjects.sort((a, b) => (a.data.index || 99) - (b.da
 
   </div>
 </section>
-
-<!-- Demo modals: rendered once, opened via dialog.showModal() -->
-<IncinDemo />
-<AsaDemo />
-<SignalDemo />
-<NluDemo />

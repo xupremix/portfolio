@@ -6,6 +6,5 @@ href: 'https://github.com/xupremix/signal_image_video'
 anchor: 'project-signal'
 impact: 'Reduced RMSE over linear tracking baseline'
 role: 'Solo Project'
-demoId: 'signal-demo'
 index: 3
 ---

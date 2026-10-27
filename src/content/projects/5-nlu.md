@@ -6,6 +6,5 @@ href: 'https://github.com/xupremix/NLU'
 anchor: 'project-nlu'
 impact: 'High accuracy intent classification'
 role: 'Solo Project'
-demoId: 'nlu-demo'
 index: 5
 ---

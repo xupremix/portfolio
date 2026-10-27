@@ -8,6 +8,5 @@ status: 'team'
 teamCredit: 'Team project, repo owned by teammate ale-bena.'
 impact: '~91.5% test coverage · 3-layer agent architecture'
 role: 'Co-lead · Team of 2'
-demoId: 'asa-demo'
 index: 4
 ---

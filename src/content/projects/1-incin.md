@@ -6,6 +6,5 @@ href: 'https://github.com/xupremix/incin'
 anchor: 'project-incin'
 impact: 'Compile-time ML shape & type safety, zero runtime overhead'
 role: 'Solo Project'
-demoId: 'incin-demo'
 index: 1
 ---
