@@ -110,6 +110,9 @@ export default defineConfig({
     }
   ],
   vite: {
+    preview: {
+      allowedHosts: ['lollato.dev', 'filippo.lollato.dev']
+    },
     plugins: [tailwindcss(), devProjectsPlugin()]
   }
 });

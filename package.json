@@ -7,7 +7,7 @@
   },
   "scripts": {
     "dev": "astro dev",
-    "build:cv": "cd cv-latex && make && cp *.pdf ../public/ && cp cv-eu-en.pdf ../public/cv.pdf && cp cv-eu-en.pdf ../public/lollato_filippo_eu_cv_en.pdf && cp cv-eu-it.pdf ../public/lollato_filippo_eu_cv_it.pdf && cp cv-it-en.pdf ../public/lollato_filippo_it_cv_en.pdf && cp cv-it-it.pdf ../public/lollato_filippo_it_cv_it.pdf",
+    "build:cv": "cd cv-latex && make && cp cv-eu-en.pdf cv-eu-it.pdf cv-it-en.pdf cv-it-it.pdf ../public/ && cp cv-eu-en.pdf ../public/cv.pdf && cp cv-eu-en.pdf ../public/lollato_filippo_eu_cv_en.pdf && cp cv-eu-it.pdf ../public/lollato_filippo_eu_cv_it.pdf && cp cv-it-en.pdf ../public/lollato_filippo_it_cv_en.pdf && cp cv-it-it.pdf ../public/lollato_filippo_it_cv_it.pdf",
     "build": "npm run build:cv && astro build",
     "preview": "astro preview",
     "astro": "astro",
