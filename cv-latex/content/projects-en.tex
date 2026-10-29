@@ -1,13 +1,24 @@
 \section{Selected Projects}
 
 \cvproject
+  {MOT Benchmark: Multi-Object Tracking}
+  {Python, PyTorch, MOT15/17/20, PPO}
+  {Solo academic project comparing tracking-by-detection methods with a reinforcement-learning tracker.}
+  {
+    \begin{itemize}
+      \item Implemented a shared evaluation pipeline for six trackers, including SORT, OC-SORT, ByteTrack, and MARLMOT, across MOT15, MOT17, and MOT20.
+      \item Compared results with CLEAR MOT and HOTA metrics; investigated evaluation and data issues to make benchmark results reproducible.
+    \end{itemize}
+  }
+
+\cvproject
   {incin: Compile-Time Safety for Machine Learning Code}
   {Rust, Machine Learning}
-  {A machine-learning framework I created as my BSc thesis project.}
+  {Rust machine-learning framework developed as my BSc thesis project.}
   {
     \begin{itemize}
       \item Explore compile-time checks for tensor shapes and invariants to make model code structurally safer and easier to reason about.
-      \item The longer-term goal is to help AI research agents produce valid machine-learning code through clear architectural rules and compiler feedback.
+      \item Longer-term goal: help AI research agents produce valid ML code through clear architectural rules and compiler feedback.
     \end{itemize}
   }
 
@@ -19,16 +30,6 @@
     \begin{itemize}
       \item Co-led a two-person team building a delivery workflow with BDI agents, an LLM coordinator, and a PDDL planner.
       \item Worked on the system architecture and integration of agent components and service interfaces.
-    \end{itemize}
-  }
-
-\cvproject
-  {MOT Benchmark}
-  {Python, PyTorch, Multi-Object Tracking, PPO}
-  {Empirical comparison of classical tracking-by-detection methods and a multi-agent PPO approach.}
-  {
-    \begin{itemize}
-      \item Benchmark SORT, OC-SORT, ByteTrack, and MARLMOT on multi-object tracking tasks.
     \end{itemize}
   }
 
