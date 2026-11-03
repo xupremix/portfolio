@@ -2,6 +2,7 @@
 import { Icon } from 'astro-icon/components';
 
 interface Passion {
+  id: 'keyboard' | 'homelab' | 'sports' | 'ai';
   title: string;
   category: string;
   icon: string;
@@ -12,6 +13,7 @@ interface Passion {
 
 const passions: Passion[] = [
   {
+    id: 'keyboard',
     title: 'Custom Mechanical Keyboards',
     category: 'Hardware & Ergonomics',
     icon: 'lucide:keyboard',
@@ -21,30 +23,33 @@ const passions: Passion[] = [
     highlights: ['Lubed Switches & Stabilizers', 'Gasket & Plate Tuning', 'Custom QMK/VIA Keymaps', 'Ergonomic Layouts'],
   },
   {
+    id: 'homelab',
     title: 'Self-Hosted AI & Homelab',
     category: 'Home Infrastructure',
     icon: 'lucide:server',
     color: 'blue',
     description:
-      'Running bare-metal 125B MoE models (Qwen 3.8 Flash Next) at home with 128k context windows. Tuned with low-level CUDA register patches for +84% Tensor Core GEMM throughput, speculative draft decoding (MTP), and LAN-wide model routing.',
-    highlights: ['125B MoE Local Inference', '128k Context (INT8 KV)', '+84% GPU Tensor Unlock', 'Strata & DSH Architecture'],
+      'Serving 125B MoE models (Qwen 3.8 Flash Next) at home with native 256k context and k8v4 KV streaming. Powered by an unlocked RTX 3060 running hand-tuned Ampere CUDA kernels, per-layer expert caching, and speculative draft decoding (MTP) sustained at ~35 TPS.',
+    highlights: ['125B MoE Local Inference', '256k Context (k8v4 KV)', 'Unlocked RTX 3060 (49.4 TFLOPS)', 'MTP Speculative Decoding'],
   },
   {
+    id: 'sports',
     title: 'Endurance Sports & Athletics',
     category: 'Discipline & Fitness',
     icon: 'lucide:activity',
     color: 'green',
     description:
-      'Applying the same iterative discipline to physical conditioning as to engineering. Regular endurance running, functional strength training, and staying active to maintain sharp focus, high energy, and mental clarity through demanding problem-solving sprints.',
+      'Applying the same iterative discipline to physical conditioning as to engineering. Regular endurance running, functional strength training, and staying active to maintain sharp focus, high energy, and mental resilience through demanding problem-solving sprints.',
     highlights: ['Endurance Running', 'Strength & Calisthenics', 'High-Output Discipline', 'Mental Resilience'],
   },
   {
+    id: 'ai',
     title: 'Bleeding-Edge AI Research',
     category: 'Continuous Learning',
     icon: 'lucide:sparkles',
     color: 'accent',
     description:
-      'Constantly tracking arXiv preprints, technical release reports, and open-source milestones. Exploring cutting-edge speculative decoding methods, sparse MoE router routing dynamics, compile-time ML invariants, and autonomous multi-agent harnesses.',
+      'Constantly tracking arXiv preprints, technical release reports, and open-source milestones. Exploring cutting-edge speculative decoding methods, sparse MoE router dynamics, compile-time ML invariants, and autonomous multi-agent harnesses.',
     highlights: ['Daily Preprint Reading', 'Speculative Decoding (MTP)', 'Sparse MoE Dynamics', 'Agent Evaluation'],
   },
 ];
@@ -62,11 +67,11 @@ const toneMap: Record<string, { text: string; bg: string; border: string; lBorde
 <section id="personal" class="px-lg py-3xl md:px-xl border-t border-border/30 bg-mantle/20">
   <div class="mx-auto max-w-[72rem]">
     <div class="reveal">
-      <p class="section-eyebrow">beyond the terminal</p>
+      <p class="section-eyebrow" data-i18n="personal.eyebrow">beyond the terminal</p>
       <div class="flex items-center gap-md mt-sm">
-        <h2 class="gradient-text inline-block text-display font-semibold">Passions & Craft</h2>
+        <h2 class="gradient-text inline-block text-display font-semibold" data-i18n="personal.title">Passions & Craft</h2>
       </div>
-      <p class="mt-sm max-w-2xl text-body text-subtext">
+      <p class="mt-sm max-w-2xl text-body text-subtext" data-i18n="personal.description">
         Engineering is only one dimension. The tactile craft, self-hosted hardware experimentation, physical discipline, and continuous curiosity that shape how I think and build.
       </p>
     </div>
@@ -88,18 +93,27 @@ const toneMap: Record<string, { text: string; bg: string; border: string; lBorde
                   <span class:list={['flex h-9 w-9 items-center justify-center rounded-[var(--radius-control)]', tone.bg, tone.text]}>
                     <Icon name={passion.icon} width={20} height={20} aria-hidden="true" />
                   </span>
-                  <span class="text-xs font-mono uppercase tracking-wider text-subtext">{passion.category}</span>
+                  <span class="text-xs font-mono uppercase tracking-wider text-subtext" data-i18n={`personal.${passion.id}.category`}>
+                    {passion.category}
+                  </span>
                 </div>
               </div>
 
-              <h3 class="text-h3 font-semibold text-text">{passion.title}</h3>
-              <p class="mt-sm text-body text-subtext leading-relaxed">{passion.description}</p>
+              <h3 class="text-h3 font-semibold text-text" data-i18n={`personal.${passion.id}.title`}>
+                {passion.title}
+              </h3>
+              <p class="mt-sm text-body text-subtext leading-relaxed" data-i18n={`personal.${passion.id}.description`}>
+                {passion.description}
+              </p>
             </div>
 
             <div class="mt-lg pt-md border-t border-border/40">
               <div class="flex flex-wrap gap-xs">
-                {passion.highlights.map((item) => (
-                  <span class:list={['rounded-full border px-sm py-[2px] text-xs font-mono', tone.pillBg]}>
+                {passion.highlights.map((item, j) => (
+                  <span
+                    class:list={['rounded-full border px-sm py-[2px] text-xs font-mono', tone.pillBg]}
+                    data-i18n={`personal.${passion.id}.hl${j + 1}`}
+                  >
                     {item}
                   </span>
                 ))}
