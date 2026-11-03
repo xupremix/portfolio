@@ -5,6 +5,7 @@ export const translations: Record<string, Record<Language, string>> = {
   'nav.projects': { en: 'Projects', it: 'Progetti' },
   'nav.skills': { en: 'Skills', it: 'Competenze' },
   'nav.experience': { en: 'Experience', it: 'Esperienza' },
+  'nav.personal': { en: 'Beyond Code', it: 'Oltre il codice' },
   'nav.contact': { en: 'Contact', it: 'Contatti' },
   'nav.openMenu': { en: 'Open menu', it: 'Apri il menu' },
   'nav.closeMenu': { en: 'Close menu', it: 'Chiudi il menu' },
