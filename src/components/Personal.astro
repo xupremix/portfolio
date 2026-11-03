@@ -1,0 +1,113 @@
+---
+import { Icon } from 'astro-icon/components';
+
+interface Passion {
+  title: string;
+  category: string;
+  icon: string;
+  color: 'accent' | 'blue' | 'green' | 'peach' | 'yellow' | 'maroon';
+  description: string;
+  highlights: string[];
+}
+
+const passions: Passion[] = [
+  {
+    title: 'Custom Mechanical Keyboards',
+    category: 'Hardware & Ergonomics',
+    icon: 'lucide:keyboard',
+    color: 'peach',
+    description:
+      'Designing and hand-assembling custom mechanical boards from the PCB up. Obsessed with tactile feedback, acoustic tuning (switches lubed with Krytox 205g0), custom plate materials, and tailored QMK/VIA keymaps for frictionless code editing.',
+    highlights: ['Lubed Switches & Stabilizers', 'Gasket & Plate Tuning', 'Custom QMK/VIA Keymaps', 'Ergonomic Layouts'],
+  },
+  {
+    title: 'Self-Hosted AI & Homelab',
+    category: 'Home Infrastructure',
+    icon: 'lucide:server',
+    color: 'blue',
+    description:
+      'Running bare-metal 125B MoE models (Qwen 3.8 Flash Next) at home with 128k context windows. Tuned with low-level CUDA register patches for +84% Tensor Core GEMM throughput, speculative draft decoding (MTP), and LAN-wide model routing.',
+    highlights: ['125B MoE Local Inference', '128k Context (INT8 KV)', '+84% GPU Tensor Unlock', 'Strata & DSH Architecture'],
+  },
+  {
+    title: 'Endurance Sports & Athletics',
+    category: 'Discipline & Fitness',
+    icon: 'lucide:activity',
+    color: 'green',
+    description:
+      'Applying the same iterative discipline to physical conditioning as to engineering. Regular endurance running, functional strength training, and staying active to maintain sharp focus, high energy, and mental clarity through demanding problem-solving sprints.',
+    highlights: ['Endurance Running', 'Strength & Calisthenics', 'High-Output Discipline', 'Mental Resilience'],
+  },
+  {
+    title: 'Bleeding-Edge AI Research',
+    category: 'Continuous Learning',
+    icon: 'lucide:sparkles',
+    color: 'accent',
+    description:
+      'Constantly tracking arXiv preprints, technical release reports, and open-source milestones. Exploring cutting-edge speculative decoding methods, sparse MoE router routing dynamics, compile-time ML invariants, and autonomous multi-agent harnesses.',
+    highlights: ['Daily Preprint Reading', 'Speculative Decoding (MTP)', 'Sparse MoE Dynamics', 'Agent Evaluation'],
+  },
+];
+
+const toneMap: Record<string, { text: string; bg: string; border: string; lBorder: string; pillBg: string }> = {
+  accent: { text: 'text-accent', bg: 'bg-accent/10', border: 'border-accent/40', lBorder: 'border-l-accent', pillBg: 'bg-accent/10 text-accent border-accent/20' },
+  blue: { text: 'text-blue', bg: 'bg-blue/10', border: 'border-blue/40', lBorder: 'border-l-blue', pillBg: 'bg-blue/10 text-blue border-blue/20' },
+  green: { text: 'text-green', bg: 'bg-green/10', border: 'border-green/40', lBorder: 'border-l-green', pillBg: 'bg-green/10 text-green border-green/20' },
+  peach: { text: 'text-peach', bg: 'bg-peach/10', border: 'border-peach/40', lBorder: 'border-l-peach', pillBg: 'bg-peach/10 text-peach border-peach/20' },
+  yellow: { text: 'text-yellow', bg: 'bg-yellow/10', border: 'border-yellow/40', lBorder: 'border-l-yellow', pillBg: 'bg-yellow/10 text-yellow border-yellow/20' },
+  maroon: { text: 'text-maroon', bg: 'bg-maroon/10', border: 'border-maroon/40', lBorder: 'border-l-maroon', pillBg: 'bg-maroon/10 text-maroon border-maroon/20' },
+};
+---
+
+<section id="personal" class="px-lg py-3xl md:px-xl border-t border-border/30 bg-mantle/20">
+  <div class="mx-auto max-w-[72rem]">
+    <div class="reveal">
+      <p class="section-eyebrow">beyond the terminal</p>
+      <div class="flex items-center gap-md mt-sm">
+        <h2 class="gradient-text inline-block text-display font-semibold">Passions & Craft</h2>
+      </div>
+      <p class="mt-sm max-w-2xl text-body text-subtext">
+        Engineering is only one dimension. The tactile craft, self-hosted hardware experimentation, physical discipline, and continuous curiosity that shape how I think and build.
+      </p>
+    </div>
+
+    <div class="mt-2xl grid grid-cols-1 gap-lg md:grid-cols-2">
+      {passions.map((passion, i) => {
+        const tone = toneMap[passion.color] || toneMap.accent;
+        return (
+          <article
+            class:list={[
+              'reveal flex flex-col justify-between rounded-[var(--radius-card)] border border-border border-l-4 bg-mantle p-lg transition-all duration-200 hover:border-border/80 hover:shadow-lg',
+              tone.lBorder,
+            ]}
+            data-delay={String(i + 1)}
+          >
+            <div>
+              <div class="flex items-center justify-between gap-sm mb-md">
+                <div class="flex items-center gap-sm">
+                  <span class:list={['flex h-9 w-9 items-center justify-center rounded-[var(--radius-control)]', tone.bg, tone.text]}>
+                    <Icon name={passion.icon} width={20} height={20} aria-hidden="true" />
+                  </span>
+                  <span class="text-xs font-mono uppercase tracking-wider text-subtext">{passion.category}</span>
+                </div>
+              </div>
+
+              <h3 class="text-h3 font-semibold text-text">{passion.title}</h3>
+              <p class="mt-sm text-body text-subtext leading-relaxed">{passion.description}</p>
+            </div>
+
+            <div class="mt-lg pt-md border-t border-border/40">
+              <div class="flex flex-wrap gap-xs">
+                {passion.highlights.map((item) => (
+                  <span class:list={['rounded-full border px-sm py-[2px] text-xs font-mono', tone.pillBg]}>
+                    {item}
+                  </span>
+                ))}
+              </div>
+            </div>
+          </article>
+        );
+      })}
+    </div>
+  </div>
+</section>
